@@ -168,6 +168,8 @@ def tool_query_evomap(action: str = "heartbeat") -> str:
                 for a in assets[:8]:
                     lines.append(f"- {a.get('name','未命名')} | {a.get('description','')[:60]}")
                 return "\n".join(lines)
+            elif r.status_code == 502:
+                return "EVOMAP技能接口故障（HTTP 502 Bad Gateway）— 这是服务器问题，不是悟空的问题。心跳接口正常，但技能学习暂时不可用。积分当前为0，即使接口恢复也可能需要积分才能获取技能。"
             else:
                 return f"EVOMAP拉取技能失败 | HTTP {r.status_code} | {r.text[:300]}"
         except requests.exceptions.ConnectionError:
