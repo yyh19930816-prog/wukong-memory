@@ -1,0 +1,36 @@
+{
+  "name": "悟空",
+  "total_xp": 0,
+  "level": 1,
+  "level_name": "炼气期",
+  "directions": {
+    "secretary": {
+      "name": "秘书大师",
+      "icon": "🗓",
+      "xp": 0,
+      "level": 1,
+      "level_name": "炼气期",
+      "logs": []
+    },
+    "avatar": {
+      "name": "沟通分身",
+      "icon": "💬",
+      "xp": 0,
+      "level": 1,
+      "level_name": "炼气期",
+      "logs": []
+    },
+    "content": {
+      "name": "内容执行",
+      "icon": "🎬",
+      "xp": 0,
+      "level": 1,
+      "level_name": "炼气期",
+      "logs": []
+    }
+  },
+  "evolution_log": [
+    "[2026-03-01] 悟空系统初始化，三大方向确立"
+  ],
+  "last_updated": "2026-03-01 00:00:00"
+}
