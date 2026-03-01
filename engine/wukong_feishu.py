@@ -1,15 +1,28 @@
 # -*- coding: utf-8 -*-
 """
-悟空飞书机器人服务端 v1.0
-接收飞书消息 → 调用DeepSeek → 回复老板
+悟空飞书机器人服务端 v2.0 — Function Calling 版
+接收飞书消息 → 悟空自主调工具 → 拿到真实结果 → 回复老板
 """
 import json
 import hashlib
 import requests
 import threading
+import sys
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from datetime import datetime
 import os
+
+# 加载工具箱
+_ENGINE_DIR = os.path.dirname(os.path.abspath(__file__))
+if _ENGINE_DIR not in sys.path:
+    sys.path.insert(0, _ENGINE_DIR)
+try:
+    from wukong_tools import TOOLS_SCHEMA, execute_tool
+    TOOLS_ENABLED = True
+    print("[悟空工具箱] 加载成功")
+except ImportError as _e:
+    TOOLS_ENABLED = False
+    print(f"[悟空工具箱] 加载失败: {_e}")
 
 # ── 配置 ─────────────────────────────────────────────────────────────────────
 FEISHU_APP_ID        = "cli_a92effd632b85cd5"
@@ -94,21 +107,27 @@ def load_memory():
     except: pass
     return ""
 
-# ── 调用AI ────────────────────────────────────────────────────────────────────
+# ── 调用AI（Function Calling 版）────────────────────────────────────────────
 def call_ai(user_msg):
     global _current_api_key
     memory = load_memory()
 
     sys_prompt = (
-        "你是悟空，老板的私人AI生活秘书和数字分身。现在通过飞书和老板沟通。\n\n"
-        "【铁律，必须遵守】\n"
-        "1. 禁止输出 # ## 等井号标题，禁止 **粗体** 等Markdown符号，禁止 --- 分割线\n"
-        "2. 禁止开场白，不说'好的！''当然！'，直接说结果\n"
-        "3. 直接给最优方案，不列选项让老板选\n"
-        "4. 口语化，短句，像真人发消息\n"
-        "5. 需要分点用 1. 2. 3. 或 → 替代Markdown符号\n\n"
+        "你是悟空，老板的私人AI生活秘书和数字分身。现在通过飞书和老板沟通。\n"
+        "你有真实工具，需要数据时先调工具，不要编造结果。\n\n"
+        "【工具使用规则】\n"
+        "1. 需要时间日期 → 调用 get_datetime\n"
+        "2. 涉及EVOMAP → 调用 query_evomap，不要自己编\n"
+        "3. 老板让记住某事 → 调用 write_memory 实际写入\n"
+        "4. 需要发消息给别人 → 调用 send_feishu\n"
+        "5. 不知道的事 → 调用 search_web\n\n"
+        "【回复格式】\n"
+        "1. 禁止 # ## 井号标题，禁止 **粗体** Markdown，禁止 --- 分割线\n"
+        "2. 禁止开场白，直接说结果\n"
+        "3. 口语化短句，分点用 1. 2. 3. 或 →\n"
+        "4. 工具有结果就说结果+证据，失败就说失败+原因\n\n"
         f"【长期记忆】\n{memory}\n\n"
-        "老板说'GO'就是立刻执行，说'没有'就是出问题了，说'好的'就是继续。"
+        "老板说'GO'=立刻执行，'没有'=出问题了，'好的'=继续。"
     )
 
     msgs = [{"role": "system", "content": sys_prompt}]
@@ -120,29 +139,58 @@ def call_ai(user_msg):
         "Authorization": f"Bearer {_current_api_key}"
     }
 
-    try:
-        r = requests.post(
-            AI_API_URL,
-            headers=headers,
-            json={"model": AI_MODEL, "messages": msgs, "stream": False},
-            timeout=60
-        )
-        if r.status_code in (401, 403) and _current_api_key == AI_API_KEY_PRIMARY:
-            print("主Key失效，切换备用Key")
-            _current_api_key = AI_API_KEY_BACKUP
-            headers["Authorization"] = f"Bearer {_current_api_key}"
-            r = requests.post(AI_API_URL, headers=headers,
-                              json={"model": AI_MODEL, "messages": msgs, "stream": False},
-                              timeout=60)
-        if r.status_code == 200:
-            reply = r.json()["choices"][0]["message"]["content"]
-            save_history("user", user_msg)
-            save_history("assistant", reply)
-            return reply
-        else:
-            return f"悟空暂时连不上，错误码 {r.status_code}，稍后再试"
-    except Exception as e:
-        return f"悟空出错了：{e}"
+    # Function Calling 循环（最多5轮）
+    max_rounds = 5
+    for _ in range(max_rounds):
+        req_body = {"model": AI_MODEL, "messages": msgs, "stream": False}
+        if TOOLS_ENABLED:
+            req_body["tools"] = TOOLS_SCHEMA
+            req_body["tool_choice"] = "auto"
+
+        try:
+            r = requests.post(AI_API_URL, headers=headers, json=req_body, timeout=90)
+            if r.status_code in (401, 403) and _current_api_key == AI_API_KEY_PRIMARY:
+                print("主Key失效，切换备用Key")
+                _current_api_key = AI_API_KEY_BACKUP
+                headers["Authorization"] = f"Bearer {_current_api_key}"
+                r = requests.post(AI_API_URL, headers=headers, json=req_body, timeout=90)
+
+            if r.status_code != 200:
+                return f"悟空暂时连不上，错误码 {r.status_code}，稍后再试"
+
+            resp = r.json()
+            choice = resp["choices"][0]
+            message = choice["message"]
+            finish_reason = choice.get("finish_reason", "stop")
+
+            # 没有工具调用，返回最终答案
+            if finish_reason != "tool_calls" or not message.get("tool_calls"):
+                reply = message.get("content", "处理完成")
+                save_history("user", user_msg)
+                save_history("assistant", reply)
+                return reply
+
+            # 有工具调用，执行工具
+            msgs.append(message)
+            for tc in message["tool_calls"]:
+                fn_name = tc["function"]["name"]
+                try:
+                    fn_args = json.loads(tc["function"].get("arguments", "{}"))
+                except:
+                    fn_args = {}
+                tool_result = execute_tool(fn_name, fn_args)
+                print(f"[工具] {fn_name} → {tool_result[:80]}")
+                msgs.append({
+                    "role": "tool",
+                    "tool_call_id": tc["id"],
+                    "name": fn_name,
+                    "content": tool_result
+                })
+
+        except Exception as e:
+            return f"悟空出错了：{e}"
+
+    return "工具调用轮数超限，请换个方式问我。"
 
 # ── 处理飞书事件 ──────────────────────────────────────────────────────────────
 def handle_event(data):

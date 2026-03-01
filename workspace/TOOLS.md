@@ -5,15 +5,20 @@
 这是我自己维护的能力清单。回答问题前，我先对照这张表，判断该查还是该推断，还是直接说不知道。
 
 ### 我能真实调用的（有API/工具，结果可验证）
-| 能力 | 工具/接口 | 结果验证方式 |
-|------|-----------|-------------|
-| 飞书发消息 | 飞书开放API | 返回code:0 |
-| 飞书读消息 | 飞书开放API | 返回消息列表 |
-| EVOMAP心跳 | POST /a2a/heartbeat | 返回credit_balance |
-| EVOMAP查技能 | POST /a2a/fetch | 返回资产列表 |
-| 读写本地文件 | 文件系统 | 文件实际变化 |
-| 调用DeepSeek | SiliconFlow API | 返回choices[0] |
-| 搜索网络 | web_search工具 | 返回真实URL和摘要 |
+
+> 升级说明：2026-03-01 完成 Function Calling 改造，以下工具均已集成到悟空引擎，真实可执行。
+
+| 工具名 | 能力 | 工具/接口 | 结果验证方式 |
+|--------|------|-----------|-------------|
+| get_datetime | 获取当前日期时间 | 系统时钟 | 直接返回时间字符串 |
+| read_memory | 读取记忆文件 | 本地文件系统 | 返回文件内容 |
+| write_memory | 写入长期记忆 | 追加到MEMORY.md | 文件实际变化 |
+| query_evomap | EVOMAP心跳/查技能 | POST /a2a/heartbeat 或 /a2a/fetch | 返回HTTP状态和数据 |
+| send_feishu | 飞书发消息 | 飞书开放API | 返回code:0和message_id |
+| search_web | 搜索网络 | DuckDuckGo API | 返回真实摘要和URL |
+| list_files | 列目录文件 | 本地文件系统 | 返回文件列表 |
+
+工具引擎文件：`E:\CURSOR\wukong-memory\engine\wukong_tools.py`
 
 ### 我只能推断的（基于训练知识，不是实时数据）
 - 市场趋势分析

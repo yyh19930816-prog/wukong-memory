@@ -5,8 +5,19 @@
 """
 import customtkinter as ctk
 import tkinter as tk
-import os, json, math, threading, time, tempfile, asyncio, requests
+import os, json, math, threading, time, tempfile, asyncio, requests, sys
 from datetime import datetime
+
+# 加载工具箱
+_ENGINE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "engine")
+if _ENGINE_DIR not in sys.path:
+    sys.path.insert(0, _ENGINE_DIR)
+try:
+    from wukong_tools import TOOLS_SCHEMA, execute_tool
+    TOOLS_ENABLED = True
+except ImportError as _e:
+    TOOLS_ENABLED = False
+    print(f"[警告] 工具箱加载失败：{_e}")
 import speech_recognition as sr
 import edge_tts
 import pygame
@@ -865,86 +876,149 @@ class WukongHUD(ctk.CTk):
         else:
             return "content", min(base_xp + s_con * 3, 80), f"内容执行(匹配{s_con}词)"
 
-    # ── API 调用（主Key失败自动切换备用Key）─────────────────────────────────
+    # ── API 调用（Function Calling 完整版）────────────────────────────────────
     def _api(self, msg):
         self.after(0, lambda: self._log(f"▸ 发送: {msg[:60]}\n"))
         try:
             hdrs = {"Content-Type": "application/json",
                     "Authorization": f"Bearer {self._api_key}"}
-            # 动态加载长期记忆
+
+            # 动态加载长期记忆（注入系统Prompt）
             memory_content = ""
             try:
                 if os.path.exists(MEMORY_LONG):
                     with open(MEMORY_LONG, "r", encoding="utf-8") as f:
-                        memory_content = f.read()[:1500]
+                        memory_content = f.read()[:2000]
             except: pass
 
+            tools_status = "已启用（可真实调用）" if TOOLS_ENABLED else "未加载（只能推断）"
+
             sys_prompt = (
-                "你是悟空，老板的私人AI生活秘书和数字分身。"
-                "你聪明、高效、贴心，像一个懂老板的智囊。"
-                "\n\n"
+                "你是悟空，老板的私人AI生活秘书和数字分身。\n"
+                "你现在拥有真实的工具，可以调用它们获取真实数据，不要编造任何结果。\n\n"
+                "【工具使用规则 - 最高优先级】\n"
+                "1. 需要实时数据时，必须先调用工具，拿到结果后再回答\n"
+                "2. 涉及EVOMAP → 调用 query_evomap 工具，不要自己编结果\n"
+                "3. 需要时间日期 → 调用 get_datetime，不要自己猜\n"
+                "4. 需要记忆内容 → 调用 read_memory 读文件，不要凭印象\n"
+                "5. 老板让你记住某事 → 调用 write_memory 实际写入\n"
+                "6. 需要发飞书 → 调用 send_feishu，看返回码才算成功\n"
+                "7. 不知道的事 → 调用 search_web 搜索，不要编造\n\n"
                 "【回复格式铁律】\n"
-                "1. 禁止 # ## 井号标题，禁止 **粗体** Markdown符号，禁止 --- 分割线\n"
-                "2. 禁止开场白，直接说结果\n"
-                "3. 口语化短句，分点用 1. 2. 3. 或 →\n"
-                "\n"
-                "【诚实铁律 - 最重要，不可违反】\n"
-                "1. 信息来源只有三种：真实数据/合理推断/不知道\n"
-                "2. 真实数据 = API返回结果、文件内容、工具输出，直接说\n"
-                "3. 合理推断 = 说'我认为'或'我估计'，不假装是查到的\n"
-                "4. 不知道 = 直接说'我不知道，要去查吗'，然后真的去查\n"
-                "5. 凡是涉及EVOMAP的内容，必须真实调用API获取数据，禁止编造任何内容\n"
-                "6. 声称完成了某件事，必须说明证据（API返回了什么/文件改了什么）\n"
-                "7. 发现自己说错了，主动说出来，不等老板纠正\n"
-                "\n"
-                "【能力边界】\n"
-                "我能真实调用：飞书API、EVOMAP API、本地文件读写、DeepSeek API\n"
-                "我只能推断：市场分析、用户心理、行业知识\n"
-                "我完全不知道：实时新闻、老板今日日程（除非他告诉我）、EVOMAP实时数据（要查才知道）\n"
-                "\n"
-                "老板风格：懒人，只聊天解决问题，不自己动手。'GO'=立刻执行，'没有'=出问题了。\n"
-                "\n"
+                "1. 禁止 # ## 井号标题，禁止 **粗体** Markdown，禁止 --- 分割线\n"
+                "2. 禁止开场白，直接给结果\n"
+                "3. 口语化，短句，分点用 1. 2. 3. 或 →\n"
+                "4. 工具结果说实话，成功就说成功+证据，失败就说失败+原因\n\n"
+                f"【工具状态】{tools_status}\n\n"
+                f"老板风格：'GO'=立刻执行，'没有'=出问题了，不废话，直接给结果。\n\n"
                 f"【长期记忆】\n{memory_content}"
             )
+
+            # 构建消息列表
             msgs = [{"role": "system", "content": sys_prompt}]
             msgs.extend(load_hist()[-12:])
-            if not msgs or msgs[-1].get("content") != msg:
-                msgs.append({"role": "user", "content": msg})
+            msgs.append({"role": "user", "content": msg})
 
-            r = requests.post(API_URL, headers=hdrs,
-                               json={"model": MODEL, "messages": msgs, "stream": False},
-                               timeout=60)
+            # ── Function Calling 循环（最多5轮工具调用）────────────────────────
+            tool_calls_log = []
+            max_rounds = 5
 
-            # 主Key失败，自动切换备用Key
-            if r.status_code in (401, 403) and self._api_key == API_KEY_PRIMARY:
-                self.after(0, lambda: self._log("▸ 主Key失效，切换备用Key...\n"))
-                self._api_key = API_KEY_BACKUP
-                hdrs["Authorization"] = f"Bearer {self._api_key}"
-                r = requests.post(API_URL, headers=hdrs,
-                                   json={"model": MODEL, "messages": msgs, "stream": False},
-                                   timeout=60)
+            for round_n in range(max_rounds):
+                req_body = {
+                    "model": MODEL,
+                    "messages": msgs,
+                    "stream": False,
+                }
+                # 只在工具可用时传入tools参数
+                if TOOLS_ENABLED:
+                    req_body["tools"] = TOOLS_SCHEMA
+                    req_body["tool_choice"] = "auto"
 
-            if r.status_code == 200:
-                reply = r.json()["choices"][0]["message"]["content"]
-                self.after(0, lambda: self._bubble("assistant", reply))
-                save_hist("assistant", reply)
-                self.after(0, lambda: self._log(f"▸ 收到: {reply[:60]}\n"))
-                direction, xp, label = self._detect_direction(msg, reply)
-                dir_names = {"secretary":"秘书大师","avatar":"沟通分身","content":"内容执行"}
-                self.after(0, lambda d=direction, x=xp, l=label: self._award(d, x, l))
-                self.after(0, lambda d=direction, x=xp, l=label:
-                    self._log(f"▸ XP: +{x} → {dir_names.get(d,d)} [{l}]\n"))
-                threading.Thread(
-                    target=write_memory, args=(msg, reply, direction, xp, label),
-                    daemon=True).start()
-                speak_async(reply)
-            else:
-                err = f"⚠ 连接失败 {r.status_code}"
-                self.after(0, lambda: self._bubble("assistant", err))
-                self.after(0, lambda: self._log(f"▸ 错误: {r.status_code}\n"))
+                r = requests.post(API_URL, headers=hdrs, json=req_body, timeout=90)
+
+                # Key失效自动切换
+                if r.status_code in (401, 403) and self._api_key == API_KEY_PRIMARY:
+                    self.after(0, lambda: self._log("▸ 主Key失效，切换备用Key...\n"))
+                    self._api_key = API_KEY_BACKUP
+                    hdrs["Authorization"] = f"Bearer {self._api_key}"
+                    r = requests.post(API_URL, headers=hdrs, json=req_body, timeout=90)
+
+                if r.status_code != 200:
+                    err = f"⚠ 连接失败 {r.status_code}"
+                    self.after(0, lambda e=err: self._bubble("assistant", e))
+                    self.after(0, lambda e=err: self._log(f"▸ 错误: {e}\n"))
+                    return
+
+                resp_data = r.json()
+                choice = resp_data["choices"][0]
+                finish_reason = choice.get("finish_reason", "stop")
+                message = choice["message"]
+
+                # ── 没有工具调用，直接返回最终答案 ──────────────────────────
+                if finish_reason != "tool_calls" or not message.get("tool_calls"):
+                    reply = message.get("content", "")
+                    if not reply:
+                        reply = "悟空处理完成，但没有返回内容。"
+
+                    # 如果有工具调用历史，附上简要说明
+                    if tool_calls_log:
+                        tool_summary = "→ ".join(tool_calls_log)
+                        self.after(0, lambda s=tool_summary: self._log(f"▸ 工具链：{s}\n"))
+
+                    self.after(0, lambda rep=reply: self._bubble("assistant", rep))
+                    save_hist("assistant", reply)
+                    self.after(0, lambda rep=reply: self._log(f"▸ 回复: {rep[:80]}\n"))
+
+                    direction, xp, label = self._detect_direction(msg, reply)
+                    dir_names = {"secretary":"秘书大师","avatar":"沟通分身","content":"内容执行"}
+                    self.after(0, lambda d=direction, x=xp, l=label: self._award(d, x, l))
+                    self.after(0, lambda d=direction, x=xp, l=label:
+                        self._log(f"▸ XP: +{x} → {dir_names.get(d,d)} [{l}]\n"))
+                    threading.Thread(
+                        target=write_memory, args=(msg, reply, direction, xp, label),
+                        daemon=True).start()
+                    speak_async(reply)
+                    return
+
+                # ── 有工具调用，依次执行 ─────────────────────────────────────
+                # 先把assistant消息（含tool_calls）放入msgs
+                msgs.append(message)
+
+                for tc in message["tool_calls"]:
+                    fn_name = tc["function"]["name"]
+                    try:
+                        fn_args = json.loads(tc["function"].get("arguments", "{}"))
+                    except:
+                        fn_args = {}
+                    tool_call_id = tc["id"]
+
+                    self.after(0, lambda n=fn_name, a=fn_args:
+                        self._log(f"▸ 调用工具: {n}({json.dumps(a, ensure_ascii=False)[:80]})\n"))
+
+                    # 真实执行工具
+                    tool_result = execute_tool(fn_name, fn_args)
+
+                    self.after(0, lambda res=tool_result:
+                        self._log(f"▸ 工具结果: {res[:120]}\n"))
+
+                    tool_calls_log.append(fn_name)
+
+                    # 把工具结果加入消息列表
+                    msgs.append({
+                        "role": "tool",
+                        "tool_call_id": tool_call_id,
+                        "name": fn_name,
+                        "content": tool_result
+                    })
+
+            # 超过最大轮数
+            self.after(0, lambda: self._bubble("assistant",
+                "工具调用轮数超限，可能遇到了复杂问题。请换个方式问我。"))
+
         except Exception as e:
-            self.after(0, lambda: self._bubble("assistant", "⚠ 悟空暂时离线，请稍后再试"))
-            self.after(0, lambda: self._log(f"▸ 异常: {e}\n"))
+            self.after(0, lambda err=str(e): self._bubble("assistant",
+                f"⚠ 悟空遇到异常：{err[:100]}"))
+            self.after(0, lambda err=str(e): self._log(f"▸ 异常: {err}\n"))
         finally:
             self.after(0, lambda: self.soul_canvas.set_thinking(False))
             self.after(0, lambda: self.lbl_status.configure(
