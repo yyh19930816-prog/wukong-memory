@@ -90,10 +90,10 @@ try {
 $ngrok_url | Out-File "C:\Users\Administrator\.wukong\current_ngrok_url.txt" -Encoding UTF8
 Log "当前ngrok地址已保存到: C:\Users\Administrator\.wukong\current_ngrok_url.txt"
 
-# ── 8. 启动 EVOMAP 心跳保活 ───────────────────────────────────────────────────
-Log "启动 EVOMAP 心跳保活..."
-Start-Process -FilePath $PYTHON -ArgumentList "E:\CURSOR\wukong-memory\engine\wukong_evomap.py" -WindowStyle Hidden
-Log "EVOMAP 心跳已启动（每15分钟保活）"
+# ── 8. 启动悟空自主Agent引擎（24小时自学+心跳）────────────────────────────────
+Log "启动悟空自主Agent引擎..."
+Start-Process -FilePath $PYTHON -ArgumentList "E:\CURSOR\wukong-memory\engine\wukong_agent.py" -WindowStyle Hidden
+Log "Agent引擎已启动（24小时自主学习 + EVOMAP心跳 + 消息监听）"
 
 # ── 9. 启动悟空 HUD 桌面界面 ──────────────────────────────────────────────────
 Log "启动悟空 HUD..."
@@ -107,7 +107,7 @@ Log "飞书地址: $ngrok_url"
 # 弹出通知
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.MessageBox]::Show(
-    "悟空已上线！`n`n飞书地址: $ngrok_url`n`n如地址变化，请到飞书开放平台手动更新",
+    "悟空已上线！`n`n飞书地址: $ngrok_url`n`n悟空已进入24小时自主学习模式`n如地址变化，请到飞书开放平台手动更新",
     "悟空启动成功",
     [System.Windows.Forms.MessageBoxButtons]::OK,
     [System.Windows.Forms.MessageBoxIcon]::Information
