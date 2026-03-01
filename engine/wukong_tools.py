@@ -4,8 +4,9 @@
 给悟空配备真实可执行的工具，每个工具都返回真实结果。
 用于 Function Calling，悟空自主决定用哪个工具。
 """
-import os, json, time, requests
+import os, json, time, requests, subprocess, shutil
 from datetime import datetime
+from pathlib import Path
 
 # ── 配置 ──────────────────────────────────────────────────────────────────────
 FEISHU_APP_ID     = "cli_a92effd632b85cd5"
@@ -15,6 +16,17 @@ EVOMAP_NODE_ID    = "node_wukong_001"
 MEMORY_LONG       = r"C:\Users\Administrator\.wukong\workspace\MEMORY.md"
 TOOLS_MD          = r"C:\Users\Administrator\.wukong\workspace\TOOLS.md"
 WORKSPACE_DIR     = r"C:\Users\Administrator\.wukong\workspace"
+DESKTOP           = os.path.join(os.path.expanduser("~"), "Desktop")
+
+# 允许悟空访问的目录白名单（防止误操作系统文件）
+ALLOWED_ROOTS = [
+    DESKTOP,
+    r"C:\Users\Administrator\Documents",
+    r"C:\Users\Administrator\Downloads",
+    r"D:\\",
+    r"E:\CURSOR",
+    WORKSPACE_DIR,
+]
 
 # ── 飞书 token 缓存 ────────────────────────────────────────────────────────────
 _feishu_token = None
@@ -271,6 +283,197 @@ def tool_list_files(directory: str = "workspace") -> str:
         return f"列目录失败：{e}"
 
 
+def _is_allowed(path: str) -> bool:
+    """检查路径是否在允许范围内"""
+    p = os.path.abspath(path)
+    for root in ALLOWED_ROOTS:
+        try:
+            if p.startswith(os.path.abspath(root)):
+                return True
+        except:
+            pass
+    return False
+
+
+def tool_browse_desktop(subpath: str = "") -> str:
+    """
+    浏览桌面或桌面下的子目录，列出所有文件和文件夹（含大小、修改时间）
+    subpath: 可选，桌面下的子目录路径，如 "文档文件" 或空字符串表示桌面根目录
+    """
+    target = os.path.join(DESKTOP, subpath) if subpath else DESKTOP
+    target = os.path.normpath(target)
+
+    if not _is_allowed(target):
+        return f"不允许访问该路径：{target}"
+    if not os.path.exists(target):
+        return f"路径不存在：{target}"
+    if not os.path.isdir(target):
+        return f"这是文件不是目录，用 read_file 工具来读它的内容"
+
+    try:
+        items = os.listdir(target)
+        if not items:
+            return f"目录为空：{target}"
+        lines = [f"[桌面] {target}（共 {len(items)} 项）："]
+        dirs, files = [], []
+        for name in sorted(items):
+            full = os.path.join(target, name)
+            try:
+                mtime = datetime.fromtimestamp(os.path.getmtime(full)).strftime("%Y-%m-%d %H:%M")
+                if os.path.isdir(full):
+                    dirs.append(f"  [文件夹] {name}/  [{mtime}]")
+                else:
+                    size = os.path.getsize(full)
+                    sz = f"{size/1024:.0f}KB" if size > 1024 else f"{size}B"
+                    files.append(f"  [文件] {name}  {sz}  [{mtime}]")
+            except:
+                dirs.append(f"  ? {name}")
+        lines.extend(dirs)
+        lines.extend(files)
+        return "\n".join(lines)
+    except Exception as e:
+        return f"浏览失败：{e}"
+
+
+def tool_read_file(path: str) -> str:
+    """
+    读取电脑上任意文件的内容（支持 txt/md/py/json/csv/log 等文本格式）
+    path: 文件完整路径，如 C:\\Users\\Administrator\\Desktop\\合同.txt
+          或桌面相对路径，如 desktop:\\合同.txt
+    """
+    # 支持 desktop:\ 简写
+    if path.lower().startswith("desktop:\\") or path.lower().startswith("desktop:/"):
+        path = os.path.join(DESKTOP, path[9:])
+    path = os.path.normpath(path)
+
+    if not _is_allowed(path):
+        return f"不允许访问该路径（不在许可目录内）：{path}"
+    if not os.path.exists(path):
+        return f"文件不存在：{path}"
+    if os.path.isdir(path):
+        return f"这是目录不是文件，用 browse_desktop 工具来浏览目录"
+
+    ext = os.path.splitext(path)[1].lower()
+    # 二进制格式提示
+    binary_exts = {'.exe','.dll','.pyd','.so','.zip','.rar','.7z','.png','.jpg','.jpeg','.gif','.mp4','.mp3'}
+    if ext in binary_exts:
+        size = os.path.getsize(path)
+        return f"这是二进制文件（{ext}），无法直接读取内容。文件大小：{size/1024:.0f}KB，路径：{path}"
+
+    # Word/Excel 文件提示
+    if ext in ('.docx', '.doc'):
+        try:
+            import docx
+            doc = docx.Document(path)
+            text = "\n".join(p.text for p in doc.paragraphs if p.text.strip())
+            return f"Word文档内容（{path}）：\n{text[:3000]}" + ("…（内容过长已截断）" if len(text) > 3000 else "")
+        except ImportError:
+            return f"读取Word文件需要安装 python-docx 库。文件路径：{path}\n运行：pip install python-docx"
+        except Exception as e:
+            return f"Word文件读取失败：{e}"
+
+    if ext in ('.xlsx', '.xls'):
+        try:
+            import openpyxl
+            wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
+            lines = []
+            for sheet in wb.sheetnames[:3]:
+                ws = wb[sheet]
+                lines.append(f"[Sheet: {sheet}]")
+                for row in list(ws.iter_rows(values_only=True))[:50]:
+                    row_str = "\t".join(str(c) if c is not None else "" for c in row)
+                    if row_str.strip():
+                        lines.append(row_str)
+            return f"Excel内容（{path}）：\n" + "\n".join(lines[:200])
+        except ImportError:
+            return f"读取Excel文件需要安装 openpyxl 库。文件路径：{path}\n运行：pip install openpyxl"
+        except Exception as e:
+            return f"Excel文件读取失败：{e}"
+
+    # 普通文本文件
+    encodings = ["utf-8", "gbk", "utf-8-sig", "gb18030"]
+    for enc in encodings:
+        try:
+            with open(path, "r", encoding=enc) as f:
+                content = f.read()
+            if len(content) > 4000:
+                return f"文件内容（{path}，前4000字）：\n{content[:4000]}\n…（文件共{len(content)}字，已截断）"
+            return f"文件内容（{path}）：\n{content}"
+        except UnicodeDecodeError:
+            continue
+        except Exception as e:
+            return f"读取失败：{e}"
+    return f"文件编码无法识别：{path}"
+
+
+def tool_search_files(keyword: str, directory: str = "desktop", search_content: bool = False) -> str:
+    """
+    在指定目录搜索文件名或文件内容
+    keyword: 搜索关键词
+    directory: 搜索范围，desktop=桌面，documents=文档，downloads=下载，d=D盘，e=E盘
+    search_content: True=同时搜索文件内容（较慢），False=只搜索文件名
+    """
+    dir_map = {
+        "desktop":   DESKTOP,
+        "documents": os.path.join(os.path.expanduser("~"), "Documents"),
+        "downloads": os.path.join(os.path.expanduser("~"), "Downloads"),
+        "d":         "D:\\",
+        "e":         "E:\\CURSOR",
+        "workspace": WORKSPACE_DIR,
+    }
+    search_root = dir_map.get(directory.lower(), DESKTOP)
+    if not os.path.exists(search_root):
+        return f"搜索目录不存在：{search_root}"
+
+    matches = []
+    kw_lower = keyword.lower()
+
+    try:
+        for dirpath, dirnames, filenames in os.walk(search_root):
+            # 跳过隐藏目录和系统目录
+            dirnames[:] = [d for d in dirnames if not d.startswith('.') and d not in ('__pycache__', 'node_modules', '$RECYCLE.BIN')]
+            for fname in filenames:
+                full = os.path.join(dirpath, fname)
+                # 文件名匹配
+                if kw_lower in fname.lower():
+                    mtime = datetime.fromtimestamp(os.path.getmtime(full)).strftime("%Y-%m-%d")
+                    size = os.path.getsize(full)
+                    matches.append(f"[文件名匹配] {full}  {size/1024:.0f}KB  {mtime}")
+                    if len(matches) >= 20:
+                        break
+                # 内容匹配（仅文本文件）
+                elif search_content and os.path.getsize(full) < 500*1024:
+                    ext = os.path.splitext(fname)[1].lower()
+                    if ext in ('.txt','.md','.py','.json','.csv','.log','.ini','.cfg'):
+                        try:
+                            for enc in ["utf-8","gbk"]:
+                                try:
+                                    with open(full, "r", encoding=enc) as f:
+                                        text = f.read()
+                                    if kw_lower in text.lower():
+                                        idx = text.lower().find(kw_lower)
+                                        snippet = text[max(0,idx-30):idx+60].replace('\n',' ')
+                                        matches.append(f"[内容匹配] {full}\n    …{snippet}…")
+                                    break
+                                except UnicodeDecodeError:
+                                    continue
+                        except:
+                            pass
+            if len(matches) >= 20:
+                break
+
+        if not matches:
+            scope = "文件名+内容" if search_content else "文件名"
+            return f"在 {search_root} 中搜索 [{scope}] 关键词「{keyword}」，没有找到任何匹配文件"
+
+        result = f"搜索「{keyword}」在 {search_root}，找到 {len(matches)} 个：\n"
+        result += "\n".join(matches)
+        return result
+
+    except Exception as e:
+        return f"搜索失败：{e}"
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # Function Calling 工具定义（OpenAI格式，DeepSeek-V3支持）
 # ══════════════════════════════════════════════════════════════════════════════
@@ -366,7 +569,7 @@ TOOLS_SCHEMA = [
         "type": "function",
         "function": {
             "name": "list_files",
-            "description": "列出目录下的文件，了解当前有哪些记忆/工具文件",
+            "description": "列出悟空自己的记忆/工具目录下的文件",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -377,6 +580,66 @@ TOOLS_SCHEMA = [
                     }
                 },
                 "required": []
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "browse_desktop",
+            "description": "浏览老板电脑的桌面或桌面下的子目录，列出所有文件和文件夹。想知道桌面有什么文件就用这个。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "subpath": {
+                        "type": "string",
+                        "description": "桌面下的子目录名，如'文档文件'或'项目'，空字符串表示桌面根目录"
+                    }
+                },
+                "required": []
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "read_file",
+            "description": "读取老板电脑上的文件内容，支持txt/md/Word/Excel/json/csv/py等格式。老板说'帮我看看某个文件'就用这个。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "path": {
+                        "type": "string",
+                        "description": "文件的完整路径，如 C:\\Users\\Administrator\\Desktop\\合同.txt，或桌面简写 desktop:\\合同.txt"
+                    }
+                },
+                "required": ["path"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_files",
+            "description": "在老板电脑的指定目录里搜索文件。老板说'帮我找一下某某文件'就用这个。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "keyword": {
+                        "type": "string",
+                        "description": "要搜索的关键词，可以是文件名的一部分"
+                    },
+                    "directory": {
+                        "type": "string",
+                        "enum": ["desktop", "documents", "downloads", "d", "e", "workspace"],
+                        "description": "搜索范围：desktop=桌面，documents=文档，downloads=下载，d=D盘，e=E盘"
+                    },
+                    "search_content": {
+                        "type": "boolean",
+                        "description": "是否同时搜索文件内容（True=搜文件名+内容，False=只搜文件名，默认False）"
+                    }
+                },
+                "required": ["keyword"]
             }
         }
     }
@@ -393,6 +656,13 @@ TOOL_DISPATCH = {
     "send_feishu":   lambda args: tool_send_feishu(args.get("message", ""), args.get("chat_id", "")),
     "search_web":    lambda args: tool_search_web(args.get("query", "")),
     "list_files":    lambda args: tool_list_files(args.get("directory", "workspace")),
+    "browse_desktop": lambda args: tool_browse_desktop(args.get("subpath", "")),
+    "read_file":     lambda args: tool_read_file(args.get("path", "")),
+    "search_files":  lambda args: tool_search_files(
+                        args.get("keyword", ""),
+                        args.get("directory", "desktop"),
+                        args.get("search_content", False)
+                     ),
 }
 
 def execute_tool(name: str, arguments: dict) -> str:
