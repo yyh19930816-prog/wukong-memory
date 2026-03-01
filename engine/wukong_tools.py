@@ -41,11 +41,13 @@ def _get_feishu_token():
 # ══════════════════════════════════════════════════════════════════════════════
 
 def tool_get_datetime() -> str:
-    """获取当前日期和时间"""
+    """获取当前日期和时间（来自本机系统时钟，这是真实时间，不是EVOMAP或任何API返回的时间戳）"""
     now = datetime.now()
     weekdays = ["星期一","星期二","星期三","星期四","星期五","星期六","星期日"]
     wd = weekdays[now.weekday()]
-    return f"{now.strftime('%Y年%m月%d日')} {wd} {now.strftime('%H:%M:%S')}"
+    result = f"本机系统时间：{now.strftime('%Y年%m月%d日')} {wd} {now.strftime('%H:%M:%S')}"
+    result += f"\n（注意：EVOMAP等外部API返回的timestamp字段是服务器记录时间，不代表现在几点）"
+    return result
 
 
 def tool_read_memory(filename: str = "MEMORY.md") -> str:
