@@ -90,7 +90,12 @@ try {
 $ngrok_url | Out-File "C:\Users\Administrator\.wukong\current_ngrok_url.txt" -Encoding UTF8
 Log "当前ngrok地址已保存到: C:\Users\Administrator\.wukong\current_ngrok_url.txt"
 
-# ── 8. 启动悟空 HUD 桌面界面 ──────────────────────────────────────────────────
+# ── 8. 启动 EVOMAP 心跳保活 ───────────────────────────────────────────────────
+Log "启动 EVOMAP 心跳保活..."
+Start-Process -FilePath $PYTHON -ArgumentList "E:\CURSOR\wukong-memory\engine\wukong_evomap.py" -WindowStyle Hidden
+Log "EVOMAP 心跳已启动（每15分钟保活）"
+
+# ── 9. 启动悟空 HUD 桌面界面 ──────────────────────────────────────────────────
 Log "启动悟空 HUD..."
 Start-Sleep 2
 Start-Process -FilePath $PYTHON -ArgumentList $HUD -WindowStyle Normal
