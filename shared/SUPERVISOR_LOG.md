@@ -525,3 +525,4 @@ pyth |
 3. ✅评分:90分 | 结论:内容真 |
 | 2026-03-03 04:55 | 美团核实悟空汇报 | ✅属实 | 结论: ✅属实
 原因: 汇报中提到的代码文件wukong_llm_hallucination_detection_evaluation_b_0303_0450. |
+| 2026-03-03 04:57 | 悟空审查美团代码 | 文件:meituan_youtube_shorts_script_template_0303_0441.py | 评分:75 | 能否运行:否 | 主要问题:1.输出文件名"s"未定义 2.shell=True有安全风险 3.占位函数无实际功能 | 改进建议:1.修复输出路径变量名 2.改用列表传参避免shell |
