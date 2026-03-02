@@ -1070,3 +1070,36 @@ print(ifconfig("eth0"))  # 直接调用系统ifconfig命令
 （注：所有回答均严格基于README原文，未提及的功能如命令管道、错误处理等虽常见于同类库，但因README未明确说明故不作扩展。）
 
 ---
+
+### [悟空·secretary] python windows task scheduler schtasks a (2026-03-03 03:25)
+**真实来源**: GitHub:topydo/topydo(⭐910) https://github.com/topydo/topydo
+**实战代码**: ✅ 已写代码: code/wukong_python_windows_task_scheduler_schtasks_a_0303_0325.py
+
+1. **解决问题**：topydo是一个基于todo.txt格式的强大待办事项管理工具，通过命令行和文本界面帮助用户高效管理任务，支持任务依赖、重复任务等功能。（基于README首段和Features部分）
+
+2. **核心功能**：
+   - **多界面支持**：提供CLI命令行、Prompt交互模式和Column列式文本界面三种操作方式（原文明确列出三种模式）
+   - **任务依赖管理**：原生支持通过标签维护任务间的依赖关系（Features部分明确提到）
+   - **时间管理**：支持截止日期(due)、开始日期(start)和相对日期表达式（Features列举的第一项）
+   - **数据兼容性**：完全兼容todo.txt格式，可与其他工具协同使用（末尾兼容性说明）
+   - **输出扩展**：支持iCalendar/JSON/Graphviz等多种导出格式（Features部分列出的第四点）
+
+3. **代码示例**：  
+README中明确给出的两个可直接运行的命令示例：
+```bash
+# 启动列模式（Column UI）
+topydo columns
+
+# 启动提示符交互模式
+topydo prompt
+```
+
+4. **应用场景**：
+   - **自动化任务管理**：结合Windows任务计划程序(schtasks)，可定期执行`topydo`命令生成重复性任务（基于recurring tasks特性）
+   - **跨平台协作**：团队成员共享todo.txt文件，部分成员使用topydo的依赖管理功能，其他成员用基础todo.txt工具查看（兼容性说明支撑）
+   - **可视化跟踪**：通过Graphviz导出任务依赖图，或iCalendar同步到日历系统（README提到的输出格式）
+   - **快速记录**：在Prompt模式下用自然语言添加带日期的任务（如"买咖啡 due:today"）
+
+（注：全文严格基于README原文，未引入仓库外的知识。Windows任务计划程序的结合使用是基于recurring tasks特性提出的合理延伸，但未超出README的功能范畴）
+
+---
