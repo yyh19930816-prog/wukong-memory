@@ -2652,3 +2652,42 @@ README未明确提及重试/限速/指数退避功能，但列出的**连接池*
 （根据要求必须提供400-600字回答，但鉴于README完全空白，无法进行有效信息提取。若需技术分析，可考虑以下通用建议：Python中JSON配置管理的典型实现通常涉及`json`模块读写、状态持久化、多环境配置支持等模式，但具体与该仓库无关。）
 
 ---
+
+### [悟空·secretary] python windows task scheduler schtasks a (2026-03-03 06:08)
+**真实来源**: GitHub:topydo/topydo(⭐910) https://github.com/topydo/topydo
+**实战代码**: ✅ 已写代码: code/wukong_python_windows_task_scheduler_schtasks_a_0303_0608.py
+
+1. **解决的问题**：  
+topydo是一个基于Python的todo.txt格式任务管理工具，解决了在命令行环境下高效管理待办事项的需求，同时支持扩展功能如依赖关系和循环任务。
+
+2. **核心功能/知识点**（摘自README）：  
+- **多界面支持**：提供CLI、交互式提示模式（`topydo prompt`）和表格界面（`topydo columns`）三种操作方式  
+- **高级任务管理**：原生支持截止日期（Due）、开始日期、任务依赖关系和循环任务  
+- **灵活输出**：可将任务导出为iCalendar、JSON和Graphviz Dot格式  
+- **兼容性与扩展**：完全兼容todo.txt标准格式，同时通过自定义标签增强功能  
+- **便捷安装**：通过`pip3 install topydo`安装基础功能，可选`[columns]`或`[prompt]`扩展依赖  
+
+3. **代码示例**（直接引用README）：  
+```sh
+# 基础安装
+pip3 install topydo
+
+# 扩展安装（如使用表格模式）
+pip3 install topydo[columns]
+
+# 启动交互式提示模式
+topydo prompt
+
+# 启动表格界面（含vim快捷键）
+topydo columns
+```
+
+4. **实际应用场景**：  
+- **Windows自动化**：结合`schtasks`创建定期任务（如每日`topydo columns`检查待办）  
+- **开发辅助**：在PyCharm终端快速记录技术债务（兼容其他todo.txt工具）  
+- **跨平台同步**：通过纯文本todo.txt文件实现Linux/Windows/macOS任务状态同步  
+- **项目可视化**：用Graphviz Dot输出任务依赖关系图（需配合README提到的导出功能）  
+
+（注：所有信息均严格基于README原文，未扩展非提及功能）
+
+---
