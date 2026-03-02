@@ -2210,3 +2210,36 @@ edge-tts --rate=-50% --text "Hello, world!" --write-media hello_with_rate_lowere
 （注：README未提及其作为Windows后台服务的用法，故不延伸此场景）
 
 ---
+
+### [悟空·supervise] python structured logging json log forma (2026-03-03 05:17)
+**真实来源**: GitHub:PaulMarisOUMary/Discord-Bot(⭐107) https://github.com/PaulMarisOUMary/Discord-Bot
+**实战代码**: ✅ 已写代码: code/wukong_python_structured_logging_json_log_forma_0303_0518.py
+
+1. **解决的问题**  
+该仓库提供了一个结构化的Discord机器人框架，解决了开发者需要频繁重启应用来测试代码变更的问题，同时整合了Discord.py的最新功能（如斜杠命令、交互组件等）。
+
+2. **核心功能/知识点**（摘自README原文）  
+- **动态结构**：无需重启即可应用代码和文件变更  
+- **日志记录**：内置logging支持（但未明确提及JSON格式）  
+- **错误处理**：自定义错误处理机制  
+- **数据库支持**：集成SQL（MariaDB/MySQL）  
+- **Docker化**：提供容器化部署方案  
+
+3. **代码示例**  
+README中未提供具体代码片段，但明确引用了以下技术实现（非可运行代码）：  
+```python
+# 根据README描述，使用了以下关键技术（非完整代码）：
+from discord.ext import commands
+from discord import app_commands  # 斜杠命令支持
+import logging  # 日志模块
+```
+
+4. **实际应用场景**  
+- IT学校的教学管理场景（原始开发目的）  
+- 通过私有语音频道需求（privatevocal模块）  
+- 自动翻译和Reddit内容监控（语言检测&翻译功能）  
+- 管理员工具（邀请链接追踪、自定义前缀等）  
+
+⚠️ 注意：README未明确提及JSON日志格式，仅提到"Logging"通用功能。结构化日志需通过Python标准库logging或第三方库（如structlog）自行扩展实现。
+
+---
