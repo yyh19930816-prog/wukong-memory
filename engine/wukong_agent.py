@@ -327,6 +327,65 @@ def learn_self_review():
     return result
 
 
+def evolve_capabilities():
+    """
+    能力进化引擎：读取今天的学习记录，提炼可复用能力轮廓，写入CAPABILITIES.md
+    每天运行一次，是悟空自我进化的核心动作
+    """
+    log("启动能力进化引擎...")
+
+    # 读取今天的学习成果
+    today = datetime.now().strftime("%Y-%m-%d")
+    mem_dir = os.path.join(WORKSPACE_DIR, "memory")
+    today_log = ""
+    try:
+        f_path = os.path.join(mem_dir, f"{today}.md")
+        if os.path.exists(f_path):
+            with open(f_path, "r", encoding="utf-8") as f:
+                today_log = f.read()[:3000]
+    except:
+        pass
+
+    # 读取当前CAPABILITIES.md了解已有能力
+    cap_file = os.path.join(WORKSPACE_DIR, "CAPABILITIES.md")
+    existing_caps = ""
+    try:
+        if os.path.exists(cap_file):
+            with open(cap_file, "r", encoding="utf-8") as f:
+                existing_caps = f.read()[:2000]
+    except:
+        pass
+
+    prompt = f"""你现在处于"能力进化模式（Capability-Driven Evolution）"。
+
+今天的学习记录：
+{today_log if today_log else '（今天暂无学习记录）'}
+
+当前已有能力轮廓（摘要）：
+{existing_caps[:800] if existing_caps else '（暂无）'}
+
+你的任务是：
+1. 从今天的学习和执行过程中，找出1-3个可复用的套路或解法
+2. 判断这些套路是否已经在现有能力库里（避免重复）
+3. 对于新的套路，调用 write_capability 工具把它抽象成能力轮廓写入
+4. 对于已有能力，判断是否可以合并或升级
+
+能力抽象的标准：
+- "这个套路下次还能用吗？" → 是 → 值得抽象
+- "已经有类似的能力了吗？" → 有 → 考虑合并而非新增
+- "这个能力会让下次更快更稳吗？" → 不会 → 不值得抽象
+
+如果今天没有发现新的可复用套路，直接说"今天无新能力候选"，不要强行抽象。
+
+开始进化，不需要废话。"""
+
+    result = call_ai([{"role": "user", "content": prompt}], "能力进化")
+    if result:
+        log(f"能力进化完成：{result[:150]}")
+        write_learn_result("secretary", f"能力进化记录：\n{result}")
+    return result
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # 老板消息检测
 # ══════════════════════════════════════════════════════════════════════════════
@@ -415,6 +474,11 @@ def run_learning_cycle(state: dict):
         log("触发深度复盘（每5次自学一次）")
         learn_self_review()
 
+    # 每学完8次，运行一次能力进化引擎（提炼可复用能力）
+    if state.get("total_learns", 0) % 8 == 0 and state.get("total_learns", 0) > 0:
+        log("触发能力进化引擎（每8次自学一次）")
+        evolve_capabilities()
+
 
 def main_loop():
     """主循环：消息检测 + 自学 + 心跳，24小时不停"""
@@ -468,6 +532,13 @@ def main_loop():
             log("触发每日深度复盘（凌晨3点）")
             learn_self_review()
             last_review_date = today
+
+        # 5. 每天凌晨4点，运行能力进化引擎
+        if hour == 4 and state.get("last_evolve_date") != today:
+            log("触发每日能力进化（凌晨4点）")
+            evolve_capabilities()
+            state["last_evolve_date"] = today
+            save_agent_state(state)
 
         # 每30秒检查一次消息
         time.sleep(CHECK_MSG_INTERVAL)

@@ -678,6 +678,82 @@ def tool_open_url(url: str) -> str:
         return f"打开链接失败：{e}\n链接：{url}"
 
 
+def tool_write_capability(name: str, trigger: str, input_desc: str,
+                          output_desc: str, tool_chain: str,
+                          failure_points: str, status: str = "待验证") -> str:
+    """
+    把一个可复用的解法抽象成能力轮廓，写入 CAPABILITIES.md。
+    当发现"这个套路下次还能用"时调用。
+    name: 能力名称，如"抖音博主分析"
+    trigger: 触发场景描述
+    input_desc: 输入是什么
+    output_desc: 输出是什么
+    tool_chain: 用了哪些工具，顺序是什么
+    failure_points: 哪里容易失败，怎么处理
+    status: 候选/待验证/已内生化
+    """
+    # 兼容两个可能的路径
+    cap_file = os.path.join(WORKSPACE_DIR, "CAPABILITIES.md")
+    if not os.path.exists(cap_file):
+        # 尝试相对于本文件的路径
+        alt_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "workspace", "CAPABILITIES.md")
+        if os.path.exists(alt_path):
+            cap_file = alt_path
+        else:
+            # 自动创建基础文件
+            try:
+                os.makedirs(os.path.dirname(cap_file), exist_ok=True)
+                with open(cap_file, "w", encoding="utf-8") as f:
+                    f.write("# 悟空 · 能力轮廓库（CAPABILITIES）\n\n## 🟢 已内生化能力\n\n## 🟡 待验证能力（已抽象，未完整测试）\n\n## 🔵 待抽象池（发现了套路，还没正式写轮廓）\n\n## 📊 进化统计\n- 最近一次更新：" + datetime.now().strftime("%Y-%m-%d") + "\n")
+            except Exception as e:
+                return f"CAPABILITIES.md 不存在且无法创建：{e}"
+
+    now = datetime.now().strftime("%Y-%m-%d")
+    # 生成能力ID（基于时间戳）
+    cap_id = f"CAP-{datetime.now().strftime('%m%d%H%M')}"
+
+    entry = f"""
+### {cap_id}：{name}
+- 触发场景：{trigger}
+- 输入：{input_desc}
+- 输出：{output_desc}
+- 工具链：{tool_chain}
+- 失败点：{failure_points}
+- 状态：{status}
+- 抽象时间：{now}
+"""
+    try:
+        with open(cap_file, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        # 根据状态插入到对应区域
+        if status == "已内生化":
+            insert_after = "## 🟢 已内生化能力"
+        elif status == "待验证":
+            insert_after = "## 🟡 待验证能力（已抽象，未完整测试）"
+        else:
+            insert_after = "## 🔵 待抽象池（发现了套路，还没正式写轮廓）"
+
+        if insert_after in content:
+            idx = content.index(insert_after) + len(insert_after)
+            content = content[:idx] + "\n" + entry + content[idx:]
+        else:
+            content += "\n" + entry
+
+        # 更新统计时间
+        content = content.replace(
+            content[content.rfind("- 最近一次更新："):content.rfind("- 最近一次更新：")+30],
+            f"- 最近一次更新：{now}"
+        )
+
+        with open(cap_file, "w", encoding="utf-8") as f:
+            f.write(content)
+
+        return f"能力轮廓已写入：{cap_id}「{name}」→ 状态：{status}"
+    except Exception as e:
+        return f"写入能力轮廓失败：{e}"
+
+
 def tool_search_github(query: str, search_type: str = "repo") -> str:
     """
     搜索GitHub获取代码库、技术方案、工具
@@ -1237,6 +1313,30 @@ TOOLS_SCHEMA = [
     {
         "type": "function",
         "function": {
+            "name": "write_capability",
+            "description": "把一个可复用的解法抽象成能力轮廓写入CAPABILITIES.md。当完成一个有价值的任务后，发现'这个套路下次还能用'时调用。这是悟空自我进化的核心动作。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string", "description": "能力名称，简洁，如'抖音博主竞品分析'"},
+                    "trigger": {"type": "string", "description": "什么情况下触发这个能力"},
+                    "input_desc": {"type": "string", "description": "需要哪些输入信息"},
+                    "output_desc": {"type": "string", "description": "产出什么结果"},
+                    "tool_chain": {"type": "string", "description": "用了哪些工具，顺序是什么"},
+                    "failure_points": {"type": "string", "description": "哪里容易失败，如何处理"},
+                    "status": {
+                        "type": "string",
+                        "enum": ["候选", "待验证", "已内生化"],
+                        "description": "能力状态：候选=刚发现套路，待验证=已抽象待测试，已内生化=稳定可用"
+                    }
+                },
+                "required": ["name", "trigger", "input_desc", "output_desc", "tool_chain", "failure_points"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "search_github",
             "description": "在GitHub上搜索开源代码库和技术方案。老板问'有没有现成的XXX工具/代码/框架'，或者遇到技术问题想找解决方案时用这个。GitHub上有全世界最好的开源代码。",
             "parameters": {
@@ -1293,6 +1393,15 @@ TOOL_DISPATCH = {
                          args.get("topic", ""),
                          args.get("questions", ""),
                          args.get("include_github", "auto")
+                      ),
+    "write_capability": lambda args: tool_write_capability(
+                         args.get("name", ""),
+                         args.get("trigger", ""),
+                         args.get("input_desc", ""),
+                         args.get("output_desc", ""),
+                         args.get("tool_chain", ""),
+                         args.get("failure_points", ""),
+                         args.get("status", "待验证")
                       ),
     "search_github":  lambda args: tool_search_github(
                          args.get("query", ""),
