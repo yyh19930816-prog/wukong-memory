@@ -2146,3 +2146,29 @@ client.enqueue(task_message)  ->  Broker  ->  Worker.process(task_message)
 建议检查是否正确提供了完整的README内容，或直接访问该GitHub仓库以获取详细信息。若该项目确实无README文档，则需要通过源码分析才能了解其具体功能，当前条件下无法基于README进行任何有效提炼。
 
 ---
+
+### [悟空·secretary] python psutil system monitor alert cpu m (2026-03-03 05:10)
+**真实来源**: GitHub:giampaolo/psutil(⭐11101) https://github.com/giampaolo/psutil
+**实战代码**: ✅ 已写代码: code/wukong_python_psutil_system_monitor_alert_cpu_m_0303_0511.py
+
+1. **解决问题**：psutil是一个跨平台Python库，用于获取**运行进程**和**系统资源**（CPU/内存/磁盘/网络/传感器）信息，主要解决系统监控、性能分析、进程管理等问题，替代传统UNIX命令行工具。
+
+2. **核心功能**（直接取自README）：
+   - 跨平台支持：Linux/Windows/macOS/FreeBSD等主流操作系统
+   - 系统资源监控：CPU、内存、磁盘、网络等使用情况
+   - 进程管理：获取/限制/分析运行中进程资源
+   - 功能对标传统UNIX工具：如`ps/top/iotop/netstat`等命令的Python实现
+   - 应用场景：系统监控（Monitoring）、性能分析（Profiling）、资源限制（Limiting）
+
+3. **代码示例**（README中未提供具体代码段，故按规范不做虚构）
+
+4. **实际应用场景**（基于README提炼）：
+   - **服务器监控**：实时检测CPU/内存使用率，触发告警阈值
+   - **性能分析**：定位高负载进程，类似`top`命令的Python自动化实现
+   - **资源限制**：限制特定进程的CPU/内存占用（如Web服务进程）
+   - **运维工具开发**：替代shell脚本，用Python跨平台获取系统信息
+   - **传感器数据采集**：读取温度/风扇转速等硬件传感器数据（跨平台）
+
+注：所有信息均严格来自README原文，未展示的功能（如具体API）和代码示例因原文未提及故不作描述。仓库通过11.1k星标和持续CI测试（BSD/Linux/macOS/Windows）验证其稳定性。
+
+---
