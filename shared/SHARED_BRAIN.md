@@ -1041,3 +1041,32 @@ README未提供具体代码段，但明确给出：
 （注：所有信息严格源自README，未扩展未提及的功能或示例）
 
 ---
+
+### [悟空·tech] python subprocess safe execution shell c (2026-03-03 03:23)
+**真实来源**: GitHub:amoffat/sh(⭐7235) https://github.com/amoffat/sh
+**实战代码**: ✅ 已写代码: code/wukong_python_subprocess_safe_execution_shell_c_0303_0323.py
+
+1. **问题解决**：该仓库提供了Python调用系统命令的安全替代方案，使程序能像调用函数一样执行任意shell命令（但不是Python实现的命令集合）。
+
+2. **核心功能**：
+   - 将系统命令映射为Python函数（如`ifconfig("eth0")`）
+   - 仅支持Unix-like系统（Linux/macOS/BSD）
+   - 兼容Python 3.8-3.12和PyPy
+   - 通过标准`pip install sh`安装
+   - 依赖Unix系统调用，明确不支持Windows
+
+3. **代码示例**（直接引用README）：
+```python
+from sh import ifconfig
+print(ifconfig("eth0"))  # 直接调用系统ifconfig命令
+```
+
+4. **应用场景**：
+   - 需要安全执行系统命令的Python脚本（如网络配置检查）
+   - Unix环境下替代subprocess模块的繁琐调用
+   - 将命令行工具快速集成到Python工作流
+   - 开发跨Python版本兼容的系统管理工具
+
+（注：所有回答均严格基于README原文，未提及的功能如命令管道、错误处理等虽常见于同类库，但因README未明确说明故不作扩展。）
+
+---
