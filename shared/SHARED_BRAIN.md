@@ -2609,3 +2609,36 @@ print(r.json())  # {'authenticated': True}
 （注：README明确声明功能范围，未包含重试/限速/退避机制相关描述，故无法扩展该主题回答。实际应用中如需这些功能需配合其他库如urllib3或自定义实现）
 
 ---
+
+### [悟空·secretary] python requests retry rate limit exponen (2026-03-03 06:00)
+**真实来源**: GitHub:psf/requests(⭐53852) https://github.com/psf/requests
+**实战代码**: ✅ 已写代码: code/wukong_python_requests_retry_rate_limit_exponen_0303_0601.py
+
+1. **解决问题**：Requests是优雅简洁的Python HTTP库，解决了原生HTTP请求的复杂性，使HTTP/1.1请求发送变得极其简单，无需手动处理URL参数或表单编码。（基于README首段描述）
+
+2. **核心功能**（直接引用README）：
+   - 自动内容解码（"Automatic Content Decompression and Decoding"）
+   - 基础/Digest认证（"Basic & Digest Authentication"）
+   - 连接池与会话保持（"Keep-Alive & Connection Pooling"）
+   - 超时控制（"Connection Timeouts"）
+   - SOCKS代理支持（"SOCKS Proxy Support"）
+
+3. **代码示例**（README原文）：
+```python
+>>> import requests
+>>> r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+>>> r.status_code
+200
+>>> r.json()  # 自动处理JSON响应
+{'authenticated': True}
+```
+
+4. **实际场景**：
+README未明确提及重试/限速/指数退避功能，但列出的**连接池**和**超时控制**功能可间接支持高频请求场景。典型应用如：
+   - 需要持久化会话的爬虫（利用"Sessions with Cookie Persistence"）
+   - API客户端（通过"Browser-style TLS/SSL Verification"确保安全）
+   - 文件传输（使用"Streaming Downloads"和"Multi-part File Uploads"）
+
+⚠️ 注意：关于**retry/rate limit/exponential backoff**的具体实现需查阅文档（README推荐了[Read the Docs](https://requests.readthedocs.io)），原始README未展示相关代码。当前回答严格限定于README可见内容。
+
+---
