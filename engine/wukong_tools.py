@@ -18,6 +18,13 @@ TOOLS_MD          = r"C:\Users\Administrator\.wukong\workspace\TOOLS.md"
 WORKSPACE_DIR     = r"C:\Users\Administrator\.wukong\workspace"
 DESKTOP           = os.path.join(os.path.expanduser("~"), "Desktop")
 
+# ── 搜索API Key（填入后搜索质量大幅提升）────────────────────────────────────
+# Serper.dev：注册免费拿2500次Google搜索 → https://serper.dev
+# 注册后在 https://serper.dev/api-key 复制Key填到这里
+SERPER_API_KEY    = ""   # 填入后自动启用Google搜索
+# Brave Search：注册免费拿2000次/月 → https://api.search.brave.com/app/keys
+BRAVE_API_KEY     = ""   # 备选搜索引擎
+
 # 允许悟空访问的目录白名单（防止误操作系统文件）
 ALLOWED_ROOTS = [
     DESKTOP,
@@ -226,79 +233,296 @@ def tool_send_feishu(message: str, chat_id: str = "") -> str:
         return f"飞书发送异常：{e}"
 
 
-def tool_search_web(query: str) -> str:
-    """
-    搜索网络，获取真实信息
-    query: 搜索关键词
-    """
-    # 多源搜索，依次尝试
-    lines = [f"搜索：{query}"]
-
-    # 源1：DuckDuckGo HTML搜索（抓取摘要）
+def _search_serper(query: str, num: int = 6) -> list:
+    """Serper.dev Google搜索"""
+    if not SERPER_API_KEY:
+        return []
     try:
-        r = requests.get(
-            "https://html.duckduckgo.com/html/",
-            params={"q": query},
-            timeout=12,
-            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
-        )
-        if r.status_code == 200:
-            import re
-            # 提取搜索结果摘要
-            snippets = re.findall(r'class="result__snippet"[^>]*>(.*?)</a>', r.text, re.DOTALL)
-            titles = re.findall(r'class="result__a"[^>]*>(.*?)</a>', r.text, re.DOTALL)
-            clean = lambda s: re.sub(r'<[^>]+>', '', s).strip()
-            results = []
-            for i, (t, s) in enumerate(zip(titles[:4], snippets[:4])):
-                tc = clean(t); sc = clean(s)
-                if tc and sc:
-                    results.append(f"{i+1}. {tc}\n   {sc[:150]}")
-            if results:
-                lines.extend(results)
-                return "\n".join(lines)
-    except Exception as e:
-        lines.append(f"DuckDuckGo搜索失败：{e}")
-
-    # 源2：Wikipedia API（适合知识性查询）
-    try:
-        r = requests.get(
-            "https://zh.wikipedia.org/api/rest_v1/page/summary/" + requests.utils.quote(query),
-            timeout=10,
-            headers={"User-Agent": "WukongBot/1.0"}
+        r = requests.post(
+            "https://google.serper.dev/search",
+            headers={"X-API-KEY": SERPER_API_KEY, "Content-Type": "application/json"},
+            json={"q": query, "num": num, "gl": "cn", "hl": "zh-cn"},
+            timeout=12
         )
         if r.status_code == 200:
             data = r.json()
-            extract = data.get("extract", "")
-            title = data.get("title", "")
-            if extract:
-                lines.append(f"Wikipedia [{title}]：{extract[:400]}")
-                return "\n".join(lines)
+            results = []
+            if data.get("answerBox"):
+                ab = data["answerBox"]
+                results.append({"title": ab.get("title", "直接答案"),
+                                 "snippet": ab.get("answer", ab.get("snippet", "")),
+                                 "url": ab.get("link", ""), "source": "Google知识卡片"})
+            for item in data.get("organic", [])[:num]:
+                results.append({"title": item.get("title", ""),
+                                 "snippet": item.get("snippet", ""),
+                                 "url": item.get("link", ""), "source": "Google/Serper"})
+            return results
     except:
         pass
+    return []
 
-    # 源3：Bing搜索（备用）
+
+def _search_brave(query: str, num: int = 6) -> list:
+    """Brave Search API"""
+    if not BRAVE_API_KEY:
+        return []
     try:
         r = requests.get(
-            "https://www.bing.com/search",
-            params={"q": query, "cc": "CN"},
-            timeout=12,
-            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+            "https://api.search.brave.com/res/v1/web/search",
+            headers={"Accept": "application/json", "Accept-Encoding": "gzip",
+                     "X-Subscription-Token": BRAVE_API_KEY},
+            params={"q": query, "count": num, "search_lang": "zh"},
+            timeout=12
         )
         if r.status_code == 200:
-            import re
-            snippets = re.findall(r'<p class="b_lineclamp[^"]*">(.*?)</p>', r.text, re.DOTALL)
-            clean = lambda s: re.sub(r'<[^>]+>', '', s).strip()
-            results = [clean(s) for s in snippets[:3] if clean(s)]
-            if results:
-                lines.append("Bing搜索结果：")
-                for s in results:
-                    lines.append(f"- {s[:150]}")
-                return "\n".join(lines)
+            data = r.json()
+            return [{"title": i.get("title", ""), "snippet": i.get("description", ""),
+                     "url": i.get("url", ""), "source": "Brave"}
+                    for i in data.get("web", {}).get("results", [])[:num]]
     except:
         pass
+    return []
 
-    lines.append("所有搜索源均无法访问，请检查网络连接")
+
+def _search_sogou(query: str, num: int = 5) -> list:
+    """搜狗搜索抓取（中文效果好，带Session绕过反爬）"""
+    import re
+    results = []
+    try:
+        session = requests.Session()
+        session.headers.update({
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/122.0.0.0",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+            "Referer": "https://www.sogou.com/",
+        })
+        # 先拿cookie
+        session.get("https://www.sogou.com/", timeout=6)
+        r = session.get("https://www.sogou.com/web", params={"query": query, "ie": "utf8"}, timeout=12)
+        if r.status_code == 200 and len(r.text) > 10000:
+            clean = lambda s: re.sub(r'<[^>]+>', '', s).strip()
+            titles = re.findall(r'<h3[^>]*>(.*?)</h3>', r.text, re.DOTALL)
+            # 搜狗摘要class随版本变化，用通用方案
+            snippets = re.findall(r'class="[^"]*str[^"]*"[^>]*>(.*?)</(?:p|div|span)>', r.text, re.DOTALL)
+            if not snippets:
+                snippets = re.findall(r'<p[^"]*>((?:[^<]|<[^/]){20,})</p>', r.text, re.DOTALL)
+            urls = re.findall(r'<a[^>]*href="(https?://[^"]{10,})"[^>]*class="[^"]*result[^"]*"', r.text)
+            if not urls:
+                urls = re.findall(r'<h3[^>]*>.*?<a[^>]*href="([^"]+)"', r.text, re.DOTALL)
+            added = 0
+            for i, title in enumerate(titles):
+                t = clean(title)
+                if not t or len(t) < 4 or added >= num:
+                    continue
+                s = clean(snippets[i]) if i < len(snippets) else ""
+                u = urls[i] if i < len(urls) else ""
+                if "sogou" in u.lower() and "link" in u.lower():
+                    u = ""
+                results.append({"title": t, "snippet": s[:200], "url": u, "source": "搜狗"})
+                added += 1
+    except:
+        pass
+    return results
+
+
+def _search_360(query: str, num: int = 5) -> list:
+    """360搜索 JSON API（稳定，有真实摘要）"""
+    import re
+    results = []
+    try:
+        # 360搜索有个JSON接口
+        r = requests.get(
+            "https://www.so.com/s",
+            params={"q": query, "src": "www_normal", "f": "7", "pn": "1"},
+            timeout=12,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/122.0.0.0",
+                "Accept": "text/html,application/xhtml+xml",
+                "Accept-Language": "zh-CN,zh;q=0.9",
+            }
+        )
+        if r.status_code == 200:
+            text = r.text
+            clean = lambda s: re.sub(r'<[^>]+>', '', s).strip()
+            # 360的结果嵌在JSON数据里
+            json_results = re.findall(r'"title"\s*:\s*"([^"]+)"[^}]*"description"\s*:\s*"([^"]*)"[^}]*"url"\s*:\s*"([^"]+)"', text)
+            if json_results:
+                for title, desc, url in json_results[:num]:
+                    if title:
+                        results.append({"title": title, "snippet": desc[:200], "url": url, "source": "360搜索"})
+                return results
+            # 备用HTML抓取
+            # 360使用React，内容在__INITIAL_STATE__或data-props里
+            state_match = re.search(r'window\.__INITIAL_STATE__\s*=\s*({.*?});', text, re.DOTALL)
+            if state_match:
+                try:
+                    import json as jsonlib
+                    state = jsonlib.loads(state_match.group(1))
+                    items = state.get("search", {}).get("items", []) or state.get("data", {}).get("result", [])
+                    for item in items[:num]:
+                        t = item.get("title", "") or item.get("name", "")
+                        s = item.get("description", "") or item.get("summary", "")
+                        u = item.get("url", "") or item.get("link", "")
+                        if t:
+                            results.append({"title": clean(t), "snippet": clean(s)[:200], "url": u, "source": "360搜索"})
+                except:
+                    pass
+    except:
+        pass
+    return results
+
+
+def _search_baidu_mip(query: str, num: int = 5) -> list:
+    """百度移动版搜索（绕过PC验证）"""
+    import re
+    results = []
+    try:
+        r = requests.get(
+            "https://m.baidu.com/s",
+            params={"word": query, "from": "1000539b"},
+            timeout=12,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36",
+                "Accept-Language": "zh-CN,zh;q=0.9",
+            }
+        )
+        if r.status_code == 200 and len(r.text) > 5000:
+            clean = lambda s: re.sub(r'<[^>]+>', '', s).strip()
+            text = r.text
+            # 百度移动版title
+            titles = re.findall(r'class="[^"]*c-title[^"]*"[^>]*>(.*?)</(?:a|div|h3)>', text, re.DOTALL)
+            snippets = re.findall(r'class="[^"]*c-abstract[^"]*"[^>]*>(.*?)</(?:span|div|p)>', text, re.DOTALL)
+            urls = re.findall(r'<a[^>]*href="(https?://[^"]{15,})"[^>]*class="[^"]*c-title[^"]*"', text)
+            added = 0
+            for i, title in enumerate(titles):
+                t = clean(title)
+                if not t or len(t) < 4 or added >= num:
+                    continue
+                s = clean(snippets[i]) if i < len(snippets) else ""
+                u = urls[i] if i < len(urls) else ""
+                results.append({"title": t, "snippet": s[:200], "url": u, "source": "百度"})
+                added += 1
+    except:
+        pass
+    return results
+
+
+def _format_results(query: str, results: list) -> str:
+    """格式化搜索结果为可读文本"""
+    engine = results[0]["source"] if results else "未知"
+    lines = [f"搜索「{query}」— 来源：{engine}，共{len(results)}条\n"]
+    for i, res in enumerate(results, 1):
+        t = res.get("title", "")
+        s = res.get("snippet", "")
+        u = res.get("url", "")
+        if not t:
+            continue
+        lines.append(f"{i}. {t}")
+        if s:
+            lines.append(f"   {s[:200]}")
+        if u:
+            lines.append(f"   {u}")
+        lines.append("")
     return "\n".join(lines)
+
+
+def tool_search_web(query: str) -> str:
+    """
+    搜索网络获取真实信息，返回带来源的搜索结果
+    query: 搜索关键词（中英文均可）
+    """
+    # 优先级：Serper(Google) > Brave > 百度移动版 > 搜狗 > 360
+    results = (
+        _search_serper(query)
+        or _search_brave(query)
+        or _search_baidu_mip(query)
+        or _search_sogou(query)
+        or _search_360(query)
+    )
+
+    # 过滤掉无意义的结果（标题太短或是广告类）
+    junk_titles = {"大家还在搜", "实时智能回复", ""}
+    results = [r for r in results
+               if r.get("title", "") not in junk_titles
+               and len(r.get("title", "")) > 5]
+
+    if not results:
+        if not SERPER_API_KEY and not BRAVE_API_KEY:
+            return (
+                f"搜索「{query}」失败：未配置搜索API Key，免费抓取被搜索引擎拦截。\n\n"
+                f"解决方法：注册 Serper.dev 获取免费API Key（2500次）\n"
+                f"1. 访问 https://serper.dev\n"
+                f"2. 免费注册\n"
+                f"3. 复制API Key\n"
+                f"4. 把 SERPER_API_KEY 填入 wukong_tools.py 第25行\n\n"
+                f"填入后悟空即可真实搜索Google，这个操作只需做一次。"
+            )
+        return f"搜索失败：所有搜索引擎均无结果。\n搜索词：{query}\n说明：工具无法访问网络，不会用推断内容代替。"
+
+    return _format_results(query, results)
+
+
+def tool_deep_research(topic: str, questions: str = "") -> str:
+    """
+    深度研究一个话题：自动拆解多个角度，多次搜索，整合成研究报告。
+    比 search_web 更强：会搜索3-5个不同角度，综合给出有来源的分析。
+    topic: 研究主题，如"抖音博主张三的内容风格和粉丝画像"
+    questions: 可选，指定要回答的具体问题，用逗号分隔
+    """
+    import re
+
+    # 拆解研究角度
+    if questions:
+        search_queries = [q.strip() for q in questions.split(",") if q.strip()]
+    else:
+        # 自动生成3个搜索角度
+        search_queries = [
+            topic,
+            topic + " 最新动态 2026",
+            topic + " 分析 数据",
+        ]
+
+    all_results = []
+    searched = []
+    junk_titles = {"大家还在搜", "实时智能回复", ""}
+
+    for q in search_queries[:4]:
+        res = (_search_serper(q, 5) or _search_brave(q, 5)
+               or _search_baidu_mip(q, 5) or _search_sogou(q, 5) or _search_360(q, 5))
+        if res:
+            # 过滤垃圾结果
+            res = [r for r in res
+                   if r.get("title", "") not in junk_titles
+                   and len(r.get("title", "")) > 5]
+        if res:
+            searched.append(q)
+            for r in res[:4]:
+                snippet = r.get("snippet", "")
+                url = r.get("url", "")
+                entry = f"[{q}] {r['title']}"
+                if snippet:
+                    entry += f"\n  摘要：{snippet[:200]}"
+                if url:
+                    entry += f"\n  来源：{url[:80]}"
+                all_results.append(entry)
+
+    if not all_results:
+        if not SERPER_API_KEY and not BRAVE_API_KEY:
+            return (
+                f"深度研究「{topic}」失败：未配置搜索API Key，被搜索引擎拦截。\n\n"
+                f"一次性解决方法：\n"
+                f"1. 访问 https://serper.dev 免费注册\n"
+                f"2. 拿到API Key\n"
+                f"3. 填入 wukong_tools.py 的 SERPER_API_KEY 变量\n"
+                f"4. 重启悟空，之后就能真实搜索Google了"
+            )
+        return f"深度研究失败：搜索「{topic}」无结果，网络不可用。"
+
+    report = f"深度研究：{topic}\n"
+    report += f"搜索角度（{len(searched)}个）：{' | '.join(searched)}\n"
+    report += f"收集到 {len(all_results)} 条真实来源\n"
+    report += "=" * 40 + "\n"
+    report += "\n\n".join(all_results)
+    return report
 
 
 def tool_open_url(url: str) -> str:
@@ -782,6 +1006,27 @@ TOOLS_SCHEMA = [
                 "required": ["keyword"]
             }
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "deep_research",
+            "description": "深度研究一个话题：自动拆解多个角度，多次搜索网络，整合成有来源的研究报告。当老板让你'帮我研究/分析/查找资料关于某件事'时使用，比单次search_web更全面。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "topic": {
+                        "type": "string",
+                        "description": "研究主题，如'抖音博主张三的内容风格'或'2026年新能源行业趋势'"
+                    },
+                    "questions": {
+                        "type": "string",
+                        "description": "可选：指定要回答的具体问题，用逗号分隔，如'他发什么内容,粉丝多少,涨粉速度'"
+                    }
+                },
+                "required": ["topic"]
+            }
+        }
     }
 ]
 
@@ -789,21 +1034,22 @@ TOOLS_SCHEMA = [
 # 工具调度器（根据函数名调用对应工具，返回结果字符串）
 # ══════════════════════════════════════════════════════════════════════════════
 TOOL_DISPATCH = {
-    "get_datetime":  lambda args: tool_get_datetime(),
-    "read_memory":   lambda args: tool_read_memory(args.get("filename", "MEMORY.md")),
-    "write_memory":  lambda args: tool_write_memory(args.get("content", ""), args.get("section", "新增记录")),
-    "query_evomap":  lambda args: tool_query_evomap(args.get("action", "heartbeat")),
-    "send_feishu":   lambda args: tool_send_feishu(args.get("message", ""), args.get("chat_id", "")),
-    "search_web":    lambda args: tool_search_web(args.get("query", "")),
-    "list_files":    lambda args: tool_list_files(args.get("directory", "workspace")),
+    "get_datetime":   lambda args: tool_get_datetime(),
+    "read_memory":    lambda args: tool_read_memory(args.get("filename", "MEMORY.md")),
+    "write_memory":   lambda args: tool_write_memory(args.get("content", ""), args.get("section", "新增记录")),
+    "query_evomap":   lambda args: tool_query_evomap(args.get("action", "heartbeat")),
+    "send_feishu":    lambda args: tool_send_feishu(args.get("message", ""), args.get("chat_id", "")),
+    "search_web":     lambda args: tool_search_web(args.get("query", "")),
+    "deep_research":  lambda args: tool_deep_research(args.get("topic", ""), args.get("questions", "")),
+    "list_files":     lambda args: tool_list_files(args.get("directory", "workspace")),
     "open_url":       lambda args: tool_open_url(args.get("url", "")),
     "browse_desktop": lambda args: tool_browse_desktop(args.get("subpath", "")),
-    "read_file":     lambda args: tool_read_file(args.get("path", "")),
-    "search_files":  lambda args: tool_search_files(
-                        args.get("keyword", ""),
-                        args.get("directory", "desktop"),
-                        args.get("search_content", False)
-                     ),
+    "read_file":      lambda args: tool_read_file(args.get("path", "")),
+    "search_files":   lambda args: tool_search_files(
+                         args.get("keyword", ""),
+                         args.get("directory", "desktop"),
+                         args.get("search_content", False)
+                      ),
 }
 
 def execute_tool(name: str, arguments: dict) -> str:
