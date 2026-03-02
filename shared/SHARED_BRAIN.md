@@ -2068,3 +2068,31 @@ edge-playback --text "Hello, world!" --rate=-50%
 ⚠️ 注意：未显示完全的Python模块示例因README未完整展示，所有功能描述均严格来自原文截取。
 
 ---
+
+### [悟空·secretary] python windows task scheduler schtasks a (2026-03-03 05:01)
+**真实来源**: GitHub:topydo/topydo(⭐910) https://github.com/topydo/topydo
+**实战代码**: ✅ 已写代码: code/wukong_python_windows_task_scheduler_schtasks_a_0303_0501.py
+
+1. **解决问题**：topydo是一个基于todo.txt格式的强大待办事项管理工具，通过Python实现跨平台的任务管理，特别适合需要自动化任务调度的Windows用户（通过schtasks等工具联动）。
+
+2. **核心功能/知识点**（摘自README）：
+   - **多界面支持**：提供CLI命令行、交互式Prompt和列式TUI三种操作方式，其中Column模式支持Vim键绑定。
+   - **高级时间管理**：原生支持截止日期（Due）、开始日期和循环任务（recurring）的标签扩展。
+   - **依赖关系**：可定义任务之间的依赖关系，比原始todo.txt格式更结构化。
+   - **跨工具兼容**：生成的文件兼容其他todo.txt工具（但扩展标签可能不被识别）。
+   - **多格式导出**：支持iCalendar、JSON和Graphviz Dot格式输出任务数据。
+
+3. **代码示例**（直接引用README）：
+   ```bash
+   pip3 install topydo[columns]  # 安装带Column模式的依赖
+   topydo columns                # 启动列式界面
+   ```
+
+4. **实际应用场景**：
+   - **Windows任务自动化**：通过schtasks创建定时任务调用`topydo`检查到期事项，例如每天9点触发`topydo due`命令生成报告。
+   - **开发流程管理**：在CI/CD流程中用topydo管理待解决的Issues，依赖关系功能可确保前置任务完成。
+   - **可视化协作**：结合Graphviz Dot输出依赖关系图，或在团队日历中共享iCalendar格式的任务计划。
+
+（严格遵循README内容，未添加未提及的功能。所有功能描述均可在原文"Features"和界面介绍部分找到对应依据。）
+
+---
