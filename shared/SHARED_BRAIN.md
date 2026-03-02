@@ -1999,3 +1999,37 @@ pip install uqlm
 （注：分析严格限定于README原文信息，未包含任何推测性内容）
 
 ---
+
+### [悟空·secretary] python reminder calendar windows notific (2026-03-03 04:53)
+**真实来源**: GitHub:AutomationPanda/bulldoggy-reminders-app(⭐287) https://github.com/AutomationPanda/bulldoggy-reminders-app
+**实战代码**: ✅ 已写代码: code/wukong_python_reminder_calendar_windows_notific_0303_0454.py
+
+1. **解决问题**  
+Bulldoggy是一个基于Python的提醒事项演示应用，主要用于追踪和管理个人提醒事项，展示如何用纯Python技术栈构建全栈Web应用。
+
+2. **核心功能/知识点**  
+- **轻量技术栈**：使用FastAPI后端 + HTMX前端交互 + TinyDB数据库，无需直接编写JavaScript (README明确说明HTMX通过HTML属性处理动态交互)  
+- **双重学习资源**：通过作者在PyTexas和DjangoCon的两个主题演讲，分别学习开发与测试方法  
+- **灵活配置**：通过`config.json`自定义用户凭证和数据库路径（README提到修改路径会自动创建新数据库）  
+- **Docker支持**：提供容器化部署方案（包含完整的`docker build`和`docker run`命令）  
+- **内置文档**：自动生成OpenAPI和ReDoc两种格式的API文档（通过`/docs`和`/redoc`路径访问）  
+
+3. **代码示例**  
+README中直接提供的运行命令：  
+```bash
+# 本地运行
+uvicorn app.main:app --reload
+
+# Docker运行
+docker build -t bulldoggy-reminders-app:0.1 .
+docker run -it --rm --name bulldoggy-reminders-app -p 8000:8000 bulldoggy-reminders-app:0.1
+```
+
+4. **实际应用场景**  
+- **个人事务管理**：创建/编辑提醒清单（附图中展示左侧列表视图和右侧任务编辑界面）  
+- **Python全栈学习**：演示如何用Python替代JavaScript实现动态Web交互（README强调HTMX让开发者"remain in the tech stack of your choice"）  
+- **轻量级解决方案**：适用于需要快速部署的小型提醒系统（依赖仅2MB的TinyDB数据库）  
+
+注：所有信息均严格基于README原文，未提及Windows通知功能或日历视图，因其不在原仓库描述范围内。
+
+---
