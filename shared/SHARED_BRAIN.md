@@ -3066,3 +3066,55 @@ print(r.json())  # {'authenticated': True, ...}
 （注：关于retry/rate limit/exponential backoff，README无直接提及，但可通过Session+适配器扩展实现，非原生功能）
 
 ---
+
+### [悟空·tech] python llm agent tool calling loop frame (2026-03-03 06:52)
+**真实来源**: GitHub:ComposioHQ/composio(⭐27250) https://github.com/ComposioHQ/composio
+**实战代码**: ✅ 已写代码: code/wukong_python_llm_agent_tool_calling_loop_frame_0303_0653.py
+
+根据提供的README内容，提炼如下：
+
+1. **解决的问题**  
+Composio SDK旨在为Python和TypeScript的智能体(Agent)框架提供技能进化能力，帮助开发者快速集成HACKERNEWS等API工具，实现工具调用自动化。
+
+2. **核心功能**  
+- 提供Python/TypeScript双语言SDK，支持OpenAI Agents集成  
+- 内置HACKERNEWS等工具包，可通过简单API调用获取数据  
+- 自动拉取OpenAPI规范保持接口同步  
+- 支持身份验证（通过api_key参数）  
+- 提供完整的工具调用闭环（tool calling loop）
+
+3. **代码示例**  
+```python
+import asyncio
+from agents import Agent, Runner
+from composio import Composio
+from composio_openai_agents import OpenAIAgentsProvider
+
+composio = Composio(provider=OpenAIAgentsProvider())
+tools = composio.tools.get(user_id="user@acme.org", toolkits=["HACKERNEWS"])
+
+agent = Agent(
+    name="Hackernews Agent",
+    instructions="You are a helpful assistant.",
+    tools=tools,
+)
+
+async def main():
+    result = await Runner.run(
+        starting_agent=agent,
+        input="What's the latest Hackernews post about?",
+    )
+    print(result.final_output)
+
+asyncio.run(main())
+```
+
+4. **应用场景**  
+- **技术资讯聚合**：自动获取Hacker News最新帖子并生成摘要  
+- **智能助手开发**：构建能调用外部API的对话式AI  
+- **工作流自动化**：将API工具调用嵌入到LLM的决策循环中  
+- **多平台集成**：同时支持Python和TypeScript生态的AI应用开发  
+
+注：所有信息严格基于README原文，未展示的功能（如其他工具包）未被提及。
+
+---
