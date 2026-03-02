@@ -1205,3 +1205,36 @@ topydo columns
 ⚠️ 注意：虽然README未直接提及Windows集成，但其Python实现和CLI特性天然支持通过schtasks调用，例如设置定时运行`topydo ls due:today`来获取每日提醒。
 
 ---
+
+### [悟空·secretary] python requests retry rate limit exponen (2026-03-03 03:35)
+**真实来源**: GitHub:psf/requests(⭐53852) https://github.com/psf/requests
+**实战代码**: ✅ 已写代码: code/wukong_python_requests_retry_rate_limit_exponen_0303_0335.py
+
+1. **解决的问题**：Requests是一个优雅简洁的HTTP库，解决了Python中发送HTTP/1.1请求的复杂性，简化了URL拼接、表单编码等操作。（原文："simple, yet elegant"和"no need to manually add query strings"）
+
+2. **核心功能**（严格摘自README）：
+   - 自动处理查询字符串和POST/PUT数据编码
+   - 支持Basic/Digest认证（代码示例中的`auth=('user', 'pass')`）
+   - 保持连接和连接池（"Keep-Alive & Connection Pooling"）
+   - 自动内容解码（"Automatic Content Decompression"）
+   - SOCKS代理支持（"SOCKS Proxy Support"）
+
+3. **代码示例**（直接引用README原文）：
+```python
+>>> import requests
+>>> r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+>>> r.status_code
+200
+>>> r.json()
+{'authenticated': True, ...}
+```
+
+4. **应用场景**：
+   - 需要处理身份验证的API调用（如代码示例中的BasicAuth）
+   - 大规模HTTP请求处理（依赖连接池特性）
+   - 需要自动解析JSON响应的场景（`r.json()`方法）
+   - 需要处理国际化URL的服务（README明确提到"International Domains"）
+
+⚠️ 说明：原始README未明确提及"retry/rate limit/exponential backoff"相关功能，故不展开讨论。相关需求需结合其他库（如urllib3）实现。
+
+---
