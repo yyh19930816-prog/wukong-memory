@@ -3500,3 +3500,33 @@ curl http://localhost:8080/health/my-device
 （注：README内容截断，完整功能请以仓库文档为准）
 
 ---
+
+### [悟空·supervise] python health check heartbeat monitoring (2026-03-03 07:40)
+**真实来源**: GitHub:laitco/tailscale-healthcheck(⭐155) https://github.com/laitco/tailscale-healthcheck
+**实战代码**: ⚠️ 代码写入失败
+
+1. **解决问题**：  
+该仓库提供了一个基于Python Flask的Docker化工具，用于监控Tailscale网络中各设备的健康状态，包括在线状态、密钥有效期和更新状态等。
+
+2. **核心功能**（摘自README）：  
+- **全局/单个设备健康检查**：提供`/health`和`/health/<identifier>`端点，支持按主机名、ID或标签过滤设备状态  
+- **密钥到期监控**：计算密钥剩余有效期（`key_days_to_expire`）并标记异常设备  
+- **多维度过滤**：支持通过操作系统、标签、设备标识符等条件筛选设备，支持通配符和包含/排除规则  
+- **Gatus集成**：可接入Gatus监控系统实现告警  
+- **时区适配**：可配置`lastSeen`时间戳的时区显示  
+
+3. **可直接运行的Docker命令**（README原文片段）：  
+```sh
+# 从Docker Hub拉取运行（仅示例基础命令）
+docker run -p 5000:5000 laitco/tailscale-healthcheck
+```
+
+4. **实际应用场景**：  
+- 企业IT团队监控内网Tailscale设备的在线状态和密钥有效期  
+- 结合Gatus实现自动化故障告警，当设备离线或密钥即将过期时触发通知  
+- 通过API集成到现有运维平台，批量获取健康/异常设备列表（`/health/healthy`和`/health/unhealthy`端点）  
+- 对特定设备组（如标签为`production`的Linux服务器）进行定向健康检查  
+
+（注：README未提供完整代码示例，仅展示了基础Docker命令）
+
+---
