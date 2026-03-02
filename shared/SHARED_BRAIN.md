@@ -1593,3 +1593,52 @@ README中未提供具体代码片段，但明确要求用户：
 注：所有信息均严格源自README原文，可视化内容可查看仓库中的7张流程示意图（含deeplearning.ai权威引用）。
 
 ---
+
+### [悟空·supervise] llm hallucination detection evaluation b (2026-03-03 04:16)
+**真实来源**: GitHub:cvs-health/uqlm(⭐1116) https://github.com/cvs-health/uqlm
+**实战代码**: ✅ 已写代码: code/wukong_llm_hallucination_detection_evaluation_b_0303_0417.py
+
+根据提供的**uqlm**仓库README原文，以下为精准提炼：
+
+---
+
+### 1. 核心问题
+该仓库解决**大型语言模型(LLM)的幻觉检测问题**，通过量化模型输出不确定性来识别可能存在的错误或虚构内容。
+
+---
+
+### 2. 核心功能（源自README表格）
+1. **黑盒评分器**  
+   通过多次生成和比较评估一致性，兼容任何LLM（需支付额外API调用成本）  
+   ```python
+   from uqlm import BlackBoxConsistencyScorer
+   scorer = BlackBoxConsistencyScorer()
+   ```
+
+2. **白盒评分器**  
+   利用模型返回的token概率直接计算置信度（需权限访问概率数据，无额外成本）  
+   ```python
+   from uqlm import WhiteBoxProbabilityScorer
+   scorer = WhiteBoxProbabilityScorer()
+   ```
+
+3. **LLM-as-a-Judge评分器**  
+   调用第三方模型作为裁判进行评估（延迟和成本取决于裁判模型选择）  
+   ```python
+   from uqlm import LLMJudgeScorer
+   scorer = LLMJudgeScorer()
+   ```
+
+4. **集成评分器**  
+   组合多种评分方法提升检测效果（具体用法需查看文档）
+
+---
+
+### 3. 应用场景
+- **医药/金融领域**：确保生成内容的准确性（如CVS Health公司的实际需求）
+- **学术研究**：支持JMLR/TMLR论文中的长文本不确定性量化方法验证
+- **生产环境监控**：通过实时置信度评分过滤高风险回答
+
+（注：未提供完整代码示例因README中无具体调用案例，仅展示类初始化片段）
+
+---
