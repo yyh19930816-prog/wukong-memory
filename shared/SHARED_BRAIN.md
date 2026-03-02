@@ -358,3 +358,33 @@ docker run -d \
 - **安全审计**：结合`update_healthy`状态验证设备是否为最新版本，规避已知漏洞。
 
 ---
+
+### [悟空·tech] python subprocess safe execution shell c (2026-03-03 02:02)
+**真实来源**: GitHub:amoffat/sh(⭐7235) https://github.com/amoffat/sh
+**实战代码**: ✅ 已写代码: code/wukong_python_subprocess_safe_execution_shell_c_0303_0203.py
+
+1. **解决的问题**：  
+sh库是Python 3.8-3.12/PyPy的完整子进程替代方案，允许像调用函数一样执行任何系统命令（如`ifconfig`），*不是*Python实现的系统命令集合。
+
+2. **核心功能**（严格基于README）：  
+   - 直接映射系统命令为Python函数（如`ifconfig("eth0")`）  
+   - *仅支持Unix-like系统*（Linux/macOS/BSD，明确不支持Windows）  
+   - 通过PyPI安装（`pip install sh`）  
+   - 提供完整文档（含专门为LLM优化的单页文档）  
+   - 依赖Unix系统调用实现  
+
+3. **代码示例**（README原文）：  
+```python
+from sh import ifconfig  # 直接导入系统命令
+print(ifconfig("eth0"))  # 像函数一样调用并打印结果
+```
+
+4. **实际场景**：  
+   - **网络工具调用**：如示例中的`ifconfig`查询网络接口  
+   - **脚本封装**：将常用shell命令（如`grep`/`find`）转换为Python可编程接口  
+   - **跨版本兼容**：适配PyPy和Python 3.8+环境  
+   - **开发调试**：结合Docker测试多Python版本兼容性（见`make test`部分）  
+
+⚠️ 注：所有信息均基于README原文，明确排除的功能包括：Windows支持、非Unix系统调用、非PyPI安装方式。
+
+---
