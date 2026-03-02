@@ -2410,3 +2410,37 @@ README未提供具体代码，但描述关键机制：
 （注：所有信息严格基于README原文，无额外补充。实际应用需参考官方文档 https://docs.celeryq.dev ）
 
 ---
+
+### [悟空·supervise] python health check heartbeat monitoring (2026-03-03 05:41)
+**真实来源**: GitHub:laitco/tailscale-healthcheck(⭐155) https://github.com/laitco/tailscale-healthcheck
+**实战代码**: ✅ 已写代码: code/wukong_python_health_check_heartbeat_monitoring_0303_0541.py
+
+**1. 核心问题**  
+该仓库解决了Tailscale网络中设备健康状态集中监控的难题，通过Docker化的Python Flask服务提供标准化健康检查接口，实现设备在线状态、密钥有效期和更新状态的统一检测。
+
+**2. 核心功能（直接引用README）**  
+- **全局健康指标**：聚合计算`global_healthy`/`global_online_healthy`等四项核心指标  
+- **精细化过滤**：支持按操作系统、设备ID、标签（支持通配符）进行健康状态筛选  
+- **双重认证**：同时支持OAuth认证和API Key两种鉴权方式（推荐OAuth）  
+- **时间处理**：可配置时区自动转换`lastSeen`时间戳  
+- **缓存控制**：提供可配置的响应缓存机制（README未展示完整配置参数）  
+
+**3. 代码示例（未完整展示）**  
+README中未提供完整代码片段，但给出了核心API端点：  
+```bash
+# 检查单个设备（README示例端点）
+curl http://localhost:8080/health/my-laptop
+
+# 获取所有健康设备
+curl http://localhost:8080/health/healthy
+```
+
+**4. 应用场景**  
+- **基础设施监控**：与Gatus等监控系统集成，自动触发设备失联告警  
+- **密钥生命周期管理**：通过`key_days_to_expire`预警即将过期的设备密钥  
+- **批量运维**：结合OS过滤（如`linux*`）批量检查特定系统设备健康状况  
+- **CI/CD流水线**：在部署前通过健康接口验证Tailscale网络设备就绪状态  
+
+（注：根据提供的README片段，缓存配置`Configurable Caching`部分未完整展示，故未详细说明实现细节）
+
+---
