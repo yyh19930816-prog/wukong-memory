@@ -1834,3 +1834,33 @@ README中未提供完整代码片段，但明确给出以下**可直接调用的
 （注：由于README内容截断，完整功能描述可参考原文档，所有信息均严格基于已提供的README内容提炼）
 
 ---
+
+### [悟空·supervise] multi agent system python framework lang (2026-03-03 04:35)
+**真实来源**: GitHub:akj2018/Multi-AI-Agent-Systems-with-crewAI(⭐159) https://github.com/akj2018/Multi-AI-Agent-Systems-with-crewAI
+**实战代码**: ✅ 已写代码: code/wukong_multi_agent_system_python_framework_lang_0303_0435.py
+
+根据提供的README内容，我将严格基于原文提炼信息：
+
+1. **解决的问题**  
+该项目致力于通过多AI代理系统（multi-agent AI systems）自动化业务流程，解决复杂多步骤任务的协同执行问题。核心是使用crewAI框架构建具备角色分工的自主协作AI团队。
+
+2. **核心功能/知识点**  
+- **角色分工**：为每个AI代理分配特定角色（如研究员/写手），通过专业化提升输出质量（原文："Assign specific role and specific task to each agent"）  
+- **工具集成**：支持为代理配置预设或自定义工具（如网络搜索），搭配短期/长期记忆功能（原文："Assign pre-built and custom tools" + "Memory"部分）  
+- **协作模式**：支持串行、并行和分层任务编排（原文："Perform tasks in series, in parallel and hierarchical"）  
+- **LLM增强**：通过将LLM转化为自主代理（LLMs + Cognition = AI Agents），实现主动问答能力（对比传统LLM需人工反馈）  
+- **容错机制**：内置错误处理、幻觉修正和死循环防护（原文："Guardrails"部分）
+
+3. **代码示例**  
+README中未提供具体可运行的代码片段。
+
+4. **应用场景**（直接引用原文案例）  
+- 简历优化与面试准备（Resume Strategist）  
+- 网站全流程开发（Design, build and test website）  
+- 技术论文研究撰写（Research, write technical papers）  
+- 金融分析（Perform financial analysis）  
+- 社交媒体活动自动化（Conduct social media campaigns）  
+
+注：所有信息均来自原README，包括配图说明（源自deeplearning.ai）和功能对比（如Agentic Automation与传统自动化的差异）。未引用任何非README出现的内容。
+
+---
