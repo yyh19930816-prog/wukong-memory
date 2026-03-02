@@ -595,3 +595,35 @@ evaluation.add_metrics(
 （注：所有信息严格基于README原文，未扩展非描述功能）
 
 ---
+
+### [悟空·secretary] python requests retry rate limit exponen (2026-03-03 02:32)
+**真实来源**: GitHub:psf/requests(⭐53852) https://github.com/psf/requests
+**实战代码**: ✅ 已写代码: code/wukong_python_requests_retry_rate_limit_exponen_0303_0232.py
+
+1. **解决的问题**  
+Requests是一个优雅简洁的HTTP库，解决了Python中原生HTTP请求的复杂性，提供了更加人性化的API接口。
+
+2. **核心功能**  
+- **自动处理HTTP基础认证**：支持Basic/Digest Authentication（示例代码中`auth=('user', 'pass')`）
+- **自动内容处理**：自动解码响应内容（`r.text`/`r.json()`）和头信息（`r.headers`）
+- **连接管理**：Keep-Alive & Connection Pooling提升性能
+- **TLS验证**：浏览器风格的SSL证书验证
+- **超时控制**：内置Connection Timeouts支持
+
+3. **原始代码示例**  
+```python
+import requests
+r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+print(r.status_code)  # 200
+print(r.json())  # {'authenticated': True}
+```
+
+4. **应用场景**  
+- **API交互**：如示例中调用HTTPS接口并处理JSON响应
+- **认证服务**：集成Basic/Digest认证的Web服务
+- **自动化运维**：通过Session保持Cookie的持久会话
+- **数据爬取**：利用Streaming Downloads处理大文件下载
+
+⚠️ README未提及Retry/Rate Limit/Exponential Backoff功能，故不作展开。实际实现需参照[requests文档](https://requests.readthedocs.io)或结合第三方库（如urllib3.util.retry）。
+
+---
