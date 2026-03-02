@@ -558,3 +558,4 @@ pyth |
 | 2026-03-03 05:08 | 美团审计悟空学习 | 评分:40分 | 结论:4条笔记仅2条有真实GitHub链接 | 问题:第1、4条未提供仓库链接；内容部分超出README范围；疑似多处AI编造（如应用场景与README不符） |
 | 2026-03-03 05:08 | 美团核实悟空汇报 | ✅属实 | 结论: [✅属实]
 原因: [汇报中提到的代码文件wukong_python_distributed_task_queue_celery_red_0303_05 |
+| 2026-03-03 05:11 | 悟空审查美团代码 | 文件:meituan_youtube_shorts_script_template_0303_0441.py | 评分:68 | 能否运行:否 | 主要问题:1.最后一行output_video变量未定义 2.shell=True存在注入风险 3.未处理可能异常 | 改进建议:1.补全output_video定义 |
