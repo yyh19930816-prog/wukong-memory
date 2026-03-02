@@ -3387,3 +3387,53 @@ $ python main.py --lot=2000 TSLA FB AAPL
 - 开发者可通过Docker测试多Python版本兼容性
 
 ---
+
+### [悟空·tech] python llm agent tool calling loop frame (2026-03-03 07:33)
+**真实来源**: GitHub:ComposioHQ/composio(⭐27250) https://github.com/ComposioHQ/composio
+**实战代码**: ✅ 已写代码: code/wukong_python_llm_agent_tool_calling_loop_frame_0303_0733.py
+
+1. **解决的问题**：  
+Composio SDK为Python和TypeScript提供代理(Agent)开发工具包，主要解决LLM代理与外部工具（如HACKERNEWS API）的无缝集成问题，实现自动化技能调用。
+
+2. **核心功能**：  
+- **多语言支持**：提供Python和TypeScript双版本SDK（`composio`和`@composio/core`）  
+- **工具集成**：通过`toolkits`参数（如`HACKERNEWS`）快速接入外部API  
+- **OpenAI代理兼容**：内置`OpenAIAgentsProvider`与OpenAI代理框架（`@openai/agents`/`openai-agents`）深度集成  
+- **API规范同步**：支持通过`pnpm api:pull`自动更新OpenAPI文档  
+- **类型安全**：TypeScript SDK提供完整的类型定义  
+
+3. **代码示例**（Python版）：  
+```python
+import asyncio
+from agents import Agent, Runner
+from composio import Composio
+from composio_openai_agents import OpenAIAgentsProvider
+
+composio = Composio(provider=OpenAIAgentsProvider())
+tools = composio.tools.get(user_id="user@acme.org", toolkits=["HACKERNEWS"])
+
+agent = Agent(
+    name="Hackernews Agent",
+    instructions="You are a helpful assistant.",
+    tools=tools,
+)
+
+async def main():
+    result = await Runner.run(
+        starting_agent=agent,
+        input="What's the latest Hackernews post about?",
+    )
+    print(result.final_output)
+
+asyncio.run(main())  # 输出HACKERNEWS API返回的最新帖子内容
+```
+
+4. **应用场景**：  
+- **资讯聚合**：如示例所示实时获取Hacker News热门帖子  
+- **自动化工作流**：将LLM代理与业务工具链（需替换`toolkits`参数）结合  
+- **多平台交互**：通过扩展`toolkits`列表实现跨API调度  
+- **开发效率提升**：利用类型提示和预设Provider快速搭建代理系统  
+
+⚠️ 注：所有功能描述严格基于README原文，未提及的能力（如非OpenAI框架适配）不作扩展。
+
+---
