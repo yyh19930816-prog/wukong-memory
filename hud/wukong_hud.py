@@ -964,6 +964,17 @@ class WukongHUD(ctk.CTk):
             msgs.extend(load_hist()[-12:])
             msgs.append({"role": "user", "content": msg})
 
+            # ── 判断第一轮是否需要辅助训练（强制调工具）────────────────────
+            # 信息获取类问题：第一轮设 tool_choice="required"，帮他建立"先查再答"的条件反射
+            # 这是辅助训练，不是永久控制；闲聊/创作类不触发
+            _info_triggers = [
+                "搜", "查", "找", "研究", "分析", "了解", "现在", "最新",
+                "几点", "日期", "时间", "趋势", "行情", "新闻", "资料",
+                "github", "http", "链接", "抖音", "微信", "飞书",
+                "怎么做", "如何", "能不能", "有没有", "帮我"
+            ]
+            _needs_assist = TOOLS_ENABLED and any(kw in msg for kw in _info_triggers)
+
             # ── Function Calling 循环（最多5轮工具调用）────────────────────────
             tool_calls_log = []
             force_no_tool = False  # 工具执行完但内容空时，强制下一轮只生成文字
@@ -978,7 +989,12 @@ class WukongHUD(ctk.CTk):
                 # 只在工具可用时传入tools参数
                 if TOOLS_ENABLED and not force_no_tool:
                     req_body["tools"] = TOOLS_SCHEMA
-                    req_body["tool_choice"] = "auto"
+                    # 第一轮+信息类问题：required（辅助训练，让他先动手）
+                    # 后续轮或非信息类：auto（他自己判断）
+                    if round_n == 0 and _needs_assist:
+                        req_body["tool_choice"] = "required"
+                    else:
+                        req_body["tool_choice"] = "auto"
 
                 r = requests.post(API_URL, headers=hdrs, json=req_body, timeout=90)
 

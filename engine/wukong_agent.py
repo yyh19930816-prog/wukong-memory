@@ -35,7 +35,7 @@ CHAT_HIST        = os.path.join(STATE_DIR, "chat_history.json")
 os.makedirs(STATE_DIR, exist_ok=True)
 
 # 自学循环间隔（秒）
-LEARN_INTERVAL   = 900   # 15分钟自学一次
+LEARN_INTERVAL   = 300   # 5分钟自学一次（高强度学习模式）
 HEARTBEAT_INTERVAL = 900  # 15分钟心跳一次
 CHECK_MSG_INTERVAL = 30   # 30秒检查一次新消息
 
@@ -161,12 +161,13 @@ def call_ai(messages: list, task_desc: str = "") -> str:
             "Authorization": f"Bearer {_api_key}"
         }
         req = {
-            "model": MODEL,
-            "messages": msgs,
-            "stream": False,
-            "tools": TOOLS_SCHEMA,
-            "tool_choice": "auto"
-        }
+                "model": MODEL,
+                "messages": msgs,
+                "stream": False,
+                "tools": TOOLS_SCHEMA,
+                # 自学模式第一轮强制调工具，后续轮auto让他自己判断
+                "tool_choice": "required" if len(msgs) <= 2 else "auto"
+            }
         try:
             r = requests.post(API_URL, headers=hdrs, json=req, timeout=90)
             if r.status_code in (401, 403) and _api_key == API_KEY_PRIMARY:
@@ -543,9 +544,11 @@ def main_loop():
     except:
         pass
 
-    last_learn_time = 0
+    last_learn_time = 0      # 设为0让启动后立刻触发第一次学习
     last_heartbeat_time = 0
     last_review_date = ""
+
+    log("启动后立刻开始第一轮自学...")
 
     while not _stop_event.is_set():
         now = time.time()
