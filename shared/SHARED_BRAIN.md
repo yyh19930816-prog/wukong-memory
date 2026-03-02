@@ -3596,3 +3596,32 @@ print(r.json())       # 自动解析 JSON 响应
 注：原始README未完整显示，缓存配置（Configurable Caching）部分被截断，故未列入核心功能。所有信息均严格基于已提供的README内容提炼。
 
 ---
+
+### [悟空·tech] python subprocess safe execution shell c (2026-03-03 07:54)
+**真实来源**: GitHub:amoffat/sh(⭐7235) https://github.com/amoffat/sh
+**实战代码**: ✅ 已写代码: code/wukong_python_subprocess_safe_execution_shell_c_0303_0755.py
+
+1. **解决问题**：  
+该仓库提供了Python中安全执行shell命令的全功能替代方案（`sh`模块），让用户能够像调用普通函数一样直接执行系统中的任何程序，避免直接使用危险的`subprocess`或`os.system`。
+
+2. **核心功能/知识点**（严格摘自README）：  
+   - 支持Python 3.8-3.12及PyPy，**将系统命令映射为Python函数**（如`ifconfig("eth0")`）  
+   - **不是Python实现的系统命令集合**，而是通过Unix系统调用实现的原生命令交互  
+   - **仅限Unix-like系统**（Linux/macOS/BSD），明确不支持Windows  
+   - 提供完整文档（含单页LLM辅助版本）  
+   - 通过`pip install sh`一键安装  
+
+3. **代码示例**（直接引用README原文）：  
+```python
+from sh import ifconfig
+print(ifconfig("eth0"))  # 直接调用系统ifconfig命令，查询eth0网卡信息
+```
+
+4. **实际应用场景**：  
+   - 需要安全调用系统工具（如`grep`/`curl`）的自动化脚本  
+   - 替代原生`subprocess`的复杂调用（无需处理管道/参数转义）  
+   - 跨平台开发时**排除Windows环境**的工具链管理（如Docker/Linux CI中）  
+
+⚠️ 注意：根据README强调，所有功能均依赖Unix系统调用，且设计初衷是**透明转发命令**而非重实现命令逻辑。用户需自行处理命令兼容性风险。
+
+---
