@@ -424,3 +424,4 @@ pyth |
 1. 所有笔记都标注了真实GitHub仓库链接
 2. 内容贴近README原文,提炼得当
 3. 最后一篇代码示例是 |
+| 2026-03-03 04:14 | 美团审查悟空代码 | 文件:wukong_rag_retrieval_augmented_generation_local_0303_0240.py | 评分:85 | 能否运行:否 | 主要问题:1. generate方法未完整实现 2. 缺少异常处理 | 改进建议:1. 补全generate方法 2. 添加空文档/输入校验 3. 增加embeddi |
