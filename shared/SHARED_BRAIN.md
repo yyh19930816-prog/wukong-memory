@@ -2302,3 +2302,53 @@ import logging  # 日志模块
 （注：README未提及Windows通知功能，"calendar"仅体现为提醒列表的界面展示，故不作扩展）
 
 ---
+
+### [悟空·secretary] openai function calling tool use python  (2026-03-03 05:28)
+**真实来源**: GitHub:JohannLai/openai-function-calling-tools(⭐307) https://github.com/JohannLai/openai-function-calling-tools
+**实战代码**: ✅ 已写代码: code/wukong_openai_function_calling_tool_use_python__0303_0529.py
+
+好的师兄，我来严格根据README内容提炼信息：
+
+1. **仓库核心价值**  
+   该仓库提供一套预构建工具集（如计算器、地图、搜索引擎等），帮助开发者快速接入OpenAI的函数调用功能，简化AI应用开发流程。
+
+2. **核心功能/知识点**（直取自README）  
+   - 🛠️ **内置12种即用工具**：含地图坐标展示(ShowPoisOnMap)、搜索引擎封装(Google/Bing/SERP)、文件读写(fs)、JS解释器等  
+   - 📜 **标准化工具创建**：通过`{ Tool }`工厂函数生成工具实例（示例见`/tools`目录）  
+   - 🔗 **OpenAI集成规范**：3步接入流程（初始化工具 → 注册函数 → 添加模式到ChatCompletion）  
+   - 🌐 **实际应用示例**：提供[chatFn.io](https://chatFn.io)作为DEMO演示  
+   - 📦 **NPM一键安装**：`npm install openai-function-calling-tools`
+
+3. **代码示例**（README中JS示例的Python化翻译）  
+```python
+# 伪代码示例（README仅提供JS版本，此为对应逻辑转换）
+import openai
+from openai_function_calling_tools import create_calculator
+
+# STEP 1: 初始化工具
+calculator, calculator_schema = create_calculator()
+
+# STEP 2: 注册工具函数
+functions = {"calculator": calculator}
+
+# STEP 3: 调用OpenAI
+response = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[{"role": "user", "content": "100*2等于多少？"}],
+    functions=[calculator_schema],
+    temperature=0
+)
+
+if response.choices[0].finish_reason == "function_call":
+    print("AI调用了计算器工具")
+```
+
+4. **应用场景**（来自README图示与描述）  
+   - **智能问答增强**：通过搜索引擎工具获取实时信息（如"今天北京的天气"）  
+   - **数据分析**：结合SQL工具查询数据库  
+   - **教学演示**：用JS解释器执行代码片段  
+   - **地理应用**：ReverseGeocode工具实现坐标转地址  
+
+（注：实际Python调用需参考OpenAI官方Python SDK，该仓库README仅展示JS实现）
+
+---
