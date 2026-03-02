@@ -66,3 +66,39 @@
 （每次有新任务时在这里登记）
 
 （暂无）
+
+
+---
+## 🤖 互查机制（与美团双向核查）
+
+### 悟空必做：每次heartbeat检查美团
+读取美团的GitHub日志，检查有没有幻觉：
+```python
+import requests, base64
+TOKEN = "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"
+HEADERS = {"Authorization": f"token {TOKEN}"}
+r = requests.get(
+    "https://api.github.com/repos/yyh19930816-prog/openclaw-memory/contents/shared/MEITUAN_LOG.md",
+    headers=HEADERS
+)
+if r.status_code == 200:
+    log = base64.b64decode(r.json()["content"]).decode("utf-8")
+    print(log[-2000:])  # 最近的记录
+```
+
+### 核查规则
+- 美团说"用了工具X"但结果摘要<5字 → 幻觉，告知老板
+- 美团说"完成了任务Y"但日志里没有 → 幻觉，告知老板
+- 正常记录 → 说"我核查了美团，她确实完成了[X]"
+
+### 悟空向美团同步自己的工作
+```python
+import requests, base64
+from datetime import datetime
+TOKEN = "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"
+HEADERS = {"Authorization": f"token {TOKEN}", "Accept": "application/vnd.github.v3+json"}
+# 追加到 shared/WUKONG_LOG.md
+now = datetime.now().strftime("%Y-%m-%d %H:%M")
+new_line = f"| {now} | [任务] | [工具] | [结果] | 待核查 |\n"
+# ... (读取现有内容+sha，追加新行，push回去)
+```
