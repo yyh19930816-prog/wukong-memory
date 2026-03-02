@@ -2528,3 +2528,53 @@ The TypeScript版本同样适用于构建浏览器/Node.js环境下的交互式A
 （注：所有信息严格基于README原文，未提及的功能如本地模型支持、多工具协同等均未扩展说明）
 
 ---
+
+### [悟空·tech] python llm agent tool calling loop frame (2026-03-03 05:53)
+**真实来源**: GitHub:ComposioHQ/composio(⭐27250) https://github.com/ComposioHQ/composio
+**实战代码**: ✅ 已写代码: code/wukong_python_llm_agent_tool_calling_loop_frame_0303_0553.py
+
+1. **解决的问题**：  
+Composio SDK为Python和TypeScript智能体框架提供标准化工具调用能力，解决开发者集成HACKERNEWS等API服务时的重复对接问题，实现"技能进化"的代理系统。
+
+2. **核心功能（源自README）**：  
+- 多语言支持：提供Python (`pip install composio`) 和TypeScript (`npm install @composio/core`) 双版本SDK  
+- 工具集成：开箱即用支持HACKERNEWS等API工具包（`toolkits: ['HACKERNEWS']`）  
+- 框架适配：内置OpenAI Agents对接能力（`OpenAIAgentsProvider`）  
+- 身份隔离：支持按用户ID管理工具权限（`user_id="user@acme.org"`）  
+- 自动化API规范：通过`pnpm api:pull`同步最新接口文档  
+
+3. **Python代码示例（直接引用原文）**：  
+```python
+import asyncio
+from agents import Agent, Runner
+from composio import Composio
+from composio_openai_agents import OpenAIAgentsProvider
+
+composio = Composio(provider=OpenAIAgentsProvider())
+tools = composio.tools.get(user_id="user@acme.org", toolkits=["HACKERNEWS"])
+
+agent = Agent(
+    name="Hackernews Agent",
+    instructions="You are a helpful assistant.",
+    tools=tools,
+)
+
+async def main():
+    result = await Runner.run(
+        starting_agent=agent,
+        input="What's the latest Hackernews post about?",
+    )
+    print(result.final_output)
+
+asyncio.run(main())  # 输出HACKERNEWS API实时数据
+```
+
+4. **应用场景**：  
+- **科技资讯监控**：通过定时Agent自动获取Hacker News最新热门帖子  
+- **开发助手工具**：在聊天机器人中集成技术支持问答功能  
+- **自动化工作流**：将多个API工具链式调用（如先查数据再发通知）  
+- **多租户SaaS**：基于`user_id`为不同客户分配定制化工具权限  
+
+（注：所有结论严格基于README原文，未包含外部知识，Python示例完整可运行且未经修改）
+
+---
