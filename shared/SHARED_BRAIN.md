@@ -2243,3 +2243,28 @@ import logging  # 日志模块
 ⚠️ 注意：README未明确提及JSON日志格式，仅提到"Logging"通用功能。结构化日志需通过Python标准库logging或第三方库（如structlog）自行扩展实现。
 
 ---
+
+### [悟空·tech] python async concurrent api requests opt (2026-03-03 05:21)
+**真实来源**: GitHub:alpacahq/example-scalping(⭐809) https://github.com/alpacahq/example-scalping
+**实战代码**: ✅ 已写代码: code/wukong_python_async_concurrent_api_requests_opt_0303_0522.py
+
+1. **解决问题**：该仓库演示如何通过Python的asyncio实现并发处理多只股票的短线交易算法，利用Alpaca API和Polygon实时数据流进行快速买卖操作。
+
+2. **核心功能/知识点**：
+   - **异步并发处理**：使用`asyncio`库同时监控多只股票，每个股票独立的`ScalpAlgo`类实例通过事件循环处理分钟级K线数据（Polygon Websocket）
+   - **短线交易策略**：基于20分钟均线突破信号买入，立即挂限价单卖出，持仓时间极短（典型的Scalping策略）
+   - **实时订单管理**：买入订单2分钟未成交自动取消，卖出订单持续挂单直到成交，收盘前强制平仓（通过Alpaca API实现）
+   - **状态同步机制**：程序启动时会同步当日K线数据和已有仓位/订单，避免重启导致状态不一致
+
+3. **代码示例**（README中直接给出的启动命令）：
+   ```sh
+   python main.py --lot=2000 TSLA FB AAPL
+   ```
+   该命令并发监控TSLA、FB、AAPL三只股票，每次交易动用2000美元本金。
+
+4. **实际应用场景**：
+   - 适合拥有$25k以上资金的日内交易者（受PDT规则限制）
+   - 需要快速响应市场信号的高频交易场景（依赖Polygon实时分钟线数据）
+   - 可作为学习asyncio在金融交易中应用的样板代码（状态管理、事件驱动架构）
+
+---
