@@ -862,39 +862,7 @@ class WukongHUD(ctk.CTk):
         except: pass
 
     # ── 判断该消息是否必须先调工具才能回答 ──────────────────────────────────
-    def _requires_tool(self, msg: str) -> str | None:
-        """
-        判断消息是否必须调工具。只拦截明确的信息获取请求，不拦截能力询问/闲聊。
-        返回：必须调用的工具名，或 None（表示可以直接回答）
-        """
-        m = msg.strip()
-
-        # 链接类 → open_url
-        if any(x in m for x in ["http://", "https://", "www."]):
-            return "open_url"
-
-        # 时间日期 → get_datetime（必须是明确问时间的句子）
-        time_kw = ["现在几点", "今天几号", "几点了", "现在时间", "当前时间"]
-        if any(k in m for k in time_kw):
-            return "get_datetime"
-
-        # 文件操作 → read_file（明确要求打开/读取某个文件）
-        file_kw = ["帮我打开", "读取文件", "打开文件", "读一下", "看一下文件"]
-        if any(k in m for k in file_kw):
-            return "read_file"
-
-        # 搜索类 → search_web（必须包含明确的搜索动词+信息对象）
-        # 只拦截"帮我搜"、"去搜一下"、"查一下最新"这类，不拦截"你会吗"、"能不能"这类
-        search_triggers = [
-            "帮我搜", "帮我查", "帮我找", "搜一下", "查一下",
-            "找一下", "搜索一下", "查询一下", "去搜", "上网查",
-            "最新新闻", "最新消息", "最新动态", "最新趋势", "查行情",
-            "搜资料", "查资料", "找资料",
-        ]
-        if any(k in m for k in search_triggers):
-            return "search_web"
-
-        return None  # 闲聊、能力询问、创作类 → 直接回答
+    # _requires_tool 已移除：悟空通过元认知自检自主判断是否需要调工具
 
     # ── 智能识别对话方向 ──────────────────────────────────────────────────────
     def _detect_direction(self, msg, reply):
@@ -939,7 +907,7 @@ class WukongHUD(ctk.CTk):
             hdrs = {"Content-Type": "application/json",
                     "Authorization": f"Bearer {self._api_key}"}
 
-            # 动态加载长期记忆（注入系统Prompt）
+            # 动态加载长期记忆
             memory_content = ""
             try:
                 if os.path.exists(MEMORY_LONG):
@@ -947,53 +915,61 @@ class WukongHUD(ctk.CTk):
                         memory_content = f.read()[:2000]
             except: pass
 
+            # 动态加载已习得能力（让悟空知道自己会什么）
+            capabilities_content = ""
+            try:
+                cap_file = os.path.join(WORKSPACE_DIR, "CAPABILITIES.md")
+                if os.path.exists(cap_file):
+                    with open(cap_file, "r", encoding="utf-8") as f:
+                        capabilities_content = f.read()[:1500]
+            except: pass
+
             tools_status = "已启用（可真实调用）" if TOOLS_ENABLED else "未加载（只能推断）"
 
             sys_prompt = (
                 "你是悟空，老板的私人AI生活秘书和数字分身。\n"
-                "你现在拥有真实的工具，必须调用工具获取真实数据，绝对不能编造任何结果。\n\n"
-                "【工具使用规则 - 最高优先级，不可违反】\n"
-                "1. 需要实时数据 → 先调工具，拿到结果后再回答，不许用训练知识替代\n"
-                "2. 涉及EVOMAP → 调用 query_evomap，不要编结果\n"
-                "3. 需要时间日期 → 必须调用 get_datetime，禁止从历史推断时间\n"
-                "4. 老板发来链接 → 必须调用 open_url，不要猜内容\n"
-                "5. 需要查记忆 → 调用 read_memory，不要凭印象\n"
-                "6. 老板让你记住某事 → 调用 write_memory 写入\n"
-                "7. 需要发飞书 → 调用 send_feishu\n"
-                "8. 不知道的普通问题 → 调用 search_web 搜一下\n"
-                "9. 老板让你研究/分析/查资料某个话题 → 调用 deep_research（自动联合Google+GitHub）\n"
-                "10. 遇到技术问题，想找现成工具/代码 → 调用 search_github\n"
-                "11. 想了解某个开源项目怎么用 → 调用 read_github_repo\n\n"
-                "【工具选择逻辑】\n"
-                "search_web → 查一条具体信息、新闻、价格\n"
-                "deep_research → 研究一个话题、做竞品分析、了解行业趋势（自动联合Google+GitHub）\n"
-                "search_github → 找现成的开源工具/代码/解决方案\n"
-                "read_github_repo → 深入了解某个项目的用法和文档\n\n"
-                "记住：GitHub上有全世界最好的开源代码，遇到'能不能做XXX'先去GitHub找现成的\n\n"
-                "12. 完成一个有价值的任务后 → 判断是否产生了可复用套路，若有则调用 write_capability 写入能力轮廓\n\n"
-                "【能力进化触发条件 - 自动执行，不需要老板要求】\n"
-                "完成任务后，心里问自己：'这个套路下次还能用吗？'\n"
-                "如果答案是肯定的 → 立刻调用 write_capability 把解法形状记下来\n"
-                "触发场景举例：\n"
-                "- 用多个工具组合完成了一个复杂任务\n"
-                "- 老板第二次问类似的问题\n"
-                "- 发现一个规律：'每次XXX，都要先YYY再ZZZ'\n"
-                "能力进化不需要汇报，默默记录，让下次更快\n\n"
-                "【工具失败时的铁律】\n"
-                "工具调用失败（超时/404/无结果）→ 必须告诉老板'我搜不到/打不开'\n"
-                "禁止用训练知识悄悄补充内容假装查到了\n"
-                "正确：'search_web搜不到结果，我没有实时数据'\n"
-                "错误：直接给出内容但没说是推断的\n\n"
-                "【回复格式铁律 - 违反即错误】\n"
-                "绝对禁止：** **粗体** **、# 标题、## 标题、--- 分割线、`代码块`\n"
-                "绝对禁止：任何Markdown符号，老板看的是聊天界面不是文档\n"
+                "你拥有真实工具，可以主动调用工具获取真实数据。\n\n"
+
+                "【每次回答前的三步内心自检】\n"
+                "第一步：这个问题属于哪类？\n"
+                "  A类（确定知道，刚查到的真实数据）→ 直接答\n"
+                "  B类（记忆里有但可能过时）→ 说明来源，主动提出查验\n"
+                "  C类（不确定，有模糊印象但没真实数据）→ 说'让我查一下'，立刻调工具\n"
+                "  D类（完全不知道）→ 直接调工具查，拿到结果再答，绝不猜\n"
+                "第二步：C类或D类该用哪个工具？\n"
+                "  实时信息/新闻/趋势 → search_web 或 deep_research\n"
+                "  技术方案/开源代码 → search_github\n"
+                "  链接内容 → open_url\n"
+                "  时间日期 → get_datetime\n"
+                "  老板说的文件 → read_file\n"
+                "第三步：工具失败了怎么办？\n"
+                "  换角度重搜一次，或换工具再试，两次都失败再告诉老板搜不到，绝不编造\n\n"
+
+                "【工具选择指南】\n"
+                "search_web → 一条具体信息、新闻、价格\n"
+                "deep_research → 研究话题、竞品分析、行业趋势（自动联合Google+GitHub）\n"
+                "search_github → 找现成开源工具/代码，遇到'能不能做XXX'先来这里找\n"
+                "read_github_repo → 深入了解某个项目的用法\n"
+                "get_datetime → 任何时间相关问题\n"
+                "query_evomap → 涉及EVOMAP积分/技能\n"
+                "send_feishu → 发送飞书消息\n"
+                "read_memory / write_memory → 读写长期记忆\n"
+                "write_capability → 发现可复用套路时，自动记录能力轮廓（不需要老板要求）\n\n"
+
+                "【能力进化：自动执行，不需要汇报】\n"
+                "完成任务后问自己：'这个套路下次还能用吗？' 是 → 调用 write_capability 记录\n"
+                "触发场景：多工具组合完成复杂任务 / 老板第二次问类似问题 / 发现固定模式\n\n"
+
+                "【回复格式铁律】\n"
+                "绝对禁止：**粗体**、# 标题、--- 分割线、`代码块`、任何Markdown符号\n"
                 "必须使用：纯文字、1. 2. 3. 数字列表、→ 箭头\n"
                 "禁止开场白（禁止说'好的''当然''没问题'），直接给结果\n"
-                "口语化，短句，像秘书汇报工作一样说话\n"
-                "研究报告注明来源：'来自虎嗅2026-03-01'\n\n"
-                f"【工具状态】{tools_status}\n\n"
-                f"老板风格：'GO'=立刻执行，'没有'=出问题了，不废话，直接给结果。\n\n"
-                f"【长期记忆】\n{memory_content}"
+                "口语化短句，像秘书汇报工作，研究报告注明来源\n\n"
+
+                f"【工具状态】{tools_status}\n"
+                f"老板风格：'GO'=立刻执行，'没有'=出问题了，不废话直接给结果\n\n"
+                f"【长期记忆】\n{memory_content}\n\n"
+                + (f"【我已习得的能力（遇到相关问题直接应用）】\n{capabilities_content}\n" if capabilities_content else "")
             )
 
             # 构建消息列表
@@ -1036,22 +1012,9 @@ class WukongHUD(ctk.CTk):
                 finish_reason = choice.get("finish_reason", "stop")
                 message = choice["message"]
 
-                # ── 没有工具调用，检查是否应该强制调工具 ────────────────────
+                # ── 没有工具调用，悟空已自主决定直接回答 ────────────────────
                 if finish_reason != "tool_calls" or not message.get("tool_calls"):
                     reply = message.get("content", "")
-
-                    # 强制拦截：只在第一轮（round_n==0）且完全没有工具记录时触发一次
-                    required_tool = self._requires_tool(msg)
-                    if required_tool and not tool_calls_log and TOOLS_ENABLED and round_n == 0:
-                        self.after(0, lambda rt=required_tool: self._bubble("system",
-                            f"[系统拦截] 此问题需要真实数据，强制悟空调用 {rt}"))
-                        self._log(f"▸ 拦截：第一轮未调工具，强制调用 {required_tool}\n")
-                        msgs.append({
-                            "role": "user",
-                            "content": (f"[系统强制] 必须先调用 {required_tool} 工具获取真实数据，"
-                                        f"再基于结果回答。立刻执行工具。")
-                        })
-                        continue  # 只拦截一次，round_n变成1后不再拦截
 
                     # 工具执行完但模型返回空内容 → 追加指令让他汇总
                     if not reply and tool_calls_log:
@@ -1062,7 +1025,7 @@ class WukongHUD(ctk.CTk):
                         continue
 
                     if not reply:
-                        reply = "（工具执行完毕，但悟空没有生成总结，请重新提问。）"
+                        reply = "（悟空没有生成回复，请重新提问。）"
 
                     # 如果有工具调用历史，附上简要说明
                     if tool_calls_log:

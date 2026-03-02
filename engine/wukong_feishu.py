@@ -112,37 +112,48 @@ def call_ai(user_msg):
     global _current_api_key
     memory = load_memory()
 
+    # 加载已习得能力
+    capabilities_content = ""
+    try:
+        from wukong_tools import WORKSPACE_DIR as _WS_DIR
+        cap_file = os.path.join(_WS_DIR, "CAPABILITIES.md")
+        if os.path.exists(cap_file):
+            with open(cap_file, "r", encoding="utf-8") as _f:
+                capabilities_content = _f.read()[:1500]
+    except: pass
+
     sys_prompt = (
         "你是悟空，老板的私人AI生活秘书和数字分身。现在通过飞书和老板沟通。\n"
-        "你有真实工具，需要数据时先调工具，绝对不能编造结果。\n\n"
-        "【工具使用规则 - 不可违反】\n"
-        "1. 需要时间日期 → 调用 get_datetime，禁止从上下文推断时间\n"
-        "2. 涉及EVOMAP → 调用 query_evomap，不要自己编\n"
-        "3. 老板发来链接 → 调用 open_url 打开，不要猜内容\n"
-        "4. 老板让记住某事 → 调用 write_memory 实际写入\n"
-        "5. 需要发消息给别人 → 调用 send_feishu\n"
-        "6. 不知道的问题 → 调用 search_web\n"
-        "7. 老板要研究/分析/查资料某话题 → 调用 deep_research（自动联合Google+GitHub）\n"
-        "8. 遇到技术问题，找现成工具/代码 → 调用 search_github\n"
-        "9. 想了解某个开源项目 → 调用 read_github_repo\n\n"
-        "【工具选择逻辑】\n"
-        "search_web → 查一条具体信息\n"
-        "deep_research → 研究话题/竞品分析/行业趋势（自动联合Google+GitHub）\n"
-        "search_github → 找开源工具/代码/解决方案\n"
-        "read_github_repo → 了解某个项目的用法\n\n"
-        "10. 完成有价值的任务后 → 判断是否产生可复用套路，若有则调用 write_capability\n\n"
-        "【能力进化规则 - 自动执行】\n"
-        "完成任务后问自己：'这个套路下次还能用吗？'\n"
-        "是 → 调用 write_capability 记录能力轮廓，默默进化，不需汇报\n\n"
-        "【工具失败铁律】\n"
-        "工具失败/搜不到 → 必须告诉老板'我搜不到'，禁止用训练知识悄悄补内容\n\n"
-        "【回复格式铁律 - 违反即错误】\n"
-        "绝对禁止：**粗体**、# 标题、## 标题、--- 分割线、`代码块`\n"
-        "绝对禁止任何Markdown符号，只用纯文字\n"
-        "必须：1. 2. 3. 数字列表 或 → 箭头，禁止开场白，口语化短句\n"
-        "研究报告注明来源（'来自虎嗅2026-03-01'）\n\n"
+        "你拥有真实工具，可以主动调用工具获取真实数据。\n\n"
+
+        "【每次回答前的三步内心自检】\n"
+        "第一步：这个问题属于哪类？\n"
+        "  A类（确定知道，刚查到的真实数据）→ 直接答\n"
+        "  B类（记忆里有但可能过时）→ 说明来源，主动提出查验\n"
+        "  C类（不确定，有模糊印象但没真实数据）→ 说'让我查一下'，立刻调工具\n"
+        "  D类（完全不知道）→ 直接调工具查，拿到结果再答，绝不猜\n"
+        "第二步：C类或D类该用哪个工具？\n"
+        "  实时信息/新闻/趋势 → search_web 或 deep_research\n"
+        "  技术方案/开源代码 → search_github\n"
+        "  链接内容 → open_url\n"
+        "  时间日期 → get_datetime\n"
+        "第三步：工具失败了怎么办？\n"
+        "  换角度重搜一次，或换工具再试，两次都失败再告诉老板，绝不编造\n\n"
+
+        "【工具选择指南】\n"
+        "search_web → 具体信息、新闻、价格\n"
+        "deep_research → 研究话题/竞品/行业趋势（自动联合Google+GitHub）\n"
+        "search_github → 找现成开源工具/代码\n"
+        "get_datetime → 时间相关问题\n"
+        "write_capability → 发现可复用套路时自动记录（不需老板要求）\n\n"
+
+        "【回复格式铁律】\n"
+        "绝对禁止：**粗体**、# 标题、--- 分割线、`代码块`、任何Markdown符号\n"
+        "必须：纯文字、1. 2. 3. 列表或 → 箭头，禁止开场白，口语化短句\n\n"
+
         f"【长期记忆】\n{memory}\n\n"
-        "老板说'GO'=立刻执行，'没有'=出问题了，'好的'=继续。"
+        + (f"【我已习得的能力（遇到相关问题直接应用）】\n{capabilities_content}\n" if capabilities_content else "")
+        + "老板说'GO'=立刻执行，'没有'=出问题了，不废话直接给结果。"
     )
 
     msgs = [{"role": "system", "content": sys_prompt}]
@@ -179,33 +190,9 @@ def call_ai(user_msg):
             message = choice["message"]
             finish_reason = choice.get("finish_reason", "stop")
 
-            # 没有工具调用，检查是否需要强制调工具
+            # 没有工具调用，悟空已自主判断直接回答
             if finish_reason != "tool_calls" or not message.get("tool_calls"):
                 reply = message.get("content", "处理完成")
-
-                # 强制拦截：涉及查询/搜索类但没调工具
-                m = user_msg.lower()
-                needs_tool = None
-                if any(x in user_msg for x in ["http://", "https://"]):
-                    needs_tool = "open_url"
-                elif any(k in reply_text for k in ["现在几点", "今天几号", "几点了", "现在时间", "当前时间"]):
-                    needs_tool = "get_datetime"
-                elif any(k in reply_text for k in ["帮我打开", "读取文件", "打开文件"]):
-                    needs_tool = "read_file"
-                elif any(k in reply_text for k in [
-                    "帮我搜", "帮我查", "帮我找", "搜一下", "查一下",
-                    "找一下", "搜索一下", "去搜", "上网查",
-                    "最新新闻", "最新消息", "最新动态", "最新趋势",
-                    "搜资料", "查资料", "找资料",
-                ]):
-                    needs_tool = "search_web"
-
-                if needs_tool and not tool_results_log and TOOLS_ENABLED and round_n == 0:
-                    msgs.append({
-                        "role": "user",
-                        "content": f"[系统强制] 必须先调用 {needs_tool} 获取真实数据再回答。立刻执行。"
-                    })
-                    continue  # 只拦截一次
 
                 save_history("user", user_msg)
                 save_history("assistant", reply)

@@ -207,92 +207,142 @@ def call_ai(messages: list, task_desc: str = "") -> str:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 三大方向自学任务
+# 自由探索自学引擎（以老板信号为驱动）
 # ══════════════════════════════════════════════════════════════════════════════
 
-def learn_secretary():
-    """秘书大师方向：整理记忆、优化工作流程、提炼老板偏好"""
-    log("开始自学 → 秘书大师方向")
+def _load_capabilities() -> str:
+    """读取已习得能力库"""
+    try:
+        cap_file = os.path.join(WORKSPACE_DIR, "CAPABILITIES.md")
+        if os.path.exists(cap_file):
+            with open(cap_file, "r", encoding="utf-8") as f:
+                return f.read()[:2000]
+    except:
+        pass
+    return ""
 
-    recent = load_recent_chat(30)
-    chat_summary = ""
-    if recent:
-        lines = []
-        for m in recent[-10:]:
-            role = "老板" if m.get("role") == "user" else "悟空"
-            lines.append(f"{role}：{m.get('content','')[:80]}")
-        chat_summary = "\n".join(lines)
 
-    prompt = f"""你现在处于自主学习模式，方向：秘书大师。
+def _load_last_reflection(state: dict) -> str:
+    """读取上次反思结论"""
+    return state.get("last_reflection", "")
 
-任务：分析最近10条对话，自主完成以下工作：
-1. 提炼老板的工作习惯和偏好（有什么新发现就写，没有就跳过）
-2. 检查自己的回复质量（有没有废话、有没有格式问题）
-3. 发现任何需要改进的地方，调用 write_memory 工具记录下来
-4. 给自己打一个自评分（0-10分）并说明原因
 
-最近对话记录：
-{chat_summary if chat_summary else "（暂无对话记录）"}
+def _save_reflection(state: dict, reflection: str):
+    """保存本次反思结论到状态"""
+    state["last_reflection"] = reflection
+    state["last_reflection_time"] = datetime.now().isoformat()
+    save_agent_state(state)
 
-直接开始工作，不需要解释你在做什么。完成后给我一个简短的学习总结。"""
 
-    result = call_ai([{"role": "user", "content": prompt}], "秘书自学")
+def learn_free_explore(state: dict):
+    """
+    自由探索自学引擎。
+    以老板信号为第一驱动，悟空自己诊断学什么、用什么工具、深入到什么程度。
+    学完后写反思，下次自学读上次反思，形成真正的连续学习闭环。
+    """
+    log("开始自由探索自学...")
+
+    # 读取老板最近的对话（最高优先级信号）
+    recent = load_recent_chat(40)
+    boss_lines = []
+    wukong_lines = []
+    for m in recent[-20:]:
+        role = "老板" if m.get("role") == "user" else "悟空"
+        content = m.get("content", "")[:100]
+        if m.get("role") == "user":
+            boss_lines.append(content)
+        else:
+            wukong_lines.append(content)
+
+    boss_context = "\n".join(f"- {l}" for l in boss_lines) if boss_lines else "（暂无）"
+    wukong_context = "\n".join(f"- {l}" for l in wukong_lines[-5:]) if wukong_lines else "（暂无）"
+
+    # 读取今日学习记录
+    today = datetime.now().strftime("%Y-%m-%d")
+    mem_dir = os.path.join(WORKSPACE_DIR, "memory")
+    today_log = ""
+    try:
+        f_path = os.path.join(mem_dir, f"{today}.md")
+        if os.path.exists(f_path):
+            with open(f_path, "r", encoding="utf-8") as f:
+                today_log = f.read()[:2000]
+    except:
+        pass
+
+    # 读取上次反思结论（连续学习的起点）
+    last_reflection = _load_last_reflection(state)
+
+    # 读取已习得能力库
+    capabilities = _load_capabilities()
+
+    prompt = f"""你现在处于自主学习模式。没有固定科目，你要自己决定这次学什么。
+
+=== 老板最近说了什么（最高优先级信号）===
+{boss_context}
+
+=== 你最近的回答 ===
+{wukong_context}
+
+=== 今天已经学了什么 ===
+{today_log if today_log else "（今天还没有学习记录）"}
+
+=== 上次自学的反思结论 ===
+{last_reflection if last_reflection else "（这是第一次，没有上次反思）"}
+
+=== 我已习得的能力库 ===
+{capabilities if capabilities else "（暂无）"}
+
+---
+
+你的任务分三步：
+
+第一步：诊断（先分析，再行动）
+回答以下四个问题：
+1. 老板最近交代了什么任务，我做完了吗？没完成的列出来
+2. 老板最近问了什么，我没答好或者是猜的？（诚实承认）
+3. 老板反复提到什么话题？这说明他最关心什么？
+4. 我的能力库里有什么空白，是老板可能需要但我还不会的？
+
+第二步：执行（根据诊断结果主动行动）
+基于上面的诊断，选择最重要的1-2个方向，用工具深入探索：
+- 如果有未完成任务 → 推进它，把结果写入记忆，等老板问起时直接给出
+- 如果有没答好的问题 → 现在去查清楚，补上漏洞
+- 如果发现老板关心的话题 → 主动深入研究，搜索最新信息
+- 自己决定调哪些工具，不要只调一个就结束
+
+第三步：反思（学完后必须写）
+用一段话总结：
+1. 这次学到了什么新东西？（具体说，不能说"有所收获"这种废话）
+2. 下次自学应该继续这个方向还是换方向？为什么？
+3. 有没有发现新的可复用套路？有就调用 write_capability 记录
+4. 给自己评分 0-10，并说明原因
+
+反思结论写完后，在最后单独一行写：
+[反思结论] <你的反思总结，一两句话>
+
+直接开始，先诊断，再执行，最后反思。"""
+
+    result = call_ai([{"role": "user", "content": prompt}], "自由探索自学")
+
     if result:
         write_learn_result("secretary", result)
-        log(f"秘书自学完成：{result[:100]}")
+        log(f"自由探索自学完成：{result[:150]}")
+
+        # 提取反思结论，存入状态供下次使用
+        reflection = ""
+        for line in result.split("\n"):
+            if line.strip().startswith("[反思结论]"):
+                reflection = line.replace("[反思结论]", "").strip()
+                break
+        if reflection:
+            _save_reflection(state, reflection)
+            log(f"反思结论已保存：{reflection[:80]}")
+
     return result
 
 
-def learn_avatar():
-    """沟通分身方向：分析老板说话风格，积累模仿素材"""
-    log("开始自学 → 沟通分身方向")
-
-    recent = load_recent_chat(50)
-    user_msgs = [m["content"] for m in recent if m.get("role") == "user"]
-
-    prompt = f"""你现在处于自主学习模式，方向：沟通分身。
-
-任务：研究老板的说话风格，完成以下工作：
-1. 分析老板的用词习惯（短句/长句？口语化程度？惯用词？）
-2. 提炼3-5个老板的典型表达方式，写进记忆
-3. 练习：用老板风格改写一句话（随便选一个你觉得有意思的场景）
-4. 评估你模仿老板说话的准确度（0-10分）
-
-老板说过的话（最近）：
-{chr(10).join(f'- {m[:60]}' for m in user_msgs[-15:]) if user_msgs else '（暂无数据）'}
-
-直接开始，完成后给简短总结。"""
-
-    result = call_ai([{"role": "user", "content": prompt}], "分身自学")
-    if result:
-        write_learn_result("avatar", result)
-        log(f"分身自学完成：{result[:100]}")
-    return result
-
-
-def learn_content():
-    """内容执行方向：搜索行业资讯，练习文案改写"""
-    log("开始自学 → 内容执行方向")
-
-    prompt = """你现在处于自主学习模式，方向：内容执行。
-
-任务：主动学习内容创作技能，完成以下工作：
-1. 调用 search_web 搜索一个你认为老板可能关心的话题（自己选，比如AI行业动态、商业趋势等）
-2. 把搜索结果改写成老板风格的简短文案（100字以内，口语化）
-3. 思考：这个内容老板会不会感兴趣？为什么？
-4. 把有价值的内容写进记忆
-
-直接开始，先搜索，再改写，最后总结。"""
-
-    result = call_ai([{"role": "user", "content": prompt}], "内容自学")
-    if result:
-        write_learn_result("content", result)
-        log(f"内容自学完成：{result[:100]}")
-    return result
-
-
-def learn_self_review():
-    """每天一次深度自我检查：我哪里还不够好？"""
+def learn_self_review(state: dict = None):
+    """每天一次深度自我检查"""
     log("开始自主深度复盘")
 
     today = datetime.now().strftime("%Y-%m-%d")
@@ -306,24 +356,35 @@ def learn_self_review():
     except:
         pass
 
+    capabilities = _load_capabilities()
+    last_reflection = _load_last_reflection(state) if state else ""
+
     prompt = f"""你现在处于自主深度复盘模式。
 
 今天的学习记录：
-{today_log if today_log else '（今天还没有学习记录）'}
+{today_log if today_log else "（今天还没有学习记录）"}
+
+上次反思结论：
+{last_reflection if last_reflection else "（无）"}
+
+已习得能力库摘要：
+{capabilities[:500] if capabilities else "（无）"}
 
 任务：
-1. 今天学了什么？真的学到东西了吗？
-2. 我在哪个方向最弱？为什么？
-3. 明天重点练什么？（具体一点，不能说"继续努力"这种废话）
-4. 有没有发现自己之前说错了或者做错了的地方？主动写出来
-5. 调用 write_memory 把复盘结论写进记忆，标题用"每日复盘"
+1. 今天整体表现怎么样？有没有真正解决了老板的问题？
+2. 有没有哪次回答是猜的、不确定的？要主动承认
+3. 明天最重要的一件事是什么？（具体，不能是"继续努力"）
+4. 能力库里有没有需要补充或升级的？
+5. 调用 write_memory 把复盘结论写进记忆
 
-直接开始复盘，不要废话。"""
+直接开始，不要废话。"""
 
     result = call_ai([{"role": "user", "content": prompt}], "深度复盘")
     if result:
         write_learn_result("secretary", f"每日复盘：\n{result}")
         log(f"深度复盘完成：{result[:100]}")
+        if state:
+            _save_reflection(state, f"复盘：{result[:100]}")
     return result
 
 
@@ -437,47 +498,25 @@ def do_heartbeat():
 # 自主循环主引擎
 # ══════════════════════════════════════════════════════════════════════════════
 
-LEARN_TASKS = [
-    ("secretary", learn_secretary),
-    ("avatar",    learn_avatar),
-    ("content",   learn_content),
-]
-
-
-def pick_next_direction(state: dict) -> tuple:
-    """根据上次学习时间，选最久没练的方向"""
-    now = time.time()
-    last = state.get("last_learn", {})
-    # 找最久没学的方向
-    oldest_dir = min(LEARN_TASKS, key=lambda x: last.get(x[0], 0))
-    return oldest_dir
-
-
 def run_learning_cycle(state: dict):
-    """执行一轮自学"""
-    direction, task_fn = pick_next_direction(state)
-    dir_names = {"secretary": "秘书大师", "avatar": "沟通分身", "content": "内容执行"}
-    log(f"自学循环开始 → {dir_names[direction]}")
+    """执行一轮自由探索自学"""
+    log("自学循环开始 → 自由探索模式（以老板信号为驱动）")
 
     with _learning_lock:
         try:
-            task_fn()
-            state["last_learn"][direction] = time.time()
-            state["learn_count"][direction] = state["learn_count"].get(direction, 0) + 1
+            learn_free_explore(state)
+            state["last_learn"] = state.get("last_learn", {})
+            state["last_learn"]["free_explore"] = time.time()
             state["total_learns"] = state.get("total_learns", 0) + 1
             save_agent_state(state)
         except Exception as e:
             log(f"自学任务出错: {e}", "ERROR")
 
-    # 每学完5次，做一次深度复盘
-    if state.get("total_learns", 0) % 5 == 0 and state.get("total_learns", 0) > 0:
-        log("触发深度复盘（每5次自学一次）")
-        learn_self_review()
-
-    # 每学完8次，运行一次能力进化引擎（提炼可复用能力）
-    if state.get("total_learns", 0) % 8 == 0 and state.get("total_learns", 0) > 0:
-        log("触发能力进化引擎（每8次自学一次）")
-        evolve_capabilities()
+    # 每学完6次，做一次深度复盘
+    total = state.get("total_learns", 0)
+    if total % 6 == 0 and total > 0:
+        log("触发深度复盘（每6次自学一次）")
+        learn_self_review(state)
 
 
 def main_loop():
@@ -530,7 +569,7 @@ def main_loop():
         hour = datetime.now().hour
         if hour == 3 and last_review_date != today:
             log("触发每日深度复盘（凌晨3点）")
-            learn_self_review()
+            learn_self_review(state)
             last_review_date = today
 
         # 5. 每天凌晨4点，运行能力进化引擎
