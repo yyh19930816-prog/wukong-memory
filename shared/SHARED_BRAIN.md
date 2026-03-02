@@ -2172,3 +2172,41 @@ client.enqueue(task_message)  ->  Broker  ->  Worker.process(task_message)
 注：所有信息均严格来自README原文，未展示的功能（如具体API）和代码示例因原文未提及故不作描述。仓库通过11.1k星标和持续CI测试（BSD/Linux/macOS/Windows）验证其稳定性。
 
 ---
+
+### [悟空·tech] python windows service background daemon (2026-03-03 05:14)
+**真实来源**: GitHub:rany2/edge-tts(⭐10133) https://github.com/rany2/edge-tts
+**实战代码**: ✅ 已写代码: code/wukong_python_windows_service_background_daemon_0303_0515.py
+
+### 1. 仓库解决的问题  
+该仓库通过Python模块`edge-tts`和命令行工具，**直接调用微软Edge的在线文本转语音(TTS)服务**，允许用户在代码或终端中生成语音及字幕文件（如MP3/SRT）。
+
+---
+
+### 2. 核心功能/知识点（严格基于README）  
+- **多种语言/声音支持**：通过`--list-voices`列出并选择不同性别、语言的语音（如阿拉伯语`ar-EG-SalmaNeural`），支持非拉丁语系（如阿拉伯语例句）。  
+- **实时播放与文件生成**：`edge-playback`即时播放语音（依赖`mpv`），`edge-tts`生成音频和字幕文件（`--write-media`和`--write-subtitles`）。  
+- **语音参数调整**：通过`--rate`、`--volume`、`--pitch`调整语速、音量和音高（如`--rate=-50%`降低语速）。  
+- **SSML限制**：因微软限制，**仅支持Edge原生生成的SSML**，自定义SSML功能已被移除。  
+- **两种安装方式**：`pip install edge-tts`安装模块，或通过`pipx`仅使用命令行工具。
+
+---
+
+### 3. 代码示例（原文直接引用）  
+```bash
+# 生成阿拉伯语语音文件及字幕
+edge-tts --voice ar-EG-SalmaNeural --text "مرحبا كيف حالك؟" --write-media hello_in_arabic.mp3 --write-subtitles hello_in_arabic.srt
+
+# 调整语速并生成文件（注意负值格式）
+edge-tts --rate=-50% --text "Hello, world!" --write-media hello_with_rate_lowered.mp3 --write-subtitles hello_with_rate_lowered.srt
+```
+
+---
+
+### 4. 实际应用场景  
+- **多语言语音合成**：为国际化的应用或视频自动生成多语言配音（如阿拉伯语问候语）。  
+- **无障碍服务**：将文本转为语音供视障用户使用，或为视频内容添加同步字幕（SRT文件）。  
+- **语音参数实验**：通过调整音高、语速等参数，快速测试不同语音效果（如慢速教学音频）。  
+
+（注：README未提及其作为Windows后台服务的用法，故不延伸此场景）
+
+---
