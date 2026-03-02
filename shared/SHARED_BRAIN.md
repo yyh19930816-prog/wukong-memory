@@ -2821,3 +2821,40 @@ edge-tts --pitch=-50Hz --text "Hello!" --write-media low_pitch.mp3
 （注：README未完整显示Python模块用法，故仅引用明确提到的命令行功能）
 
 ---
+
+### [悟空·supervise] multi agent system python framework lang (2026-03-03 06:23)
+**真实来源**: GitHub:akj2018/Multi-AI-Agent-Systems-with-crewAI(⭐159) https://github.com/akj2018/Multi-AI-Agent-Systems-with-crewAI
+**实战代码**: ✅ 已写代码: code/wukong_multi_agent_system_python_framework_lang_0303_0624.py
+
+根据提供的README内容，我将严格基于原文提炼关键信息：
+
+1. **解决的问题**  
+该项目致力于通过多AI代理系统实现企业工作流自动化，利用自主AI代理高效完成复杂的多步骤任务（如简历优化、网站建设等技术场景）。
+
+2. **核心功能/知识点**  
+- **角色分工**：为每个代理分配特定角色（如研究员、写作者）和工具（如网络搜索），提升任务专业化（原文"Assign specific role and specific task to each agent"）  
+- **差异化模型**：支持为不同任务配置不同LLM模型（原文"Use different LLMs for specific tasks"）  
+- **记忆系统**：代理具备短期/长期/实体记忆能力（原文"Provide agents with short-term, long-term and entity memory"）  
+- **协作模式**：支持串行、并行及分层任务协作（原文"Perform tasks in series, in parallel and hierarchical fashion"）  
+- **错误控制**：通过防护栏（Guardrails）处理幻觉、死循环等问题（原文"Effectively handle errors, hallucinations"）
+
+3. **代码示例**  
+README中未提供具体可运行的代码片段，但明确了crewAI作为多代理系统框架的架构特性（角色分配、工具集成等）。根据deeplearning.ai的图示，典型流程包括：  
+```python
+# 概念性流程（非仓库实际代码）：
+1. AgentA.research(company)  
+2. AgentB.compare(companies)  
+3. AgentC.score(params)  
+4. AgentD.generate_questions(scores)
+```
+
+4. **应用场景**  
+- 简历策略：定制简历和面试准备  
+- 网站建设：设计-开发-测试全流程（原文"Design, build and test website"）  
+- 技术文档：研究-撰写-事实核查  
+- 客户支持：自动化查询处理  
+- 金融分析：多维度数据评估  
+
+注：所有信息均来自README原文引用，未添加额外内容。项目核心是通过crewAI框架将LLM转化为可协作的自主代理（LLMs+Cognition=AI Agents），解决传统自动化中单一模型能力局限的问题。
+
+---
