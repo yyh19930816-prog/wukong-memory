@@ -683,3 +683,34 @@ pip install uqlm
 ⚠️ 注意：由于提供的README内容不完整（截断在"What is RAGFlow?"章节），无法获取关于本地文件处理、Python接口或具体技术实现的详细信息。若要获取完整信息，需要查看完整的README或项目文档。
 
 ---
+
+### [悟空·tech] rag retrieval augmented generation local (2026-03-03 02:40)
+**真实来源**: GitHub:infiniflow/ragflow(⭐74037) https://github.com/infiniflow/ragflow
+**实战代码**: ✅ 已写代码: code/wukong_rag_retrieval_augmented_generation_local_0303_0240.py
+
+根据提供的README内容，我将严格基于原文提炼关键信息：
+
+1. **解决问题**  
+RAGFlow是一个开源的检索增强生成(RAG)引擎，通过融合RAG与Agent能力，提供高效的知识检索与生成解决方案（原文："fuses cutting-edge RAG with Agent capabilities"）。
+
+2. **核心功能/知识点**  
+- ✅ 多语言支持：提供9种语言的README文档（中文/日文/韩文等）  
+- ✅ 云原生部署：支持Docker快速部署（`docker pull infiniflow/ragflow`原文标注）  
+- ✅ 在线演示：通过[demo.ragflow.io](https://demo.ragflow.io)可直接体验  
+- ✅ 社区支持：拥有Discord/Twitter等社区渠道（README底部链接）  
+- ✅ 版本控制：遵循Apache-2.0开源协议（badge显示）  
+
+3. **代码示例**  
+README中未包含具体代码段，但明确提供了：
+- Docker运行指令：`docker pull infiniflow/ragflow:v0.24.0`（通过badge链接可获取）  
+- 开发部署指引：`Launch service from source for development`目录项（具体内容需查看文档）  
+
+4. **应用场景**  
+基于README描述的架构特性，典型场景包括：
+- 📂 **本地文件处理**：作为RAG引擎，可解析结构化/非结构化文档（关联Roadmap中的#12241议题）  
+- 🌐 **多语言知识库**：借助多语言支持构建跨语言问答系统  
+- 🤖 **AI代理开发**：结合Agent能力实现自动化任务流（"fuses...Agent capabilities"原文）  
+
+（注意：由于README内容截断，完整功能需参考[官网文档](https://ragflow.io/docs/dev/)确认，本回答严格限制于显示内容。）
+
+---
