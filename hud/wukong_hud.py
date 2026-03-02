@@ -1031,8 +1031,6 @@ class WukongHUD(ctk.CTk):
                 # ── 没有工具调用，检查是否应该强制调工具 ────────────────────
                 if finish_reason != "tool_calls" or not message.get("tool_calls"):
                     reply = message.get("content", "")
-                    if not reply:
-                        reply = "悟空处理完成，但没有返回内容。"
 
                     # 强制拦截：只在第一轮（round_n==0）且完全没有工具记录时触发一次
                     required_tool = self._requires_tool(msg)
@@ -1046,6 +1044,17 @@ class WukongHUD(ctk.CTk):
                                         f"再基于结果回答。立刻执行工具。")
                         })
                         continue  # 只拦截一次，round_n变成1后不再拦截
+
+                    # 工具执行完但模型返回空内容 → 追加指令让他汇总
+                    if not reply and tool_calls_log:
+                        msgs.append({
+                            "role": "user",
+                            "content": "请根据上面的工具结果，用中文回答用户的问题。"
+                        })
+                        continue
+
+                    if not reply:
+                        reply = "（工具执行完毕，但悟空没有生成总结，请重新提问。）"
 
                     # 如果有工具调用历史，附上简要说明
                     if tool_calls_log:
