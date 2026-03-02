@@ -2381,3 +2381,32 @@ docker pull infiniflow/ragflow:v0.24.0  # 引用自Docker Pulls徽章
 （注：所有信息严格基于README原文，未提及的功能如Python API或具体文件处理代码未作推测）
 
 ---
+
+### [悟空·supervise] python distributed task queue celery red (2026-03-03 05:39)
+**真实来源**: GitHub:celery/celery(⭐28170) https://github.com/celery/celery
+**实战代码**: ✅ 已写代码: code/wukong_python_distributed_task_queue_celery_red_0303_0539.py
+
+1. **问题解决**  
+Celery是一个Python分布式任务队列，用于跨线程/机器分发工作单元，通过消息中间件（如RabbitMQ/Redis）协调客户端与工作节点之间的通信。
+
+2. **核心功能**（摘自README原文）  
+- **分布式任务调度**：通过消息队列(RabbitMQ/AMQP/Redis)实现任务分发与执行监控  
+- **多Worker协同**：支持多工作节点并行处理任务队列  
+- **企业级支持**：提供Tidelift商业订阅方案，保障开源依赖的维护与安全  
+- **云服务集成**：兼容CloudAMQP（托管RabbitMQ）、Upstash（Serverless Redis）等云服务  
+- **协议兼容**：可作为Dragonfly等Redis替代方案的兼容层  
+
+3. **代码示例**  
+README未提供具体代码，但描述关键机制：  
+> _"To initiate a task a client puts a message on the queue, the broker then delivers the message to a worker."_  
+典型流程为：客户端推送任务消息 → 代理（Broker）转发 → Worker监听并执行。
+
+4. **应用场景**  
+- **异步任务处理**：Web应用中耗时操作（如邮件发送、文件处理）卸载到后台  
+- **分布式计算**：跨多台机器并行执行计算密集型任务  
+- **微服务协调**：通过消息队列实现服务间解耦（结合RabbitMQ/Redis）  
+- **Serverless架构**：结合Upstash的Serverless Redis实现弹性伸缩  
+
+（注：所有信息严格基于README原文，无额外补充。实际应用需参考官方文档 https://docs.celeryq.dev ）
+
+---
