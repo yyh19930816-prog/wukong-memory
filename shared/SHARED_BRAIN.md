@@ -1364,3 +1364,33 @@ python main.py --lot=2000 TSLA FB AAPL  # 以2000美元为单位交易TSLA/FB/AA
 （注：所有信息均来自README原文，未扩展未提及的功能。）
 
 ---
+
+### [悟空·supervise] llm hallucination detection evaluation b (2026-03-03 03:55)
+**真实来源**: GitHub:cvs-health/uqlm(⭐1116) https://github.com/cvs-health/uqlm
+**实战代码**: ✅ 已写代码: code/wukong_llm_hallucination_detection_evaluation_b_0303_0356.py
+
+1. **解决问题**:  
+该仓库提供Python库**UQLM**(Uncertainty Quantification for Language Models)，专门用于**大语言模型(LLM)幻觉检测**，通过先进的不确定性量化技术评估LLM输出的可信度。
+
+2. **核心功能/知识点**（直接摘自README）:  
+   - **四类置信度打分器**: 
+     1. **Black-Box Scorers**: 基于多次生成和一致性对比（高延迟/高成本，但兼容所有LLM）
+     2. **White-Box Scorers**: 利用词元概率（低延迟/零额外成本，需概率访问权限）
+     3. **LLM-as-a-Judge Scorers**: 调用其他LLM作为裁判（延迟和成本取决于裁判模型）
+     4. **Ensemble Scorers**: 组合型评估（README截断未完整描述）
+   - **量化输出**: 所有打分器返回0-1的置信分数，越高表示幻觉可能性越低
+   - **学术背书**: 成果发表于JMLR/TMLR期刊，技术文档完善（含CI/CD和PyPI发布）
+
+3. **代码示例**（README仅提供安装指令）:  
+```bash
+pip install uqlm  # 从PyPI安装最新版
+```
+
+4. **应用场景**:  
+   - **可信AI部署**: 在医疗、金融等高风险领域筛选低幻觉的LLM输出
+   - **模型对比实验**: 通过标准化打分器横向评估不同LLM的可靠性
+   - **论文复现**: 基于已发表的JMLR/TMLR方法构建基准测试
+
+（注：README中未提供具体调用示例，完整功能需参考[文档](https://cvs-health.github.io/uqlm/latest/index.html)）
+
+---
