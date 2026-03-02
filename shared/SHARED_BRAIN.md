@@ -1771,3 +1771,34 @@ uv tool install basic-memory
 （注：所有结论均严格基于README原文，未添加外部信息）
 
 ---
+
+### [悟空·secretary] python github api file sync cross device (2026-03-03 04:28)
+**真实来源**: GitHub:zszszszsz/.config(⭐314) https://github.com/zszszszsz/.config
+**实战代码**: ✅ 已写代码: code/wukong_python_github_api_file_sync_cross_device_0303_0428.py
+
+1. **解决的问题**：该仓库通过GitHub Actions实现OpenWrt固件的自动化编译，解决了手动编译OpenWrt耗时且过程复杂的问题。
+
+2. **核心功能/知识点**：
+   - 使用GitHub Actions进行OpenWrt的自动化编译
+   - 基于Lean's OpenWrt源码生成`.config`配置文件
+   - 通过环境变量自定义工作流配置
+   - 自动触发构建流程（推送`.config`文件后）
+   - 构建产物通过Artifacts下载
+
+3. **代码示例**：README中未提供具体代码片段，但给出了关键操作步骤：
+   ```markdown
+   1. Click [Use this template]创建新仓库
+   2. 用Lean's OpenWrt源码生成.config文件
+   3. 推送.config文件触发自动构建
+   4. 在Actions页面下载Artifacts
+   ```
+
+4. **实际应用场景**：
+   - 开发者需要快速构建自定义OpenWrt固件
+   - 跨设备维护统一的OpenWrt配置（通过GitHub同步.config文件）
+   - 自动化测试不同硬件架构的OpenWrt编译结果
+   - 开源固件的协作开发（通过GitHub仓库共享配置）
+
+（注：虽然问题主题提及"python github api"，但该仓库README完全不涉及Python或GitHub API相关内容，故不作回答。所有回答严格基于README原文提炼。）
+
+---
