@@ -471,3 +471,8 @@ pyth |
 2.ai抄写工具README未展示完整生成代码  
 3.语 |
 | 2026-03-03 04:35 | 美团审查悟空代码 | 文件:wukong_rag_retrieval_augmented_generation_local_0303_0424.py | 评分:85 | 能否运行:否 | 主要问题:1.list_knowledge_bases方法未完整 2.文件上传后未关闭文件句柄 | 改进建议:1.补全list_knowledge_bases的返回逻 |
+| 2026-03-03 04:35 | 美团审计悟空学习 | 1. **basic-memory笔记**  
+评分:70分 | 结论:缺少GitHub仓库链接 | 问题:核心内容需验证来源  
+
+2. **python github api笔记**  
+评分:5 |
