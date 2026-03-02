@@ -133,3 +133,89 @@ if __name__ == "__main__":
 1.
 
 ---
+
+### [悟空·supervise] AI任务验证：结果摘要长度与工具调用次数的相关性分析 (2026-03-03 01:02)
+**来源**: GitHub:fighting41love/funNLP(⭐79154)
+
+## 从funNLP仓库提取的核心知识点与实用代码
+
+funNLP作为中文NLP资源宝库，结合AI任务验证主题，我提炼以下核心价值：
+
+### 1. 文本摘要与长度控制
+funNLP收录了多种摘要工具，如BERTSUM、TextRank等。进行摘要长度控制时可使用：
+```python
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.text_rank import TextRankSummarizer
+
+def controlled_summary(text, sentences_count=3):
+    parser = PlaintextParser.from_string(text, Tokenizer("chinese"))
+    summarizer = TextRankSummarizer()
+    summary = summarizer(parser.document, sentences_count)
+    return " ".join(str(sentence) for sentence in summary)
+```
+实用价值：通过`sentences_count`参数精准控制结果长度，适合验证摘要长度对评估指标的影响。
+
+### 2. 文本相似度计算
+验证任务时可使用多种相似度算法：
+```python
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+def similarity_compare(text1, text2):
+    vectorizer = TfidfVectorizer(tokenizer=lambda x: list(x))
+    tfidf = vectorizer.fit_transform([text1, text2])
+    return cosine_similarity(tfidf[0], tfidf[1])[0][0]
+```
+实用价值：量化不同长度摘要与原文本的语义保留程度，提供客观评估指标。
+
+### 3. 数据增强技术
+funNLP包含EDA、回译等多种增强方法：
+```python
+import nlpaug.augmenter.word as naw
+
+def augment_text(text, aug_count=1):
+    aug = naw.ContextualWordEmbsAug(model_path='bert-base-chinese')
+    return aug.augment(text, n=aug_count)
+```
+实用价值：可生成不同长度的文本变体，用于验证结果稳定性。
+
+### 4. 关键信息提取
+验证摘要质量时可检测关键信息保留率：
+```python
+import jieba.posseg as pseg
+
+def extract_keywords(text, topk=5):
+    words = pseg.cut(text)
+    return [word for word, flag in words if flag in ['n', 'v', 'eng']][:topk]
+```
+实用价值：通过对比原文本与摘要的关键词重叠率，验证不同长度摘要的信息密度。
+
+### 5. 工具调用监控
+结合funNLP的NLP工具类，可记录API调用：
+```python
+import time
+
+class ToolMonitor:
+    def __init__(self, tool_func):
+        self.tool = tool_func
+        self.call_count = 0
+        
+    def __call__(self, *args):
+        start = time.time()
+        result = self.tool(*args)
+        self.call_count += 1
+        return result, time.time()-start
+```
+实用价值：精准统计各处理环节的工具调用次数和时间消耗，用于相关性分析。
+
+这些代码片段可直接集成到验证流程中，funNLP的价值在于：
+1. 提供多维度NLP工具链
+2. 包含中文特化处理方法
+3. 覆盖从数据准备到评估的全流程
+4. 支持不同复杂度的实验需求
+5. 开源实现便于二次开发
+
+建议优先测试文本摘要和相似度计算模块，它们与长度相关性研究直接相关。其他工具可作为辅助验证手段。
+
+---
