@@ -157,7 +157,7 @@ def call_ai(user_msg):
     # Function Calling 循环（最多5轮）
     max_rounds = 5
     tool_results_log = []  # 记录已调用的工具，用于强制拦截检查
-    for _ in range(max_rounds):
+    for round_n in range(max_rounds):
         req_body = {"model": AI_MODEL, "messages": msgs, "stream": False}
         if TOOLS_ENABLED:
             req_body["tools"] = TOOLS_SCHEMA
@@ -195,13 +195,12 @@ def call_ai(user_msg):
                 elif any(k in m for k in search_kw):
                     needs_tool = "search_web"
 
-                if needs_tool and not tool_results_log and TOOLS_ENABLED:
+                if needs_tool and not tool_results_log and TOOLS_ENABLED and round_n == 0:
                     msgs.append({
                         "role": "user",
-                        "content": f"[系统强制] 你没有调用工具就回答了，这不允许。"
-                                   f"必须先调用 {needs_tool} 获取真实数据再回答。立刻执行工具。"
+                        "content": f"[系统强制] 必须先调用 {needs_tool} 获取真实数据再回答。立刻执行。"
                     })
-                    continue  # 强制重跑
+                    continue  # 只拦截一次
 
                 save_history("user", user_msg)
                 save_history("assistant", reply)

@@ -1034,21 +1034,18 @@ class WukongHUD(ctk.CTk):
                     if not reply:
                         reply = "悟空处理完成，但没有返回内容。"
 
-                    # 强制拦截：如果这个问题必须用工具但悟空没调，打回去
+                    # 强制拦截：只在第一轮（round_n==0）且完全没有工具记录时触发一次
                     required_tool = self._requires_tool(msg)
-                    if required_tool and not tool_calls_log and TOOLS_ENABLED:
-                        # 悟空没调工具就想直接回答 → 强制要求他去调
-                        self.after(0, lambda: self._bubble("system",
-                            f"[系统拦截] 检测到此问题需要真实数据，强制要求悟空调用 {required_tool} 工具"))
-                        self._log(f"▸ 拦截：悟空试图不调工具回答，强制要求调用 {required_tool}\n")
-                        # 注入强制指令到消息里，让他重新来
+                    if required_tool and not tool_calls_log and TOOLS_ENABLED and round_n == 0:
+                        self.after(0, lambda rt=required_tool: self._bubble("system",
+                            f"[系统拦截] 此问题需要真实数据，强制悟空调用 {rt}"))
+                        self._log(f"▸ 拦截：第一轮未调工具，强制调用 {required_tool}\n")
                         msgs.append({
                             "role": "user",
-                            "content": f"[系统强制指令] 你刚才没有调用任何工具就回答了。这是不允许的。"
-                                       f"这个问题必须先调用 {required_tool} 工具获取真实数据，"
-                                       f"然后基于工具返回的真实结果来回答。立刻调用工具，不许再空口说话。"
+                            "content": (f"[系统强制] 必须先调用 {required_tool} 工具获取真实数据，"
+                                        f"再基于结果回答。立刻执行工具。")
                         })
-                        continue  # 继续下一轮，强制他调工具
+                        continue  # 只拦截一次，round_n变成1后不再拦截
 
                     # 如果有工具调用历史，附上简要说明
                     if tool_calls_log:
