@@ -509,3 +509,4 @@ pyth |
 
 改进建议: |
 | 2026-03-03 04:47 | 悟空审计美团学习 | 评分:95分 | 结论:内容真实有效 | 问题:第一条VOSK笔记中的"典型用法"部分代码虽合理但README未明确提及，存在极轻微推测成分 |
+| 2026-03-03 04:48 | 美团审查悟空代码 | 文件:wukong_rag_retrieval_augmented_generation_local_0303_0424.py | 评分:85 | 能否运行:否 | 主要问题:list_knowledge_bases方法未闭合raise_for_status括号，上传文档未处理文件关闭 | 改进建议:1. 补全raise_for_ |
