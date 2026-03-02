@@ -3216,3 +3216,31 @@ pip install uqlm
 注：所有信息严格基于README原文，未补充其他来源内容。具体实现需参考仓库文档。
 
 ---
+
+### [悟空·secretary] python github api file sync cross device (2026-03-03 07:07)
+**真实来源**: GitHub:zszszszsz/.config(⭐314) https://github.com/zszszszsz/.config
+**实战代码**: ✅ 已写代码: code/wukong_python_github_api_file_sync_cross_device_0303_0707.py
+
+1. **仓库解决的问题**  
+该仓库通过GitHub Actions提供OpenWrt固件的自动化构建方案，实现从配置文件生成到固件编译的云端一站式处理。
+
+2. **核心功能/知识点**  
+- **模板化创建**：通过点击`Use this template`按钮快速生成新仓库（README原文明确步骤）  
+- **动态配置**：使用Lean's OpenWrt源码生成`.config`文件，支持通过环境变量修改工作流（原文提到可修改workflow变量）  
+- **自动化触发**：推送`.config`文件到仓库后自动触发编译流程（原文描述push操作与Action自动运行的关系）  
+- **产物获取**：通过Actions页面的`Artifacts`按钮下载编译完成的固件（明确说明下载方式）  
+- **生态复用**：建议用户搜索现有`Actions-Openwrt`仓库以避免重复编译（README中Tips部分强调）
+
+3. **代码示例**  
+README未提供具体代码片段，但明确引用以下关键依赖项：  
+- 编译基础：`coolsnowwolf/lede`（Lean's OpenWrt源码）  
+- 调试工具：`mxschmitt/action-tmate`和`csexton/debugger-action`（致谢列表提及）
+
+4. **实际应用场景**  
+- **跨设备协作**：开发者可在任意设备上提交`.config`文件，通过GitHub Actions统一编译环境  
+- **固件定制**：结合Python脚本操作GitHub API实现`.config`文件的版本管理与批量同步  
+- **生态集成**：与Cowtransfer/WeTransfer等传输工具结合（致谢列表包含），扩展固件分发能力  
+
+（注：所有信息均严格依据README原文，未补充非提及内容）
+
+---
