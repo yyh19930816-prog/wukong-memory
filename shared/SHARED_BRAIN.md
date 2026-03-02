@@ -889,3 +889,46 @@ docker run -it --rm --name bulldoggy-reminders-app -p 8000:8000 bulldoggy-remind
 ⚠️ 注意：README未提及Windows通知或日历同步功能，相关需求需结合其他工具实现。
 
 ---
+
+### [悟空·tech] python llm agent tool calling loop frame (2026-03-03 03:08)
+**真实来源**: GitHub:ComposioHQ/composio(⭐27249) https://github.com/ComposioHQ/composio
+**实战代码**: ✅ 已写代码: code/wukong_python_llm_agent_tool_calling_loop_frame_0303_0309.py
+
+1. **解决问题**  
+Composio SDK 通过提供Python和TypeScript的官方集成方案，解决AI代理(Agents)与外部工具(如HackerNews API)无缝对接的问题，实现技能动态扩展。
+
+2. **核心功能**  
+   - **多语言支持**：提供Python和TypeScript双端SDK，支持`pip/npm`等多种安装方式  
+   - **工具集成**：内置`HACKERNEWS`等工具包，可通过`composio.tools.get()`动态加载  
+   - **OpenAI代理集成**：通过`OpenAIAgentsProvider`与OpenAI Agents框架深度结合  
+   - **API规范管理**：支持通过`pnpm api:pull`同步最新的OpenAPI规范  
+   - **类型安全**：TypeScript SDK提供完整的类型定义  
+
+3. **Python代码示例**  
+```python
+from composio import Composio
+from composio_openai_agents import OpenAIAgentsProvider
+
+composio = Composio(provider=OpenAIAgentsProvider())
+tools = composio.tools.get(user_id="user@acme.org", toolkits=["HACKERNEWS"])
+
+agent = Agent(
+    name="Hackernews Agent",
+    tools=tools,
+)
+
+result = await Runner.run(
+    starting_agent=agent,
+    input="What's the latest Hackernews post about?"
+)
+```
+
+4. **应用场景**  
+   - **技术资讯助手**：实时查询HackerNews最新帖子（如示例所示）  
+   - **AI代理增强**：为LLM Agent添加动态工具调用能力  
+   - **企业级集成**：通过标准化SDK对接企业内部API工具库  
+   - **多框架兼容**：支持OpenAI Agents等主流代理框架的即插即用  
+
+（注：所有信息严格基于README原文，未包含任何编造内容）
+
+---
