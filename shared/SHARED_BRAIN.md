@@ -1691,3 +1691,43 @@ docker pull infiniflow/ragflow:v0.24.0
 （注：README未明确提及Python API或本地文件处理的具体实现细节，所有信息均严格基于原文提炼）
 
 ---
+
+### [悟空·supervise] llm agent evaluation tool call verificat (2026-03-03 04:24)
+**真实来源**: GitHub:raga-ai-hub/RagaAI-Catalyst(⭐16100) https://github.com/raga-ai-hub/RagaAI-Catalyst
+**实战代码**: ✅ 已写代码: code/wukong_llm_agent_evaluation_tool_call_verificat_0303_0424.py
+
+基于提供的RagaAI Catalyst仓库README内容，提炼如下信息：
+
+1. **解决的问题**  
+该平台专注于LLM项目的全生命周期管理，提供从数据集管理到模型评估的一站式解决方案，特别针对RAG应用等场景的评估与质量保障需求。
+
+2. **核心功能/知识点**  
+- **评估管理**：支持Faithfulness等指标的自动化评测，可配置GPT-4等模型作为评估器（见Evaluation模块代码片段）  
+- **Trace管理**：包含Agentic Tracing功能，用于追踪LLM调用链路（目录中明确列出）  
+- **防护机制**：提供Guardrail Management和Red-teaming功能，保障应用安全性  
+- **数据集生成**：支持CSV导入和Synthetic Data Generation（数据集管理代码示例）  
+- **Prompt管理**：独立的Prompt版本管理与测试能力  
+
+3. **可运行代码示例**  
+```python
+# 评估管理示例（摘自README）
+from ragaai_catalyst import Evaluation
+
+evaluation = Evaluation(project_name="Test-RAG-App-1", dataset_name="MyDataset")
+evaluation.add_metrics(metrics=[
+    {"name": "Faithfulness", 
+     "config": {"model": "gpt-4o-mini", "provider": "openai"},
+     "schema_mapping": {'Query':'prompt', 'response':'response'}
+    }
+])
+```
+
+4. **实际应用场景**  
+- 企业级Chatbot开发时，通过Trace Management追踪多轮对话的agent调用链条  
+- 上线前使用Red-teaming模块进行对抗测试，验证模型抗干扰能力  
+- 自动化批量评估RAG系统回答的忠实度（Faithfulness）等关键指标  
+- 利用Synthetic Data Generation快速构建边缘case测试数据集  
+
+注：所有信息均严格来源于README原文，未添加任何外部知识。平台强调认证体系（需Access Key/Secret Key）和可视化操作（README含多个GIF演示）。
+
+---
