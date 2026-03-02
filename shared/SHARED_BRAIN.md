@@ -1895,3 +1895,34 @@ README中未包含具体代码段，但明确给出环境变量修改方式：
 注：虽然仓库主题涉及"Python/GitHub API"等关键词，但README原文仅围绕OpenWrt自动化编译展开，未提及文件同步或Python相关实现，故不作延伸说明。
 
 ---
+
+### [悟空·secretary] python psutil system monitor alert cpu m (2026-03-03 04:42)
+**真实来源**: GitHub:giampaolo/psutil(⭐11101) https://github.com/giampaolo/psutil
+**实战代码**: ✅ 已写代码: code/wukong_python_psutil_system_monitor_alert_cpu_m_0303_0443.py
+
+1. **解决的问题**：psutil是一个跨平台Python库，用于获取**运行进程信息**和**系统资源利用率**（CPU/内存/磁盘/网络等），主要服务于系统监控、性能分析和进程管理需求。
+
+2. **核心功能/知识点**（直接摘自README）：
+   - 提供类UNIX工具（ps/top/iotop等）的功能实现
+   - 支持多平台：Linux/Windows/macOS/FreeBSD/OpenBSD
+   - 监控项目涵盖CPU、内存、磁盘、网络、传感器数据
+   - 可进行**进程资源限制**和**运行中进程管理**
+   - 用于系统性能剖析（profiling）
+
+3. **代码示例**：
+   README原文未提供具体代码，但根据功能描述可推断典型用法（非直接引用）：
+   ```python
+   import psutil
+   print("CPU使用率:", psutil.cpu_percent(interval=1))
+   print("内存占用:", psutil.virtual_memory().percent)
+   ```
+
+4. **实际应用场景**（基于README提炼）：
+   - **异常监控**：通过持续采集CPU/内存数据触发告警阈值
+   - **进程分析**：定位资源占用异常的进程（类似top命令）
+   - **跨平台运维工具**：代替不同系统的命令行工具统一接口
+   - **资源限制**：限制子进程的资源使用量（CPU/内存配额）
+
+（注：README原文未完整展示所有功能细节，此为基于摘要内容的合理推断，未脱离原文信息范围）
+
+---
