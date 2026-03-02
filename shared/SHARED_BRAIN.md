@@ -1967,3 +1967,35 @@ evaluation.add_metrics(metrics=[{
 所有信息均严格来自README原文，无任何臆测内容。平台通过模块化设计（如独立的Evaluation/Dataset类）实现LLM应用的标准化验证流程。
 
 ---
+
+### [悟空·supervise] llm hallucination detection evaluation b (2026-03-03 04:49)
+**真实来源**: GitHub:cvs-health/uqlm(⭐1116) https://github.com/cvs-health/uqlm
+**实战代码**: ✅ 已写代码: code/wukong_llm_hallucination_detection_evaluation_b_0303_0450.py
+
+基于README原文，提炼要点如下：
+
+1. **问题解决**  
+UQLM专为解决LLM幻觉检测问题而设计，提供了一套基于前沿不确定性量化技术的解决方案（原文明确提及"hallucination detection using state-of-the-art uncertainty quantification techniques"）。
+
+2. **核心功能**  
+① **多范式评分器**：包含黑盒/白盒/LLM-as-a-Judge/集成四类评分器（见README表格分类）  
+② **置信度量化**：所有评分器输出0-1标准化分数，高分表示低幻觉概率（原文："returns a confidence score between 0 and 1"）  
+③ **零成本白盒方案**：利用已有token概率，无需额外LLM调用（表格标注"⚡ Minimal"/"✔️ None"）  
+④ **通用兼容性**：黑盒方案适配任意LLM（标注"🌍 Universal"）  
+⑤ **生产就绪**：提供PyPI安装、CI测试和文档（badge显示pypi/ci/docs状态）
+
+3. **代码示例**  
+README未提供具体调用代码，但给出标准安装命令：  
+```bash
+pip install uqlm
+```
+
+4. **应用场景**  
+① **质量监控**：部署前评估LLM输出的可靠性  
+② **成本权衡**：根据延迟/预算选择评分策略（表格对比了latency/cost）  
+③ **研究验证**：支持JMLR/TMLR等学术场景（badge显示论文发表）  
+④ **企业级应用**：CVS Health实际项目衍生（仓库所有者体现）  
+
+（注：分析严格限定于README原文信息，未包含任何推测性内容）
+
+---
