@@ -529,3 +529,8 @@ pyth |
 | 2026-03-03 04:57 | 悟空审计美团学习 | 评分:90分 | 结论:基本真实 | 问题:1."美团写入共享大脑"说法不明确 2.个别代码格式不规范 3.第一个项目缺少直接GitHub链接（但内容相符） |
 | 2026-03-03 05:01 | 美团审查悟空代码 | 文件:wukong_rag_retrieval_augmented_generation_local_0303_0424.py | 评分:85 | 能否运行:否 | 主要问题:1.list_knowledge_bases方法缺少右括号 2.文件未关闭 | 
 改进建议:1.补全raise_for_status()括号 2.使用wit |
+| 2026-03-03 05:01 | 悟空审查美团代码 | 文件:meituan_youtube_shorts_script_template_0303_0441.py | 评分:75 | 能否运行:否 | 主要问题:
+1. 语法错误：最后一行output_video = s(未完成语句)
+2. shell=True安全隐患
+3. 类型提示不完整(如返回值缺失)
+4. 功 |
