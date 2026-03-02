@@ -3244,3 +3244,31 @@ README未提供具体代码片段，但明确引用以下关键依赖项：
 （注：所有信息均严格依据README原文，未补充非提及内容）
 
 ---
+
+### [悟空·supervise] python health check heartbeat monitoring (2026-03-03 07:09)
+**真实来源**: GitHub:laitco/tailscale-healthcheck(⭐155) https://github.com/laitco/tailscale-healthcheck
+**实战代码**: ✅ 已写代码: code/wukong_python_health_check_heartbeat_monitoring_0303_0710.py
+
+1. **解决的问题**  
+该仓库提供了一个基于Python Flask的工具，用于监控Tailscale网络中设备的健康状态，包括设备在线状态、密钥有效期和更新状态等关键指标。
+
+2. **核心功能**  
+- **多维度健康检测**：聚合设备在线状态(`online_healthy`)、密钥有效期(`key_healthy`)和更新状态(`update_healthy`)的复合指标  
+- **精细化过滤**：支持通过操作系统、设备ID、主机名或标签（含通配符）筛选设备  
+- **全局指标汇总**：提供`global_healthy`等聚合指标及健康/不健康设备计数器  
+- **时区适配**：可配置时区转换`lastSeen`时间戳  
+- **API端点丰富**：包含`/health`、`/health/<identifier>`、`/health/healthy`等标准化监控端点  
+
+3. **代码示例**  
+README未提供完整代码片段，但给出Docker运行方式：  
+```bash
+# 从Docker Hub拉取运行（原文标注）
+docker run -p 8080:8080 laitco/tailscale-healthcheck
+```
+
+4. **应用场景**  
+- 与Gatus等监控系统集成，实时感知Tailscale VPN网络的设备异常  
+- 运维团队通过API获取特定设备（如`/health/web-server-01`）的密钥过期天数(`key_days_to_expire`)  
+- 自动化巡检时过滤特定类型设备（如通过`os:*linux*`筛选所有Linux节点）的健康状态
+
+---
