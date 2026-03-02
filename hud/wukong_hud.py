@@ -816,25 +816,46 @@ class WukongHUD(ctk.CTk):
         threading.Thread(target=self._api, args=(msg,), daemon=True).start()
 
     def _bubble(self, role, text):
-        is_user = role == "user"
+        is_user   = role == "user"
+        is_system = role == "system"   # 工具调用透明气泡
         container = ctk.CTkFrame(self.chat_area, fg_color="transparent")
-        container.pack(fill="x", pady=6, padx=12)
-        bg  = "#0A1A10" if is_user else C_BG1
-        bdr = C_GOLD   if is_user else C_BORDER
-        bubble = ctk.CTkFrame(container, fg_color=bg, corner_radius=12,
+        container.pack(fill="x", pady=3 if is_system else 6, padx=12)
+
+        if is_system:
+            # 工具调用：深色小条，让老板看到悟空真正做了什么
+            bg  = "#0D2A1A"
+            bdr = "#1A4A2A"
+            role_txt = "⚙ 工具执行"
+            role_col = "#3AFF8A"
+            wrap = 760
+        elif is_user:
+            bg  = "#0A1A10"
+            bdr = C_GOLD
+            role_txt = "老板"
+            role_col = C_GOLD
+            wrap = 700
+        else:
+            bg  = C_BG1
+            bdr = C_BORDER
+            role_txt = "🐵 悟空"
+            role_col = C_CYAN
+            wrap = 700
+
+        bubble = ctk.CTkFrame(container, fg_color=bg, corner_radius=8 if is_system else 12,
                                border_width=1, border_color=bdr)
-        bubble.pack(side="right" if is_user else "left",
-                    anchor="e" if is_user else "w")
-        role_txt = "老板" if is_user else "🐵 悟空"
-        role_col = C_GOLD if is_user else C_CYAN
+        bubble.pack(side="left", anchor="w",
+                    fill="x" if is_system else "none",
+                    expand=is_system)
+
         ctk.CTkLabel(bubble, text=role_txt,
-                     font=("Microsoft YaHei UI", 10, "bold"),
+                     font=("Microsoft YaHei UI", 9 if is_system else 10, "bold"),
                      text_color=role_col).pack(
-                         anchor="e" if is_user else "w",
-                         padx=14, pady=(8, 0))
-        ctk.CTkLabel(bubble, text=text, font=F_CHAT,
-                     text_color=C_TEXT, wraplength=700,
-                     justify="left").pack(padx=14, pady=(2, 12))
+                         anchor="w", padx=14, pady=(5 if is_system else 8, 0))
+        ctk.CTkLabel(bubble, text=text,
+                     font=("Microsoft YaHei UI", 11) if is_system else F_CHAT,
+                     text_color="#8ADFB0" if is_system else C_TEXT,
+                     wraplength=wrap, justify="left").pack(
+                         padx=14, pady=(1 if is_system else 2, 6 if is_system else 12))
         try:
             self.chat_area.update_idletasks()
             self.chat_area._parent_canvas.yview_moveto(1.0)
@@ -1018,11 +1039,22 @@ class WukongHUD(ctk.CTk):
                         fn_args = {}
                     tool_call_id = tc["id"]
 
+                    # 日志记录
                     self.after(0, lambda n=fn_name, a=fn_args:
                         self._log(f"▸ 调用工具: {n}({json.dumps(a, ensure_ascii=False)[:80]})\n"))
 
+                    # 在聊天界面显示"正在调用工具"提示（让老板看到）
+                    arg_preview = json.dumps(fn_args, ensure_ascii=False)[:60]
+                    tool_notice = f"[工具调用] {fn_name}({arg_preview})"
+                    self.after(0, lambda t=tool_notice: self._bubble("system", t))
+
                     # 真实执行工具
                     tool_result = execute_tool(fn_name, fn_args)
+
+                    # 在聊天界面显示工具真实结果的摘要
+                    result_preview = tool_result[:200] if tool_result else "（无结果）"
+                    result_notice = f"[工具结果] {result_preview}"
+                    self.after(0, lambda t=result_notice: self._bubble("system", t))
 
                     self.after(0, lambda res=tool_result:
                         self._log(f"▸ 工具结果: {res[:120]}\n"))
