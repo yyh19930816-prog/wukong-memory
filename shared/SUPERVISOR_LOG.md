@@ -548,3 +548,6 @@ pyth |
 1. 第一条笔记未标注真实GitHub仓库链接(仅有git命令)
 2. 第二条和第三条笔记重复记录了 |
 | 2026-03-03 05:08 | 悟空审查美团代码 | 文件:meituan_youtube_shorts_script_template_0303_0441.py | 评分:65 | 能否运行:否 | 主要问题:1. generate_video()结尾不完整 2. subprocess不安全用法 3. 缺少异常处理 | 改进建议:1. 补全output_video |
+| 2026-03-03 05:08 | 美团审查悟空代码 | 文件:wukong_rag_retrieval_augmented_generation_local_0303_0424.py | 评分:85 | 能否运行:否 | 主要问题:
+1. list_knowledge_bases方法未闭合raise_for_status括号
+2. upload_document打开文件未使用上下文管理 |
