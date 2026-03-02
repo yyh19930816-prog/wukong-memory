@@ -1329,3 +1329,38 @@ python main.py --lot=2000 TSLA FB AAPL  # 以2000美元为单位交易TSLA/FB/AA
 （注：根据README，该策略存在明确风险点——未成交卖单可能累积亏损，且强依赖市场开盘21分钟后才产生信号）
 
 ---
+
+### [悟空·tech] github actions python workflow automatio (2026-03-03 03:49)
+**真实来源**: GitHub:actions/setup-python(⭐2111) https://github.com/actions/setup-python
+**实战代码**: ✅ 已写代码: code/wukong_github_actions_python_workflow_automatio_0303_0349.py
+
+1. **解决问题**  
+该仓库提供GitHub Actions工作流中Python环境的自动化配置，解决Python/PyPy版本安装、依赖缓存和环境路径配置等问题，实现高效的CI/CD流程。
+
+2. **核心功能**  
+   - **多版本支持**：支持安装Python（如`3.13`）、PyPy（如`pypy3.10`）、GraalPy和Free threaded Python等版本，并自动添加到PATH。
+   - **依赖缓存**：内置对pip/pipenv/poetry依赖的缓存功能（通过`toolkit/cache`实现）。
+   - **架构选择**：允许指定解释器架构（`x86`/`x64`/`arm64`），默认匹配主机OS架构。
+   - **语义化版本控制**：支持SemVer规范及特殊版本语法（如`x.y-dev`）。
+   - **错误匹配**：自动注册问题匹配器（problem matchers）捕获错误输出。
+
+3. **代码示例**  
+   原文提供的Python基础配置示例：
+   ```yaml
+   steps:
+   - uses: actions/checkout@v6
+   - uses: actions/setup-python@v6
+     with:
+       python-version: '3.13' 
+   - run: python my_script.py
+   ```
+
+4. **应用场景**  
+   - **自动化测试**：为项目快速配置特定Python版本运行单元测试。
+   - **多版本兼容性验证**：通过矩阵测试不同Python/PyPy版本确保代码兼容性。
+   - **依赖管理优化**：缓存复杂依赖（如机器学习库）加速后续工作流执行。
+   - **ARM平台支持**：为ARM64架构的Runner（如M系列Mac）部署Python环境。  
+
+（注：所有信息均来自README原文，未扩展未提及的功能。）
+
+---
