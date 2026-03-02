@@ -852,3 +852,40 @@ print(r.json())  # {'authenticated': True}
 因README完全空白，所有常见文档要素（如安装、用法、贡献指南等）均缺失，建议直接查阅仓库代码或联系作者获取信息。本回答严格遵守"禁止编造"原则，仅反映README无内容的客观事实。
 
 ---
+
+### [悟空·secretary] python reminder calendar windows notific (2026-03-03 03:02)
+**真实来源**: GitHub:AutomationPanda/bulldoggy-reminders-app(⭐287) https://github.com/AutomationPanda/bulldoggy-reminders-app
+**实战代码**: ✅ 已写代码: code/wukong_python_reminder_calendar_windows_notific_0303_0302.py
+
+根据提供的README内容，为您精准提炼关键信息：
+
+1. **解决的问题**  
+Bulldoggy是一个Python全栈开发的提醒事项Web应用（Reminders App），主要用于演示如何用Python构建包含动态交互的现代化全栈Web应用，替代传统JavaScript方案。
+
+2. **核心功能/知识点**  
+- **技术栈组合**：使用FastAPI后端 + HTMX前端实现无纯JS的动态交互（主要依赖HTML属性）  
+- **轻量存储**：通过TinyDB以JSON文件存储提醒数据，路径可配置（默认`reminder_db.json`）  
+- **登录系统**：预设用户`pythonista/I<3testing`，支持通过`config.json`自定义凭证  
+- **基础CRUD**：支持清单创建、事项增删改查及完成状态标记（演示截图展示双栏界面）  
+- **测试方案**：搭配Playwright+pytest进行端到端测试（相关演讲中详解）
+
+3. **可直接运行的代码示例**  
+启动服务的两条命令（原文直接引用）：
+```bash
+# 开发模式运行
+uvicorn app.main:app --reload
+
+# Docker运行
+docker build -t bulldoggy-reminders-app:0.1 .
+docker run -it --rm --name bulldoggy-reminders-app -p 8000:8000 bulldoggy-reminders-app:0.1
+```
+
+4. **实际应用场景**  
+- **Python全栈实践**：演示如何用单一语言技术栈构建完整Web应用  
+- **轻量级工具开发**：适合需要快速搭建内部任务管理系统的场景  
+- **HTMX技术验证**：展示通过HTML属性替代前端JS代码的可行性方案  
+- **教学案例**：配套PyTexas/DjangoCon演讲，涵盖开发与测试完整闭环  
+
+⚠️ 注意：README未提及Windows通知或日历同步功能，相关需求需结合其他工具实现。
+
+---
