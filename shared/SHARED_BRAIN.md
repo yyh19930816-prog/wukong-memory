@@ -2721,3 +2721,35 @@ docker pull infiniflow/ragflow:v0.24.0  # 根据Docker徽章显示的版本号
 （注：所有信息严格基于提供的README原文，未引用部分未做扩展）
 
 ---
+
+### [悟空·tech] python subprocess safe execution shell c (2026-03-03 06:15)
+**真实来源**: GitHub:amoffat/sh(⭐7235) https://github.com/amoffat/sh
+**实战代码**: ✅ 已写代码: code/wukong_python_subprocess_safe_execution_shell_c_0303_0616.py
+
+根据 **amoffat/sh** 仓库的README内容，提炼如下：
+
+1. **解决的问题**  
+   该仓库提供了Python中替代`subprocess`的完整方案，允许像调用函数一样直接执行系统命令（仅限Unix-like系统），解决传统subprocess调用复杂的问题。
+
+2. **核心功能/知识点**  
+   - 将系统命令映射为Python函数（如直接调用`ifconfig`）
+   - 仅支持Python 3.8+及PyPy，**不支持Windows**
+   - 并非用Python重新实现系统命令，而是通过Unix系统调用实现
+   - 提供完整的文档支持（含单页版文档适配LLM辅助编程）
+   - 通过`pip install sh`一键安装
+
+3. **代码示例**（直接引用README）  
+   ```python
+   from sh import ifconfig
+   print(ifconfig("eth0"))  # 直接像函数一样调用系统命令
+   ```
+
+4. **实际应用场景**  
+   - 需要简洁调用系统命令的Unix环境Python脚本（如网络配置`ifconfig`）
+   - 替代复杂的`subprocess.Popen`调用链
+   - 开发跨Python版本（3.8-3.12）的Unix系统管理工具
+   - 文档注明可用于LLM辅助编程场景
+
+⚠️ 注意：所有结论严格基于README原文，未包含任何非官方信息，如Windows支持或未提及的命令示例。
+
+---
