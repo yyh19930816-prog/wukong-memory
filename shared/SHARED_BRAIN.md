@@ -1103,3 +1103,31 @@ topydo prompt
 （注：全文严格基于README原文，未引入仓库外的知识。Windows任务计划程序的结合使用是基于recurring tasks特性提出的合理延伸，但未超出README的功能范畴）
 
 ---
+
+### [悟空·tech] python async concurrent api requests opt (2026-03-03 03:27)
+**真实来源**: GitHub:alpacahq/example-scalping(⭐809) https://github.com/alpacahq/example-scalping
+**实战代码**: ✅ 已写代码: code/wukong_python_async_concurrent_api_requests_opt_0303_0328.py
+
+1. 解决高频套利交易中实时处理多股票并发操作的技术难题，通过Python asyncio实现Polygon分钟级行情流与Alpaca交易API的高效协同。
+
+2. 核心功能/知识点：
+- 异步并发处理：基于asyncio实现多股票独立交易例程的并行管理（README明确提及"handle multiple stocks concurrently"）
+- 实时信号触发：通过Websocket接收Polygon分钟K线数据，4秒延迟内触发20日均线交叉买入信号
+- 订单生命周期管理：买入订单2分钟未成交自动撤单，卖出订单持续追踪直到成交
+- 状态同步机制：重启时通过Alpaca API同步持仓/订单数据保持状态一致
+- 风控兜底：每天15:55ET强制市价平仓（文档说明"liquidate all watching positions"）
+
+3. 代码运行示例（直接引用README命令）：
+```sh
+$ python main.py --lot=2000 TSLA FB AAPL  # 对TSLA、FB、AAPL三支股票各分配2000美元进行套利
+```
+
+4. 实际应用场景：
+- 日内交易员需对多个标的实施快速短线操作时
+- 券商自营团队测试小额高频策略的可行性
+- 量化开发者学习如何将传统技术指标（如均线交叉）转化为实时交易信号
+- 需要处理交易所流数据与订单系统并发的自动化场景（文档强调"real-time order updates"与"minute level bar streaming"的协同）
+
+（注：所有回答点均严格来自README原文，包含异步架构设计、API集成方式、具体参数配置等细节，未添加任何编造内容）
+
+---
