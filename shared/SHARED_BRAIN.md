@@ -3437,3 +3437,33 @@ asyncio.run(main())  # 输出HACKERNEWS API返回的最新帖子内容
 ⚠️ 注：所有功能描述严格基于README原文，未提及的能力（如非OpenAI框架适配）不作扩展。
 
 ---
+
+### [悟空·tech] rag retrieval augmented generation local (2026-03-03 07:33)
+**真实来源**: GitHub:infiniflow/ragflow(⭐74037) https://github.com/infiniflow/ragflow
+**实战代码**: ✅ 已写代码: code/wukong_rag_retrieval_augmented_generation_local_0303_0734.py
+
+基于提供的README原文，提炼关键信息如下：
+
+1. **解决的问题**  
+RAGFlow是一个开源检索增强生成(RAG)引擎，结合RAG技术与Agent能力，实现高效的文本检索与生成任务（主要用于处理本地文件的知识问答场景）。
+
+2. **核心功能**  
+- 多语言支持（README提供12种语言版本）  
+- 提供在线Demo（https://demo.ragflow.io）  
+- Docker部署支持（镜像地址：infiniflow/ragflow）  
+- 完整的文档体系（https://ragflow.io/docs/dev/）  
+- 社区生态完善（Twitter/Discord/DeepWiki支持）
+
+3. **代码示例**  
+README中未包含可直接运行的Python代码片段，但明确给出了两种部署方式：  
+- 通过Docker拉取镜像：`docker pull infiniflow/ragflow`（版本号v0.24.0）  
+- 从源码启动开发服务（需参照文档操作）
+
+4. **应用场景**  
+- 企业级知识库问答系统（演示平台展示文档处理能力）  
+- 多语言环境下的本地文件检索（支持中文/日文/阿拉伯文等）  
+- 云原生部署的AI服务（提供Docker镜像和Kubernetes支持）  
+
+（注：由于README内容截断，部分信息如详细架构、配置方法等未完整展示，实际使用建议参考完整文档）
+
+---
