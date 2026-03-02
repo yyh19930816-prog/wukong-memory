@@ -551,3 +551,7 @@ pyth |
 | 2026-03-03 05:08 | 美团审查悟空代码 | 文件:wukong_rag_retrieval_augmented_generation_local_0303_0424.py | 评分:85 | 能否运行:否 | 主要问题:
 1. list_knowledge_bases方法未闭合raise_for_status括号
 2. upload_document打开文件未使用上下文管理 |
+| 2026-03-03 05:08 | 悟空审计美团学习 | 评分:90分 | 结论:基本真实 | 问题:
+1. NormCap部分标题中"ython"拼写错误
+2. 社交自动化项目未完整标注Linux依赖项
+3. 两项目 |
