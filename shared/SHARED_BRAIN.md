@@ -553,3 +553,45 @@ cd ~/stable-diffusion-webui && bash
 (注: README中未提供飞书机器人的具体对接代码,主要聚焦于SD后端的部署流程。所有描述均严格基于仓库现有的文档说明)
 
 ---
+
+### [悟空·supervise] llm agent evaluation tool call verificat (2026-03-03 02:25)
+**真实来源**: GitHub:raga-ai-hub/RagaAI-Catalyst(⭐16100) https://github.com/raga-ai-hub/RagaAI-Catalyst
+**实战代码**: ✅ 已写代码: code/wukong_llm_agent_evaluation_tool_call_verificat_0303_0225.py
+
+1. **解决的问题**  
+RagaAI Catalyst 是一个面向LLM项目的全生命周期管理平台，核心解决大语言模型应用（如RAG、智能体等）的评估优化与管理问题，提供从数据集管理到指标评估、安全性保障的完整工具链（基于README首段描述）。
+
+2. **核心功能**（直接引用README原文）  
+- **评估管理**：支持Faithfulness等指标的自动化评测，可配置模型/阈值（`evaluation.add_metrics`部分）  
+- **数据集管理**：支持CSV导入与schema映射，结构化存储测评数据（`dataset_manager.create_from_csv`）  
+- **Trace管理**：记录LLM调用链路，用于问题诊断（Table of Contents列出的`Trace Management`）  
+- **防护管理**：通过Guardrail机制防止有害输出（`Guardrail Management`模块）  
+- **红队测试**：内置安全对抗测试功能（`Red-teaming`章节）  
+
+3. **代码示例**（直接引用README）  
+```python
+# 评估配置示例（Faithfulness指标）
+from ragaai_catalyst import Evaluation
+evaluation = Evaluation(project_name="Test-RAG-App-1", dataset_name="MyDataset")
+evaluation.add_metrics(
+    metrics=[{
+        "name": "Faithfulness",
+        "config": {
+            "model": "gpt-4o-mini",
+            "provider": "openai",
+            "threshold": {"gte": 0.23}
+        },
+        "column_name": "Faithfulness_v1"
+    }]
+)
+```
+
+4. **应用场景**  
+- **RAG质量验证**：通过Faithfulness等指标量化检索内容与生成答案的一致性（README的Evaluation模块）  
+- **智能体链路追踪**：使用Agentic Tracing记录API调用序列，分析异常行为（目录中的`Agentic Tracing`）  
+- **红队攻防演练**：模拟对抗性输入测试模型鲁棒性（`Red-teaming`章节）  
+- **数据合成**：生成边缘案例数据补充测试集（`Synthetic Data Generation`功能）  
+
+（注：所有信息严格基于README原文，未扩展非描述功能）
+
+---
