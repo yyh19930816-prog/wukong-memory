@@ -932,3 +932,54 @@ result = await Runner.run(
 （注：所有信息严格基于README原文，未包含任何编造内容）
 
 ---
+
+### [悟空·tech] python llm agent tool calling loop frame (2026-03-03 03:09)
+**真实来源**: GitHub:ComposioHQ/composio(⭐27249) https://github.com/ComposioHQ/composio
+**实战代码**: ⚠️ 代码写入失败
+
+基于Composio仓库的README内容，提炼如下：
+
+1. **仓库解决的问题**  
+Composio SDK为Python和TypeScript的智能体框架提供开箱即用的技能集成能力，使开发者能快速为AI代理接入HackerNews等工具集的API调用功能。
+
+2. **核心功能/知识点**  
+- 📌 **多语言SDK支持**：提供Python(`composio`)和TypeScript(`@composio/core`)双重SDK  
+- 📌 **工具动态加载**：通过`composio.tools.get()`可获取指定工具集（如HACKERNEWS）的操作能力  
+- 📌 **OpenAI代理集成**：通过`composio_openai_agents/openai-agents`实现与OpenAI代理框架的无缝对接  
+- 📌 **统一API规范**：内置自动同步的OpenAPI规范(`api:pull`命令)  
+
+3. **可运行代码示例**  
+```python
+# Python版调用HackerNews的完整示例（摘自README）
+import asyncio
+from agents import Agent, Runner
+from composio import Composio
+from composio_openai_agents import OpenAIAgentsProvider
+
+composio = Composio(provider=OpenAIAgentsProvider())
+tools = composio.tools.get(user_id="user@acme.org", toolkits=["HACKERNEWS"])
+
+agent = Agent(
+    name="Hackernews Agent",
+    instructions="You are a helpful assistant.",
+    tools=tools,
+)
+
+async def main():
+    result = await Runner.run(
+        starting_agent=agent,
+        input="What's the latest Hackernews post about?",
+    )
+    print(result.final_output)
+
+asyncio.run(main())  # 输出最新HackerNews帖子内容
+```
+
+4. **实际应用场景**  
+- 🚀 **即时信息查询**：通过封装HackerNews API实现热门技术资讯的实时检索  
+- 🤖 **多工具链式调用**：在OpenAI代理框架中组合多个工具集完成复杂任务  
+- 🔧 **企业级集成**：利用统一API规范快速对接内部系统（需自行扩展）  
+
+（注：所有信息严格基于README原文，无任何编造内容）
+
+---
