@@ -156,6 +156,7 @@ def call_ai(user_msg):
 
     # Function Calling 循环（最多5轮）
     max_rounds = 5
+    tool_results_log = []  # 记录已调用的工具，用于强制拦截检查
     for _ in range(max_rounds):
         req_body = {"model": AI_MODEL, "messages": msgs, "stream": False}
         if TOOLS_ENABLED:
@@ -178,9 +179,30 @@ def call_ai(user_msg):
             message = choice["message"]
             finish_reason = choice.get("finish_reason", "stop")
 
-            # 没有工具调用，返回最终答案
+            # 没有工具调用，检查是否需要强制调工具
             if finish_reason != "tool_calls" or not message.get("tool_calls"):
                 reply = message.get("content", "处理完成")
+
+                # 强制拦截：涉及查询/搜索类但没调工具
+                m = user_msg.lower()
+                search_kw = ["搜","查","找","研究","分析","最新","github","工具","有没有","http"]
+                time_kw = ["几点","日期","时间"]
+                needs_tool = None
+                if any(x in user_msg for x in ["http://","https://"]):
+                    needs_tool = "open_url"
+                elif any(k in m for k in time_kw):
+                    needs_tool = "get_datetime"
+                elif any(k in m for k in search_kw):
+                    needs_tool = "search_web"
+
+                if needs_tool and not tool_results_log and TOOLS_ENABLED:
+                    msgs.append({
+                        "role": "user",
+                        "content": f"[系统强制] 你没有调用工具就回答了，这不允许。"
+                                   f"必须先调用 {needs_tool} 获取真实数据再回答。立刻执行工具。"
+                    })
+                    continue  # 强制重跑
+
                 save_history("user", user_msg)
                 save_history("assistant", reply)
                 return reply
@@ -194,6 +216,7 @@ def call_ai(user_msg):
                 except:
                     fn_args = {}
                 tool_result = execute_tool(fn_name, fn_args)
+                tool_results_log.append(fn_name)
                 print(f"[工具] {fn_name} → {tool_result[:80]}")
                 msgs.append({
                     "role": "tool",

@@ -861,6 +861,33 @@ class WukongHUD(ctk.CTk):
             self.chat_area._parent_canvas.yview_moveto(1.0)
         except: pass
 
+    # ── 判断该消息是否必须先调工具才能回答 ──────────────────────────────────
+    def _requires_tool(self, msg: str) -> str | None:
+        """
+        分析用户消息，判断是否属于"必须调工具"的类型。
+        返回：必须调用的工具名，或 None（表示可以直接回答）
+        """
+        m = msg.lower()
+        # 搜索/研究类 → 必须调 search_web 或 deep_research
+        search_kw = ["搜", "查", "找", "研究", "分析", "了解", "看看",
+                     "最新", "现在", "今天", "新闻", "资料", "行情",
+                     "github", "代码", "工具", "开源", "有没有", "能不能"]
+        # 链接类 → 必须调 open_url
+        if any(x in msg for x in ["http://", "https://", "www."]):
+            return "open_url"
+        # 文件类 → 必须调 read_file 或 search_files
+        file_kw = ["文件", "桌面", "文档", "excel", "word", "打开", "读取"]
+        if any(k in m for k in file_kw):
+            return "read_file"
+        # 时间日期 → 必须调 get_datetime
+        time_kw = ["现在几点", "今天几号", "几点了", "日期", "时间"]
+        if any(k in m for k in time_kw):
+            return "get_datetime"
+        # 搜索类
+        if any(k in m for k in search_kw):
+            return "search_web"
+        return None  # 不需要工具（闲聊、创作类可直接回答）
+
     # ── 智能识别对话方向 ──────────────────────────────────────────────────────
     def _detect_direction(self, msg, reply):
         text = (msg + " " + reply).lower()
@@ -1001,11 +1028,27 @@ class WukongHUD(ctk.CTk):
                 finish_reason = choice.get("finish_reason", "stop")
                 message = choice["message"]
 
-                # ── 没有工具调用，直接返回最终答案 ──────────────────────────
+                # ── 没有工具调用，检查是否应该强制调工具 ────────────────────
                 if finish_reason != "tool_calls" or not message.get("tool_calls"):
                     reply = message.get("content", "")
                     if not reply:
                         reply = "悟空处理完成，但没有返回内容。"
+
+                    # 强制拦截：如果这个问题必须用工具但悟空没调，打回去
+                    required_tool = self._requires_tool(msg)
+                    if required_tool and not tool_calls_log and TOOLS_ENABLED:
+                        # 悟空没调工具就想直接回答 → 强制要求他去调
+                        self.after(0, lambda: self._bubble("system",
+                            f"[系统拦截] 检测到此问题需要真实数据，强制要求悟空调用 {required_tool} 工具"))
+                        self._log(f"▸ 拦截：悟空试图不调工具回答，强制要求调用 {required_tool}\n")
+                        # 注入强制指令到消息里，让他重新来
+                        msgs.append({
+                            "role": "user",
+                            "content": f"[系统强制指令] 你刚才没有调用任何工具就回答了。这是不允许的。"
+                                       f"这个问题必须先调用 {required_tool} 工具获取真实数据，"
+                                       f"然后基于工具返回的真实结果来回答。立刻调用工具，不许再空口说话。"
+                        })
+                        continue  # 继续下一轮，强制他调工具
 
                     # 如果有工具调用历史，附上简要说明
                     if tool_calls_log:
