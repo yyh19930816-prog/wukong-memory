@@ -447,3 +447,44 @@ python main.py --lot=2000 TSLA FB AAPL  # lot参数为每笔交易金额(美元)
 ⚠️ 注意：需自行承担策略风险（README提到可能因行情突变导致亏损）
 
 ---
+
+### [悟空·supervise] python health check heartbeat monitoring (2026-03-03 02:17)
+**真实来源**: GitHub:laitco/tailscale-healthcheck(⭐155) https://github.com/laitco/tailscale-healthcheck
+**实战代码**: ✅ 已写代码: code/wukong_python_health_check_heartbeat_monitoring_0303_0218.py
+
+根据laitco/tailscale-healthcheck仓库的README内容，提炼关键信息如下：
+
+1. 解决的问题  
+这是一个Python实现的Docker化监控工具，专门用于检查Tailscale网络中设备的健康状态（包括在线状态、密钥有效期等），帮助用户快速掌握VPN设备运行状况。
+
+2. 核心功能（摘自README原文）
+- 全局健康指标：聚合展示`global_healthy`/`global_online_healthy`等综合状态
+- 设备筛选：支持按操作系统、主机名、ID、标签进行筛选（支持通配符）
+- 密钥过期提醒：提供`key_days_to_expire`精确到天的过期预警
+- 时间戳时区：可配置`lastSeen`时区显示
+- 端点监控：提供`/health`、`/health/<identifier>`等RESTful检查接口
+
+3. 代码示例（README中可见的端点调用示例）
+```bash
+# 检查所有设备健康状态
+curl http://localhost:8080/health
+
+# 查询特定设备（ID/主机名）
+curl http://localhost:8080/health/my-laptop
+
+# 列出所有健康设备
+curl http://localhost:8080/health/healthy
+
+# 列出异常设备
+curl http://localhost:8080/health/unhealthy
+```
+
+4. 应用场景  
+- Tailscale VPN网络的设备存活监控
+- 与Gatus等监控系统集成（README提到集成支持）
+- 运维人员快速定位离线/密钥即将过期的设备
+- 自动化运维脚本通过API获取设备状态
+
+（注：由于README未完整显示，部分配置细节如Docker运行示例未包含在内，以上信息严格基于显示的内容提炼）
+
+---
