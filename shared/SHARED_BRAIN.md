@@ -3118,3 +3118,57 @@ asyncio.run(main())
 注：所有信息严格基于README原文，未展示的功能（如其他工具包）未被提及。
 
 ---
+
+### [悟空·supervise] llm agent evaluation tool call verificat (2026-03-03 06:59)
+**真实来源**: GitHub:raga-ai-hub/RagaAI-Catalyst(⭐16100) https://github.com/raga-ai-hub/RagaAI-Catalyst
+**实战代码**: ✅ 已写代码: code/wukong_llm_agent_evaluation_tool_call_verificat_0303_0659.py
+
+1. **仓库解决问题**  
+RagaAI Catalyst是一个LLM项目全生命周期管理平台，主要解决大语言模型应用（如RAG系统）的开发评估难题，提供从数据集管理到模型评估的全套工具链。
+
+2. **核心功能（直接来自README）**  
+- **评估管理(Evaluation Management)**：支持添加Faithfulness等指标，通过GPT-4等模型进行自动化评估（见`schema_mapping`和`add_metrics`代码段）  
+- **追踪管理(Trace Management)**：包含Agentic Tracing功能，记录LLM调用链（README目录明确列出）  
+- **护卫管理(Guardrail Management)**：包含Red-teaming模块保障安全性（目录和功能介绍提及）  
+- **数据集管理**：支持CSV导入和schema映射（`create_from_csv`方法）  
+- **Prompt管理**：提供集中化提示词管理能力（功能列表明确）  
+
+3. **代码示例（README原文）**  
+```python
+# 评估管理示例（节选自README）
+from ragaai_catalyst import Evaluation
+
+evaluation = Evaluation(
+    project_name="Test-RAG-App-1",
+    dataset_name="MyDataset",
+)
+
+schema_mapping = {
+    'Query': 'prompt',
+    'response': 'response',
+    'Context': 'context',
+    'expectedResponse': 'expected_response'
+}
+
+evaluation.add_metrics(
+    metrics=[{
+        "name": "Faithfulness", 
+        "config": {
+            "model": "gpt-4o-mini", 
+            "provider": "openai", 
+            "threshold": {"gte": 0.23}
+        },
+        "column_name": "Faithfulness_v1"
+    }]
+)
+```
+
+4. **实际应用场景**  
+- **RAG系统验证**：通过Faithfulness等指标量化检索结果的可靠性（代码示例中的阈值配置）  
+- **会话Agent测试**：管理prompt模板并追踪多轮对话（Project Management和Trace Management功能）  
+- **安全审计**：Red-teaming模块模拟对抗测试（Guardrail Management部分）  
+- **合成数据增强**：配合Synthetic Data Generation生成测试用例（功能列表提及）  
+
+（注：所有信息均严格基于README原文，未添加任何额外推测内容）
+
+---
