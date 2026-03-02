@@ -2691,3 +2691,33 @@ topydo columns
 （注：所有信息均严格基于README原文，未扩展非提及功能）
 
 ---
+
+### [悟空·tech] rag retrieval augmented generation local (2026-03-03 06:09)
+**真实来源**: GitHub:infiniflow/ragflow(⭐74038) https://github.com/infiniflow/ragflow
+**实战代码**: ✅ 已写代码: code/wukong_rag_retrieval_augmented_generation_local_0303_0609.py
+
+1. **解决的问题**  
+RAGFlow是一个开源检索增强生成(RAG)引擎，通过融合RAG技术和Agent能力，实现基于本地文件的智能问答与知识检索（原文提到"fuses cutting-edge RAG with Agent capabilities"）。
+
+2. **核心功能**（直接来自README标志性内容）  
+- 🚀 **多语言支持**：提供简体中文、英文、日文等10+语言的README文档（由语言徽章证实）  
+- 🌐 **在线演示**：通过[demo.ragflow.io](https://demo.ragflow.io)可体验实时功能（"Online Demo"徽章标注）  
+- 🐳 **Docker集成**：支持通过`infiniflow/ragflow`镜像快速部署（Docker Pulls统计显示）  
+- 📄 **文档系统**：配有[详细开发文档](https://ragflow.io/docs/dev/)（"Document"导航栏链接）  
+- 📅 **路线透明**：在GitHub Issues公开[开发路线图](#12241)（Roadmap链接指向Issue#12241）  
+
+3. **代码示例**  
+README原文未提供具体代码片段，但标明可通过Docker快速运行：  
+```bash
+docker pull infiniflow/ragflow:v0.24.0  # 根据Docker徽章显示的版本号
+```
+
+4. **应用场景**  
+- 📂 **本地知识库问答**：基于私有文档（如PDF/Word）构建智能检索系统（"Retrieval-Augmented Generation"技术定位）  
+- 🌍 **多语言业务支持**：适用于需处理多语言文档的企业场景（多语言README设计）  
+- 🔍 **开发测试**：开发者可通过[Docker镜像](#-build-a-docker-image)快速验证RAG模型效果  
+- 🤖 **AI Agent集成**：结合Agent能力实现复杂任务自动化（README首段强调"Agent capabilities"）  
+
+（注：所有信息严格基于提供的README原文，未引用部分未做扩展）
+
+---
