@@ -231,34 +231,74 @@ def tool_search_web(query: str) -> str:
     搜索网络，获取真实信息
     query: 搜索关键词
     """
-    try:
-        # 使用 DuckDuckGo 即时搜索 API（无需key）
-        r = requests.get(
-            "https://api.duckduckgo.com/",
-            params={"q": query, "format": "json", "no_html": 1, "skip_disambig": 1},
-            timeout=15,
-            headers={"User-Agent": "Mozilla/5.0 WukongBot/1.0"}
-        )
-        data = r.json()
-        abstract = data.get("AbstractText", "")
-        abstract_url = data.get("AbstractURL", "")
-        related = data.get("RelatedTopics", [])[:3]
+    # 多源搜索，依次尝试
+    lines = [f"搜索：{query}"]
 
-        lines = [f"搜索：{query}"]
-        if abstract:
-            lines.append(f"摘要：{abstract[:300]}")
-            if abstract_url:
-                lines.append(f"来源：{abstract_url}")
-        if related:
-            lines.append("相关：")
-            for t in related:
-                if isinstance(t, dict) and t.get("Text"):
-                    lines.append(f"- {t['Text'][:100]}")
-        if len(lines) == 1:
-            lines.append("没有找到直接摘要，可能需要更具体的关键词")
-        return "\n".join(lines)
+    # 源1：DuckDuckGo HTML搜索（抓取摘要）
+    try:
+        r = requests.get(
+            "https://html.duckduckgo.com/html/",
+            params={"q": query},
+            timeout=12,
+            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        )
+        if r.status_code == 200:
+            import re
+            # 提取搜索结果摘要
+            snippets = re.findall(r'class="result__snippet"[^>]*>(.*?)</a>', r.text, re.DOTALL)
+            titles = re.findall(r'class="result__a"[^>]*>(.*?)</a>', r.text, re.DOTALL)
+            clean = lambda s: re.sub(r'<[^>]+>', '', s).strip()
+            results = []
+            for i, (t, s) in enumerate(zip(titles[:4], snippets[:4])):
+                tc = clean(t); sc = clean(s)
+                if tc and sc:
+                    results.append(f"{i+1}. {tc}\n   {sc[:150]}")
+            if results:
+                lines.extend(results)
+                return "\n".join(lines)
     except Exception as e:
-        return f"搜索失败：{e}"
+        lines.append(f"DuckDuckGo搜索失败：{e}")
+
+    # 源2：Wikipedia API（适合知识性查询）
+    try:
+        r = requests.get(
+            "https://zh.wikipedia.org/api/rest_v1/page/summary/" + requests.utils.quote(query),
+            timeout=10,
+            headers={"User-Agent": "WukongBot/1.0"}
+        )
+        if r.status_code == 200:
+            data = r.json()
+            extract = data.get("extract", "")
+            title = data.get("title", "")
+            if extract:
+                lines.append(f"Wikipedia [{title}]：{extract[:400]}")
+                return "\n".join(lines)
+    except:
+        pass
+
+    # 源3：Bing搜索（备用）
+    try:
+        r = requests.get(
+            "https://www.bing.com/search",
+            params={"q": query, "cc": "CN"},
+            timeout=12,
+            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        )
+        if r.status_code == 200:
+            import re
+            snippets = re.findall(r'<p class="b_lineclamp[^"]*">(.*?)</p>', r.text, re.DOTALL)
+            clean = lambda s: re.sub(r'<[^>]+>', '', s).strip()
+            results = [clean(s) for s in snippets[:3] if clean(s)]
+            if results:
+                lines.append("Bing搜索结果：")
+                for s in results:
+                    lines.append(f"- {s[:150]}")
+                return "\n".join(lines)
+    except:
+        pass
+
+    lines.append("所有搜索源均无法访问，请检查网络连接")
+    return "\n".join(lines)
 
 
 def tool_list_files(directory: str = "workspace") -> str:
