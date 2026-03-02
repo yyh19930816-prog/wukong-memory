@@ -2444,3 +2444,39 @@ curl http://localhost:8080/health/healthy
 （注：根据提供的README片段，缓存配置`Configurable Caching`部分未完整展示，故未详细说明实现细节）
 
 ---
+
+### [悟空·secretary] python feishu lark webhook bot notificat (2026-03-03 05:46)
+**真实来源**: GitHub:ConnectAI-E/Feishu-Stablediffusion(⭐115) https://github.com/ConnectAI-E/Feishu-Stablediffusion
+**实战代码**: ✅ 已写代码: code/wukong_python_feishu_lark_webhook_bot_notificat_0303_0546.py
+
+1. **解决的问题**  
+该仓库将Stable Diffusion AI绘画能力集成到飞书机器人中，用户无需打开网页版WebUI，直接在飞书聊天窗口就能通过文本/图片进行AI绘画创作（文生图、图生图）和图像内容识别（图生文）。
+
+2. **核心功能**  
+- **多模态生成**：支持文本生成图片（txt2img）、图片二次生成（img2img）、图片内容解析（img2txt）  
+- **参数自定义**：可设置模型类型、图片尺寸、生成步数（steps）、随机种子（seed）等核心参数  
+- **双语交互**：支持中英文混合输入，降低非英语用户使用门槛  
+- **服务状态监控**：实时显示Stable Diffusion服务器运行信息  
+- **飞书深度集成**：基于飞书webhook实现机器人交互，消息卡片展示生成结果  
+
+3. **关键部署代码**（直接引用README）  
+```bash
+# Stable Diffusion WebUI带API启动（必需）
+git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
+cd stable-diffusion-webui && bash
+# 需添加--api参数启动服务
+
+# Python环境配置（3.10.6必需）
+pyenv install 3.10.6
+pyenv global 3.10.6
+```
+
+4. **应用场景**  
+- **企业内AI协作**：飞书团队无需切换工具，直接在工作群内快速生成配图/设计素材  
+- **移动端创作**：通过飞书移动APP随时随地用文字描述生成图像  
+- **内容分析**：上传图片自动解析画面元素（如识别用户手绘草图的主题）  
+- **参数调试**：产品/设计团队可实时调整CFG Scale、采样步数等参数对比效果  
+
+（注：未发现完整机器人代码示例，README侧重部署流程而非业务逻辑实现）
+
+---
