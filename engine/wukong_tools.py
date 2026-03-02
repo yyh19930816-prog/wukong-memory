@@ -375,6 +375,42 @@ def _search_360(query: str, num: int = 5) -> list:
     return results
 
 
+def _search_google_news_rss(query: str, num: int = 6) -> list:
+    """Google新闻RSS（完全免费，无需Key，真实新闻结果）"""
+    import re
+    results = []
+    try:
+        r = requests.get(
+            "https://news.google.com/rss/search",
+            params={"q": query, "hl": "zh-CN", "gl": "CN", "ceid": "CN:zh-Hans"},
+            timeout=12,
+            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+        )
+        if r.status_code == 200:
+            titles = re.findall(r"<title>(.*?)</title>", r.text)[1:]
+            links = re.findall(r"<link>(.*?)</link>", r.text)[1:]
+            sources = re.findall(r"<source[^>]*>(.*?)</source>", r.text)
+            dates = re.findall(r"<pubDate>(.*?)</pubDate>", r.text)
+            for i, title in enumerate(titles[:num]):
+                if not title or title == "Google 新闻":
+                    continue
+                url = links[i] if i < len(links) else ""
+                src = sources[i] if i < len(sources) else ""
+                date = dates[i][:16] if i < len(dates) else ""
+                snippet = f"来源：{src}" if src else ""
+                if date:
+                    snippet += f"  日期：{date}"
+                results.append({
+                    "title": title,
+                    "snippet": snippet,
+                    "url": url,
+                    "source": "Google新闻"
+                })
+    except:
+        pass
+    return results
+
+
 def _search_baidu_mip(query: str, num: int = 5) -> list:
     """百度移动版搜索（绕过PC验证）"""
     import re
@@ -434,33 +470,24 @@ def tool_search_web(query: str) -> str:
     搜索网络获取真实信息，返回带来源的搜索结果
     query: 搜索关键词（中英文均可）
     """
-    # 优先级：Serper(Google) > Brave > 百度移动版 > 搜狗 > 360
+    # 优先级：Serper(Google) > Brave > Google新闻RSS（无需Key）> 百度移动版 > 搜狗 > 360
     results = (
         _search_serper(query)
         or _search_brave(query)
+        or _search_google_news_rss(query)
         or _search_baidu_mip(query)
         or _search_sogou(query)
         or _search_360(query)
     )
 
-    # 过滤掉无意义的结果（标题太短或是广告类）
-    junk_titles = {"大家还在搜", "实时智能回复", ""}
+    # 过滤掉无意义的结果
+    junk_titles = {"大家还在搜", "实时智能回复", "", "Google 新闻"}
     results = [r for r in results
                if r.get("title", "") not in junk_titles
                and len(r.get("title", "")) > 5]
 
     if not results:
-        if not SERPER_API_KEY and not BRAVE_API_KEY:
-            return (
-                f"搜索「{query}」失败：未配置搜索API Key，免费抓取被搜索引擎拦截。\n\n"
-                f"解决方法：注册 Serper.dev 获取免费API Key（2500次）\n"
-                f"1. 访问 https://serper.dev\n"
-                f"2. 免费注册\n"
-                f"3. 复制API Key\n"
-                f"4. 把 SERPER_API_KEY 填入 wukong_tools.py 第25行\n\n"
-                f"填入后悟空即可真实搜索Google，这个操作只需做一次。"
-            )
-        return f"搜索失败：所有搜索引擎均无结果。\n搜索词：{query}\n说明：工具无法访问网络，不会用推断内容代替。"
+        return f"搜索失败：搜索「{query}」无结果，网络可能不通。"
 
     return _format_results(query, results)
 
@@ -504,6 +531,7 @@ def tool_deep_research(topic: str, questions: str = "", include_github: str = "a
     web_results = []
     for q in search_queries[:3]:
         res = (_search_serper(q, 5) or _search_brave(q, 5)
+               or _search_google_news_rss(q, 5)
                or _search_baidu_mip(q, 5) or _search_sogou(q, 5) or _search_360(q, 5))
         if res:
             res = [r for r in res
@@ -557,16 +585,7 @@ def tool_deep_research(topic: str, questions: str = "", include_github: str = "a
 
     # ── 汇总 ─────────────────────────────────────────────────────────────
     if not sections:
-        if not SERPER_API_KEY and not BRAVE_API_KEY:
-            return (
-                f"深度研究「{topic}」：网络搜索被拦截（未配置API Key）\n\n"
-                f"GitHub部分可用（无需Key），但「{topic}」不是技术话题，无法用GitHub。\n\n"
-                f"激活完整搜索能力：\n"
-                f"1. 访问 https://serper.dev 免费注册（2500次Google搜索）\n"
-                f"2. 把API Key填入 wukong_tools.py 的 SERPER_API_KEY\n"
-                f"3. 重启悟空"
-            )
-        return f"深度研究失败：「{topic}」在所有渠道均无结果"
+        return f"深度研究失败：「{topic}」在所有渠道均无结果，网络可能不通。"
 
     report = f"深度研究报告：{topic}\n"
     if searched:
