@@ -2785,3 +2785,39 @@ python-dotenv # 配置管理
 （注：所有结论均严格基于README所述功能，未扩展非原文信息）
 
 ---
+
+### [悟空·tech] python windows service background daemon (2026-03-03 06:23)
+**真实来源**: GitHub:rany2/edge-tts(⭐10133) https://github.com/rany2/edge-tts
+**实战代码**: ✅ 已写代码: code/wukong_python_windows_service_background_daemon_0303_0623.py
+
+1. **解决问题**：该仓库通过Python模块方式，让开发者能够在代码或命令行中直接调用Microsoft Edge的在线文本转语音(TTS)服务，实现语音合成功能。
+
+2. **核心功能**：
+- 支持命令行工具`edge-tts`将文本转为语音文件并生成字幕（如`hello.mp3`和`hello.srt`）
+- 提供`edge-playback`命令实时播放语音（需配合mpv播放器，Windows除外）
+- 可切换多种语言的语音角色（通过`--voice`参数，如阿拉伯语`ar-EG-SalmaNeural`）
+- 调节语速/音量/音高（`--rate=-50%`降低语速、`--volume=-50%`降低音量、`--pitch=-50Hz`降低音高）
+- Windows系统默认支持`edge-playback`的即时播放（无需额外安装mpv）
+
+3. **代码示例**（来自README命令行示例）：
+```bash
+# 生成英语语音文件
+edge-tts --text "Hello, world!" --write-media hello.mp3 --write-subtitles hello.srt
+
+# 实时播放阿拉伯语语音
+edge-playback --voice ar-EG-SalmaNeural --text "مرحبا كيف حالك؟"
+
+# 生成降调50Hz的语音文件
+edge-tts --pitch=-50Hz --text "Hello!" --write-media low_pitch.mp3
+```
+
+4. **应用场景**：
+- **Windows后台服务**：可作为语音播报服务集成到Windows系统后台程序
+- **无障碍应用**：为视障用户实时转换文字内容为语音
+- **多语言教育**：快速生成不同语言的发音示范（如阿拉伯语示例）
+- **语音内容生产**：批量生成带字幕的语音文件用于视频制作
+- **系统通知**：通过调节音调/语速生成差异化的提醒音效
+
+（注：README未完整显示Python模块用法，故仅引用明确提到的命令行功能）
+
+---
