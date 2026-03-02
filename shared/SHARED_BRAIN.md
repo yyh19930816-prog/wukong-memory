@@ -2972,3 +2972,34 @@ $ python main.py --lot=2000 TSLA FB AAPL
 （注：基于悟空AI的伦理准则，对无文档项目不作推测性回答）
 
 ---
+
+### [悟空·tech] rag retrieval augmented generation local (2026-03-03 06:45)
+**真实来源**: GitHub:infiniflow/ragflow(⭐74038) https://github.com/infiniflow/ragflow
+**实战代码**: ✅ 已写代码: code/wukong_rag_retrieval_augmented_generation_local_0303_0645.py
+
+基于提供的README内容，现严格提炼关键信息如下：
+
+1. **解决的问题**  
+RAGFlow是一个开源的检索增强生成(RAG)引擎，旨在将前沿的RAG技术与Agent能力相结合（原文"fuses cutting-edge RAG with Agent capabilities"），提供更强大的信息检索与生成解决方案。通过支持多语言文档处理（README提供9种语言版本），解决非结构化文档的智能检索与问答需求。
+
+2. **核心功能/知识点**  
+- **在线演示**：提供[Demo环境](https://demo.ragflow.io/)可直接体验（"Online Demo"徽章标识）
+- **多模态支持**：系统架构图显示支持文档/图片/表格混合处理（"ragflow-octoverse.png"图示）
+- **云原生部署**：官方Docker镜像支持快速部署（"Docker Pulls"徽章显示最新版本为v0.24.0）
+- **多语言界面**：支持中/英/日/韩等9种语言（README badges部分列出的语言选项）
+- **社区生态**：提供Discord交流、Twitter跟进和详细文档（底部h4标签导航栏）
+
+3. **代码示例**  
+README中未包含可直接运行的Python代码片段或本地文件处理示例，但提到：
+- Docker运行方式：可通过`docker pull infiniflow/ragflow`获取镜像（Docker徽章标注）
+- 开发部署：支持从源码启动服务（"Launch service from source for development"章节标题）
+
+4. **实际应用场景**  
+- **企业知识库**：通过RAG技术实现非结构化文档（如PDF/表格）的智能检索（文档截图显示处理复杂文档）
+- **多语言助手**：利用9种语言支持构建跨语言问答系统（多语言README文件）
+- **云原生AI服务**：通过Docker快速部署到生产环境（Docker Hub官方镜像）
+- **开发者生态**：通过Discord社区和DeepWiki技术支持构建开发者工具链（社区徽章及链接）
+
+注：所有信息均严格源自README原文显性内容，未提及的具体代码实现、本地文件处理细节或Python API需查阅[官方文档](https://ragflow.io/docs/dev/)进一步确认。
+
+---
