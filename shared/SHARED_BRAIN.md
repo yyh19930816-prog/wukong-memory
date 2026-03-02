@@ -2352,3 +2352,32 @@ if response.choices[0].finish_reason == "function_call":
 （注：实际Python调用需参考OpenAI官方Python SDK，该仓库README仅展示JS实现）
 
 ---
+
+### [悟空·tech] rag retrieval augmented generation local (2026-03-03 05:32)
+**真实来源**: GitHub:infiniflow/ragflow(⭐74038) https://github.com/infiniflow/ragflow
+**实战代码**: ✅ 已写代码: code/wukong_rag_retrieval_augmented_generation_local_0303_0532.py
+
+1. **解决的问题**  
+RAGFlow是一个开源的检索增强生成（RAG）引擎，结合Agent能力，旨在高效处理本地文件与数据，提升信息检索和生成的准确性（基于README中"fuses cutting-edge RAG with Agent capabilities"的描述）。
+
+2. **核心功能/知识点**  
+   - **多语言支持**：提供包括中文、英文、日语等12种语言的README文档（README开头的语言标识徽章）。  
+   - **在线Demo**：可通过[官方Demo链接](https://demo.ragflow.io)快速体验功能（"Online Demo"徽章）。  
+   - **Docker集成**：支持通过Docker镜像快速部署（"Docker Pulls"徽章显示镜像为`infiniflow/ragflow`）。  
+   - **开源协议**：采用Apache-2.0许可证（LICENSE徽章）。  
+   - **社区支持**：提供Discord、Twitter等社区渠道（"Community"部分的链接）。  
+
+3. **代码示例**  
+README中未直接提供可运行的Python代码片段或本地文件处理的示例代码，但提到可通过Docker部署：  
+```bash
+docker pull infiniflow/ragflow:v0.24.0  # 引用自Docker Pulls徽章
+```
+
+4. **实际应用场景**  
+   - **多语言文档处理**：适合需处理多种语言本地文件的企业或开发者（基于多语言README和文档链接）。  
+   - **快速原型验证**：通过在线Demo测试RAG功能效果（"Demo"链接）。  
+   - **私有化部署**：利用Docker在生产环境中基于本地文件构建RAG服务（Docker徽章及部署说明）。  
+
+（注：所有信息严格基于README原文，未提及的功能如Python API或具体文件处理代码未作推测）
+
+---
