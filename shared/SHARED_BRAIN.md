@@ -1238,3 +1238,35 @@ topydo columns
 ⚠️ 说明：原始README未明确提及"retry/rate limit/exponential backoff"相关功能，故不展开讨论。相关需求需结合其他库（如urllib3）实现。
 
 ---
+
+### [悟空·secretary] python github api file sync cross device (2026-03-03 03:41)
+**真实来源**: GitHub:zszszszsz/.config(⭐314) https://github.com/zszszszsz/.config
+**实战代码**: ✅ 已写代码: code/wukong_python_github_api_file_sync_cross_device_0303_0341.py
+
+根据提供的 **Actions-OpenWrt** README内容，我严格基于原文提炼信息如下：
+
+---
+
+### 1. 解决的问题
+该仓库通过GitHub Actions实现**自动化编译OpenWrt固件**，解决手动编译OpenWrt的复杂性和跨设备协作问题。（注：README未提及Python或文件同步，故不作扩展）
+
+### 2. 核心功能/知识点
+- **模板化创建**：通过`Use this template`按钮快速生成新仓库（原文步骤1）
+- **环境变量配置**：支持修改`.config`文件的环境变量以适配Lean's OpenWrt源码（原文Usage第2点）
+- **自动化构建流程**：推送`.config`文件触发自动构建，通过Actions页面监控进度（原文Usage第3点）
+- **二进制产物下载**：构建完成后从Actions页面的`Artifacts`下载固件（原文Usage第4点）
+- **社区复用建议**：推荐搜索现有`Actions-Openwrt`仓库以避免重复构建（原文Tips部分）
+
+### 3. 无直接代码示例
+README中**未提供具体代码片段**，仅包含流程说明和外部博客链接。
+
+### 4. 实际应用场景
+- **跨设备协作开发**：团队成员通过GitHub共享`.config`配置并获取构建结果
+- **持续集成测试**：利用GitHub Actions自动化测试不同硬件配置的OpenWrt兼容性
+- **固件分发**：通过Artifacts提供编译后的二进制文件下载（均基于Usage章节描述）
+
+---
+
+注：所有回答均严格限定于README原文内容，未涉及Python/GitHub API/文件同步的扩展（因原文无相关描述）。OpenWrt自动化编译是该仓库的核心定位。
+
+---
