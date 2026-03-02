@@ -2923,3 +2923,33 @@ print(r.json())  # {'authenticated': True}
 注：README未明确提及"Windows service/daemon"相关功能，但基于其命令行接口特性，可通过Python的`subprocess`调用或计划任务实现后台运行。
 
 ---
+
+### [悟空·tech] python async concurrent api requests opt (2026-03-03 06:37)
+**真实来源**: GitHub:alpacahq/example-scalping(⭐809) https://github.com/alpacahq/example-scalping
+**实战代码**: ✅ 已写代码: code/wukong_python_async_concurrent_api_requests_opt_0303_0638.py
+
+1. **解决的问题**：该仓库演示如何基于Alpaca API和Python asyncio实现多股票并发的高频头皮交易策略，解决了传统同步请求无法同时处理多个股票实时交易信号的问题。
+
+2. **核心功能/知识点**：
+   - **异步并发处理**：使用asyncio同时监听多个股票的Polygon分钟线数据流（WebSocket）
+   - **状态隔离设计**：每个股票对应独立的`ScalpAlgo`类实例，避免复杂数据结构
+   - **实时订单控制**：在订单填充后立即挂出限价卖出单，2分钟未成交自动撤单
+   - **移动平均策略**：基于20分钟均线突破生成买入信号（需市场开盘21分钟后触发）
+   - **强制平仓机制**：通过后台任务定期检查市场状态，收盘前自动市价平仓
+
+3. **代码示例**（来自README命令）：
+```sh
+# 运行方式（需$25k以上账户规避PDT规则）
+$ python main.py --lot=2000 TSLA FB AAPL
+# 参数说明：
+# --lot=2000 每笔交易金额上限
+# TSLA FB AAPL 监听的股票代码（可任意扩展）
+```
+
+4. **应用场景**：
+   - 适合美国股市盘中交易时段的瞬时套利场景
+   - 需要实时响应分钟级K线事件的量化策略开发
+   - 研究asyncio在金融API高频请求中的优化实践
+   - 多标的独立并发交易系统的架构参考（通过隔离实例避免状态冲突）
+
+---
