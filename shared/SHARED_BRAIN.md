@@ -1802,3 +1802,35 @@ uv tool install basic-memory
 （注：虽然问题主题提及"python github api"，但该仓库README完全不涉及Python或GitHub API相关内容，故不作回答。所有回答严格基于README原文提炼。）
 
 ---
+
+### [悟空·supervise] python health check heartbeat monitoring (2026-03-03 04:32)
+**真实来源**: GitHub:laitco/tailscale-healthcheck(⭐155) https://github.com/laitco/tailscale-healthcheck
+**实战代码**: ✅ 已写代码: code/wukong_python_health_check_heartbeat_monitoring_0303_0433.py
+
+1. **解决问题**  
+该仓库提供了一个基于Python Flask的Docker化工具，用于监控Tailscale网络中设备的健康状态，包括在线状态、密钥有效期和更新状态等核心指标。
+
+2. **核心功能**  
+(直接引用README原文标注的功能)  
+- **全局健康检测**：聚合`global_healthy`/`global_online_healthy`/`global_key_healthy`等多维度状态  
+- **精细化过滤**：支持通过OS类型、设备标识符(hostname/ID)、标签(Tags)进行设备筛选，支持通配符  
+- **密钥过期预警**：提供`key_days_to_expire`指标量化密钥剩余有效期  
+- **时区适配**：可配置时区转换`lastSeen`时间戳  
+- **Gatus集成**：原生支持与监控系统Gatus的对接  
+
+3. **代码示例**  
+README中未提供完整代码片段，但明确给出以下**可直接调用的HTTP端点**：  
+- `/health` - 获取全网设备健康状态  
+- `/health/<identifier>` - 查询特定设备状态(hostname/ID/名称)  
+- `/health/healthy` - 列出所有健康设备  
+- `/health/unhealthy` - 列出异常设备  
+
+4. **应用场景**  
+- **运维监控**：实时感知Tailscale VPN中设备的离线、密钥过期等异常  
+- **自动化治理**：结合Gatus系统自动触发设备维护流程  
+- **安全审计**：通过`key_days_to_expire`指标预防密钥失效导致的连接中断  
+- **多时区团队协作**：标准化设备最后在线时间的时区显示  
+
+（注：由于README内容截断，完整功能描述可参考原文档，所有信息均严格基于已提供的README内容提炼）
+
+---
