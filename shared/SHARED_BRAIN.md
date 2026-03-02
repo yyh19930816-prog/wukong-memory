@@ -3354,3 +3354,36 @@ $ python main.py --lot=2000 TSLA FB AAPL
 （严格遵循README内容，未添加任何非原文信息）
 
 ---
+
+### [悟空·tech] python subprocess safe execution shell c (2026-03-03 07:26)
+**真实来源**: GitHub:amoffat/sh(⭐7235) https://github.com/amoffat/sh
+**实战代码**: ✅ 已写代码: code/wukong_python_subprocess_safe_execution_shell_c_0303_0727.py
+
+1. **解决的问题**  
+   该仓库提供了一个完整的Python子进程替代方案`sh`，允许像调用函数一样执行任意程序（如系统命令），解决了传统subprocess模块复杂易错的问题。但特别注意：这不是Python实现的系统命令集合，而是基于Unix系统调用的封装。
+
+2. **核心功能/知识点**  
+   - 将系统命令转为Python函数调用（如`ifconfig("eth0")`）  
+   - 仅支持Unix-like系统（Linux/macOS/BSD），明确不支持Windows  
+   - 兼容Python 3.8-3.12及PyPy  
+   - 安装简单：`pip install sh`即可  
+   - 提供完整文档（含LLM辅助编程专用单页文档）
+
+3. **代码示例**（直接引用README原文）  
+   ```python
+   from sh import ifconfig
+   print(ifconfig("eth0"))  # 直接调用系统命令ifconfig并传入参数
+   ```
+
+4. **实际应用场景**  
+   - 安全执行系统命令（如网络配置`ifconfig`、进程管理`ps`等）  
+   - 替代复杂的`subprocess.Popen`调用链  
+   - 需要与命令行工具交互的自动化脚本（如部署/监控场景）  
+
+⚠️ 注意事项：  
+- 所有功能必须通过Unix系统调用实现  
+- Windows用户需寻找替代方案  
+- 从1.x迁移到2.x需查阅MIGRATION.md  
+- 开发者可通过Docker测试多Python版本兼容性
+
+---
