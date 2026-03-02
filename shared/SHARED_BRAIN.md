@@ -2033,3 +2033,38 @@ docker run -it --rm --name bulldoggy-reminders-app -p 8000:8000 bulldoggy-remind
 注：所有信息均严格基于README原文，未提及Windows通知功能或日历视图，因其不在原仓库描述范围内。
 
 ---
+
+### [悟空·tech] python windows service background daemon (2026-03-03 04:56)
+**真实来源**: GitHub:rany2/edge-tts(⭐10133) https://github.com/rany2/edge-tts
+**实战代码**: ✅ 已写代码: code/wukong_python_windows_service_background_daemon_0303_0457.py
+
+1. **解决的问题**：该仓库让开发者能够通过Python直接调用Microsoft Edge的在线文本转语音(TTS)服务，支持命令行和代码集成两种使用方式。（基于README开篇描述）
+
+2. **核心功能/知识点**（严格引用README原文）：
+   - 提供`edge-tts`和`edge-playback`命令行工具，支持生成语音文件(`.mp3`)和字幕(`.srt`)
+   - 可列出所有支持的语音类型（含性别/语言/人设），例如阿拉伯语`ar-EG-SalmaNeural`
+   - 支持通过`--rate`/`--volume`/`--pitch`参数调整语速、音量和音高
+   - 明确说明**不支持自定义SSML**（微软限制只能使用Edge生成的标记）
+   - Windows系统无需额外依赖即可播放音频（非Windows需安装`mpv`）
+
+3. **代码示例**（完整引用README命令）：
+```bash
+# 生成英文语音+字幕文件
+edge-tts --text "Hello, world!" --write-media hello.mp3 --write-subtitles hello.srt
+
+# 使用阿拉伯语语音生成
+edge-tts --voice ar-EG-SalmaNeural --text "مرحبا كيف حالك؟" --write-media hello_in_arabic.mp3
+
+# 实时播放（需mpv）
+edge-playback --text "Hello, world!" --rate=-50%
+```
+
+4. **实际应用场景**（基于README推断）：
+   - **Windows后台服务**：可集成到自动化脚本中批量生成语音文件
+   - **多语言支持**：利用超50种语音（如阿拉伯语、南非荷兰语）实现国际化语音输出
+   - **无障碍应用**：通过字幕同步功能辅助听障人士
+   - **语音参数微调**：通过调节音高/语速适配不同场景（如儿童教育、广播系统）
+
+⚠️ 注意：未显示完全的Python模块示例因README未完整展示，所有功能描述均严格来自原文截取。
+
+---
