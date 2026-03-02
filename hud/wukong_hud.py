@@ -979,6 +979,7 @@ class WukongHUD(ctk.CTk):
 
             # ── Function Calling 循环（最多5轮工具调用）────────────────────────
             tool_calls_log = []
+            force_no_tool = False  # 工具执行完但内容空时，强制下一轮只生成文字
             max_rounds = 5
 
             for round_n in range(max_rounds):
@@ -988,7 +989,7 @@ class WukongHUD(ctk.CTk):
                     "stream": False,
                 }
                 # 只在工具可用时传入tools参数
-                if TOOLS_ENABLED:
+                if TOOLS_ENABLED and not force_no_tool:
                     req_body["tools"] = TOOLS_SCHEMA
                     req_body["tool_choice"] = "auto"
 
@@ -1016,12 +1017,13 @@ class WukongHUD(ctk.CTk):
                 if finish_reason != "tool_calls" or not message.get("tool_calls"):
                     reply = message.get("content", "")
 
-                    # 工具执行完但模型返回空内容 → 追加指令让他汇总
+                    # 工具执行完但模型返回空内容 → 强制下一轮不允许再调工具，只生成文字总结
                     if not reply and tool_calls_log:
                         msgs.append({
                             "role": "user",
-                            "content": "请根据上面的工具结果，用中文回答用户的问题。"
+                            "content": "请根据上面工具返回的真实数据，直接用中文回答我的问题，不要再调用任何工具。"
                         })
+                        force_no_tool = True  # 下一轮不传 tools，强制纯文字回复
                         continue
 
                     if not reply:
