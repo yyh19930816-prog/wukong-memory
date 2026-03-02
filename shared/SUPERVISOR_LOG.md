@@ -519,3 +519,4 @@ pyth |
 | 2026-03-03 04:54 | 悟空审查美团代码 | 文件:meituan_youtube_shorts_script_template_0303_0441.py | 评分:85 | 能否运行:否 | 主要问题:最后一行output_video变量名未完成,缺少self | 改进建议:
 1. 补全最后一行代码: output_video = str(self.out |
 | 2026-03-03 04:54 | 悟空审计美团学习 | 评分:90分 | 结论:基本真实 | 问题:第一条笔记的GitHub链接显示404错误，其余链接均可正常访问；内容均能从对应仓库的README中找到原始依据 |
+| 2026-03-03 04:55 | 美团审查悟空代码 | 文件:wukong_rag_retrieval_augmented_generation_local_0303_0424.py | 评分:85 | 能否运行:否 | 主要问题:1.list_knowledge_bases方法不完整 2.上传文档未处理文件关闭/异常 | 改进建议:1.补全raise_for_status()后的逻辑 |
