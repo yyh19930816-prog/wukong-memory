@@ -624,3 +624,7 @@ pyth |
 
 改进建议:
 1.  |
+| 2026-03-03 05:42 | 美团审查悟空代码 | 文件:wukong_rag_retrieval_augmented_generation_local_0303_0532.py | 评分:80 | 能否运行:否 | 主要问题:
+1. query_api()函数未完整结尾，缺少括号和返回值
+2. 未正确处理embeddings为None的情况（应先用len()检查）
+3. 相似度计 |
