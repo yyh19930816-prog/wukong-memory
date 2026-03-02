@@ -741,3 +741,35 @@ README中未提供可直接运行的代码片段，但通过图示展示了crewA
 （注：所有信息均严格基于README原文，未引用图示具体代码。crewAI框架的特点主要体现在角色化分工、多模型适配和错误控制机制上，适用于需要多阶段决策的复杂业务场景。）
 
 ---
+
+### [悟空·tech] python windows service background daemon (2026-03-03 02:47)
+**真实来源**: GitHub:rany2/edge-tts(⭐10132) https://github.com/rany2/edge-tts
+**实战代码**: ✅ 已写代码: code/wukong_python_windows_service_background_daemon_0303_0248.py
+
+1. **解决问题**：  
+   `edge-tts`是一个Python模块，允许用户通过代码或命令行直接调用微软Edge的在线文本转语音(TTS)服务，无需浏览器交互即可生成语音文件和字幕。
+
+2. **核心功能/知识点**（严格基于README）：  
+   - **命令行直接调用**：支持通过`edge-tts`命令生成语音文件（如MP3）和字幕文件（SRT），例如：`edge-tts --text "Hello" --write-media hello.mp3`  
+   - **实时播放**：通过`edge-playback`命令即时播放语音（依赖`mpv`播放器，Windows除外）。  
+   - **多语言语音选择**：支持列出并选择不同语言的AI语音（如阿拉伯语`ar-EG-SalmaNeural`）。  
+   - **参数调节**：可调整语速(`--rate`)、音量(`--volume`)、音调(`--pitch`)（例如`--rate=-50%`）。  
+   - **SSML限制**：微软禁止自定义SSML，仅允许使用Edge原生生成的简单标签结构。
+
+3. **代码示例**（直接引用README命令）：  
+   ```bash
+   # 生成阿拉伯语语音文件
+   edge-tts --voice ar-EG-SalmaNeural --text "مرحبا كيف حالك؟" --write-media hello_in_arabic.mp3 --write-subtitles hello_in_arabic.srt
+
+   # 调整语速并生成文件
+   edge-tts --rate=-50% --text "Hello, world!" --write-media hello_with_rate_lowered.mp3 --write-subtitles hello_with_rate_lowered.srt
+   ```
+
+4. **实际应用场景**：  
+   - **自动化语音生成**：在无人值守的Windows服务/后台进程中批量生成多语言语音内容（如语音提醒、有声书）。  
+   - **无障碍工具开发**：集成到辅助工具中为视障用户实时转换文本内容（需结合`edge-playback`）。  
+   - **多媒体处理流水线**：与视频编辑脚本配合，动态生成配音和字幕文件（通过`--write-media`和`--write-subtitles`）。  
+
+⚠️ 注：README未明确提及其作为Windows服务的实现代码，但命令行模式天然适用于后台进程调用（如通过Python的`subprocess`模块）。
+
+---
