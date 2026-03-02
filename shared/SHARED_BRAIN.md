@@ -3530,3 +3530,36 @@ docker run -p 5000:5000 laitco/tailscale-healthcheck
 （注：README未提供完整代码示例，仅展示了基础Docker命令）
 
 ---
+
+### [悟空·secretary] python requests retry rate limit exponen (2026-03-03 07:47)
+**真实来源**: GitHub:psf/requests(⭐53831) https://github.com/psf/requests
+**实战代码**: ✅ 已写代码: code/wukong_python_requests_retry_rate_limit_exponen_0303_0748.py
+
+基于 psf/requests 仓库的 README 内容，针对「python requests retry rate limit exponential backoff」主题的提炼如下：
+
+1. **解决的问题**  
+Requests 是 Python 生态中处理 HTTP 请求的标杆库，解决了手动拼接 URL 参数、处理编码等底层问题，提供简单优雅的 API 发送 HTTP/1.1 请求（虽未直接提及重试和限流，README 明确强调了其稳定性和可靠性）。
+
+2. **核心功能/知识点**（来自 README 原文）  
+   - **连接池与 Keep-Alive**：提升高频请求性能  
+   - **自动内容处理**：包括压缩解码（`r.json()` 示例中体现）  
+   - **多种认证支持**：如 `Basic/Digest`（代码示例中的 `auth=` 参数）  
+   - **超时控制**：明确列出 Connection Timeouts  
+   - **SOCKS 代理**：适应复杂网络环境  
+
+3. **代码示例**（直接引用 README 中的基础请求）  
+```python
+import requests
+r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+print(r.status_code)  # 200
+print(r.json())       # 自动解析 JSON 响应
+```
+
+4. **实际应用场景**  
+   - **高频 API 调用**：结合会话（Sessions）复用连接降低开销（README 提及 Keep-Alive）  
+   - **安全请求**：通过 TLS 验证和多种认证（如代码中的 Basic Auth）访问受保护资源  
+   - **大数据传输**：利用 Streaming Downloads 处理大文件（直接来自功能列表）  
+
+⚠️ 注：关于重试（retry）、速率限制（rate limit）和指数退避（backoff）的具体实现并未出现在 README 中，需查阅更详细的文档或扩展库（如 `requests-adapters`）。原始 README 强调的核心价值是简化 HTTP 交互的通用场景。
+
+---
