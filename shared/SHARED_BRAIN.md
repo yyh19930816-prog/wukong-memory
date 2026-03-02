@@ -3563,3 +3563,36 @@ print(r.json())       # 自动解析 JSON 响应
 ⚠️ 注：关于重试（retry）、速率限制（rate limit）和指数退避（backoff）的具体实现并未出现在 README 中，需查阅更详细的文档或扩展库（如 `requests-adapters`）。原始 README 强调的核心价值是简化 HTTP 交互的通用场景。
 
 ---
+
+### [悟空·supervise] python health check heartbeat monitoring (2026-03-03 07:48)
+**真实来源**: GitHub:laitco/tailscale-healthcheck(⭐155) https://github.com/laitco/tailscale-healthcheck
+**实战代码**: ✅ 已写代码: code/wukong_python_health_check_heartbeat_monitoring_0303_0749.py
+
+1. **解决的问题**：这是一个基于Python的Flask应用，通过Docker容器化部署，用于监控Tailscale网络中所有设备的健康状态（在线状态、密钥有效期、系统更新状态等）。
+
+2. **核心功能/知识点**（直接摘自README）：
+   - **设备状态检测**：同时检查设备的在线状态（`online_healthy`）、密钥有效期（`key_healthy`）和系统更新状态（`update_healthy`）
+   - **全局聚合指标**：提供全局健康状态（`global_healthy`）及其子状态（在线/密钥/更新的聚合结果）
+   - **灵活过滤**：支持按操作系统、设备标识（主机名/IP/Tag）进行过滤，可使用通配符
+   - **时区适配**：可配置时区来调整设备`lastSeen`时间戳显示
+   - **安全输出**：敏感数据自动脱敏，支持通过`DISPLAY_SETTINGS_IN_OUTPUT`控制配置信息是否显示
+
+3. **代码示例**（README中未提供具体代码片段，但描述了两个关键运行方式）：
+   ```bash
+   # 从Docker Hub直接运行（README提到的部署方式）
+   docker run -p 5000:5000 laitco/tailscale-healthcheck
+
+   # 本地构建运行（同README说明）
+   docker build -t tailscale-healthcheck .
+   docker run -p 5000:5000 tailscale-healthcheck
+   ```
+
+4. **应用场景**：
+   - **网络运维监控**：通过`/health`接口获取整个Tailscale网络的设备健康概览
+   - **自动化告警**：将`/health/unhealthy`端点接入Gatus等监控系统（README明确提及集成）
+   - **密钥管理**：利用`key_days_to_expire`指标预防密钥过期导致的连接中断
+   - **设备维护窗口规划**：根据`update_healthy`状态批量筛选需要系统更新的设备
+
+注：原始README未完整显示，缓存配置（Configurable Caching）部分被截断，故未列入核心功能。所有信息均严格基于已提供的README内容提炼。
+
+---
