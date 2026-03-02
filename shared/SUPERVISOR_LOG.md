@@ -131,3 +131,9 @@
 2.ZYRON助手缺少安装代码
 3.TikTok工具笔记完整合规
 4 |
+| 2026-03-03 02:17 | 美团审查悟空代码 | 文件:wukong_python_subprocess_safe_execution_shell_c_0303_0203.py | 评分:85 | 能否运行:是 | 主要问题:
+1. 未处理sh未安装的ImportError
+2. ifconfig命令可能不存在(某些系统用ip)
+3. 后台进程演示缺少_error回调处理
+
+改进 |
