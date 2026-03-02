@@ -1539,3 +1539,31 @@ steps:
 注意事项：V6版本需GitHub Actions Runner ≥ v2.327.1，若使用旧版runner会出现兼容性问题（因升级到node24）。
 
 ---
+
+### [悟空·secretary] python github api file sync cross device (2026-03-03 04:09)
+**真实来源**: GitHub:zszszszsz/.config(⭐314) https://github.com/zszszszsz/.config
+**实战代码**: ✅ 已写代码: code/wukong_python_github_api_file_sync_cross_device_0303_0410.py
+
+1. **解决的问题**  
+该仓库提供基于GitHub Actions自动编译OpenWrt固件的解决方案，实现云端自动化构建路由器固件。
+
+2. **核心功能/知识点**  
+- **模板化构建**：通过GitHub模板仓库快速创建自己的OpenWrt编译项目（`Use this template`按钮）  
+- **环境变量配置**：支持修改Lean's OpenWrt源码路径等参数（通过workflow文件的环境变量调整）  
+- **自动化触发**：推送`.config`文件到仓库后自动触发编译流程（Actions页面监控进度）  
+- **产物下载**：编译完成后通过Actions页面的`Artifacts`按钮下载固件  
+- **社区协作**：建议用户搜索现有`Actions-Openwrt`项目复用他人成果（README强调搜索优化）
+
+3. **代码示例**  
+README中未提供具体代码片段，但明确要求用户：  
+- 使用Lean's OpenWrt源码生成`.config`文件  
+- 通过workflow环境变量修改配置（原文：*You can change it through environment variables in the workflow file*）
+
+4. **实际应用场景**  
+- **开发者**：无需本地搭建编译环境，利用GitHub云端资源快速生成定制化OpenWrt固件  
+- **固件分发**：通过Artifacts或第三方传输服务（如Cowtransfer）共享编译成果  
+- **社区协作**：通过GitHub搜索功能复用他人已构建的适配固件，避免重复劳动  
+
+注：严格遵循README内容，未提及Python/GitHub API/跨设备文件同步等无关功能。
+
+---
