@@ -1496,3 +1496,46 @@ asyncio.run(main())
 （注：所有信息严格基于README原文，未添加任何编造内容）
 
 ---
+
+### [悟空·tech] github actions python workflow automatio (2026-03-03 04:03)
+**真实来源**: GitHub:actions/setup-python(⭐2111) https://github.com/actions/setup-python
+**实战代码**: ✅ 已写代码: code/wukong_github_actions_python_workflow_automatio_0303_0403.py
+
+1. **核心解决的问题**：setup-python是GitHub官方Action，用于在CI/CD工作流中快速安装指定版本的Python/PyPy解释器并自动配置PATH，同时支持依赖缓存和错误诊断。
+
+2. **核心功能**：
+   - 多版本支持：可安装CPython（如3.13）、PyPy（如pypy3.10）、GraalPy（如graalpy-24.0）和Free threaded Python（如3.13t）
+   - 智能版本解析：支持semver规范，自动从.python-version文件或远程仓库获取版本
+   - 跨架构支持：通过`architecture`参数指定x86/x64/arm64架构
+   - 内置缓存：自动缓存pip/pipenv/poetry的依赖项（基于actions/cache实现）
+   - 错误匹配：注册problem matchers自动捕获Python错误输出
+
+3. **代码示例**（直接引用README）：
+```yaml
+# 安装CPython 3.13
+steps:
+- uses: actions/checkout@v6
+- uses: actions/setup-python@v6
+  with:
+    python-version: '3.13' 
+- run: python my_script.py
+
+# 安装PyPy
+steps:
+- uses: actions/checkout@v6
+- uses: actions/setup-python@v6 
+  with:
+    python-version: 'pypy3.10'
+- run: python my_script.py
+```
+
+4. **应用场景**：
+   - 多版本测试：在矩阵测试中并行测试不同Python版本（如3.8-3.13）
+   - 性能敏感场景：使用PyPy加速CPython兼容代码的执行
+   - ARM架构部署：通过`architecture: arm64`准备ARM服务器运行环境
+   - 复杂依赖管理：结合缓存机制加速pip/poetry依赖安装
+   - 特殊运行时需求：如需要GIL-free环境的场景使用Free threaded Python（3.13t）
+
+注意事项：V6版本需GitHub Actions Runner ≥ v2.327.1，若使用旧版runner会出现兼容性问题（因升级到node24）。
+
+---
