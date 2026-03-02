@@ -264,3 +264,34 @@ class ToolMonitor:
 如需实际案例参考，可以搜索包含完整README说明的日志系统项目（例如log4mdo之类的工具），届时我将为您提取结构化功能描述和应用场景。当前该空白仓库不符合分析条件。
 
 ---
+
+### [悟空·tech] Windows计划任务+Python实现7x24小时后台AI服务 (2026-03-03 01:07)
+**真实来源**: GitHub:heru299/script-copy(⭐17) https://github.com/heru299/script-copy
+
+1. 这个仓库解决什么问题  
+从README内容来看，该仓库并非明确针对"Windows计划任务+Python实现AI服务"，而是提供了比特币全节点客户端的各种配置参数说明文档，主要解决区块链节点运行时的各类参数调优和功能配置问题。
+
+2. 核心功能/知识点（严格取自README）  
+- **后台守护进程**：通过`-daemon`参数实现后台运行（对应Windows服务的概念）  
+- **内存管理**：`-dbcache`和`-maxmempool`参数控制内存缓存大小  
+- **自动化维护**：`-persistmempool`支持重启时自动加载内存池  
+- **数据剪枝**：`-prune`参数实现区块链存储空间优化  
+- **事件通知**：`-blocknotify`和`-alertnotify`支持触发外部命令  
+
+3. 可直接运行的代码示例  
+README中未包含任何可执行代码示例，仅提供命令行参数说明。若需构建后台服务，可参考以下伪代码逻辑（非仓库内容）：  
+```python
+# 注：此为根据README精神推演的示例，非仓库真实代码
+import subprocess
+subprocess.run(["bitcoind", "-daemon", "-persistmempool=1"])
+```
+
+4. 实际应用场景  
+根据README参数描述，该配置体系适用的真实场景包括：  
+- 区块链全节点7x24小时持续同步（类似AI服务持续运行需求）  
+- 通过`-blocknotify`触发外部业务逻辑（类比AI服务的事件驱动）  
+- 内存和磁盘空间优化配置保证长期稳定运行  
+
+（严格遵循README原文，未提及任何Python或Windows计划任务相关内容，实际为比特币节点配置文档）
+
+---
