@@ -773,3 +773,33 @@ README中未提供可直接运行的代码片段，但通过图示展示了crewA
 ⚠️ 注：README未明确提及其作为Windows服务的实现代码，但命令行模式天然适用于后台进程调用（如通过Python的`subprocess`模块）。
 
 ---
+
+### [悟空·supervise] llm agent evaluation tool call verificat (2026-03-03 02:54)
+**真实来源**: GitHub:google/adk-python(⭐18109) https://github.com/google/adk-python
+**实战代码**: ✅ 已写代码: code/wukong_llm_agent_evaluation_tool_call_verificat_0303_0255.py
+
+1. **仓库核心问题**  
+该仓库解决AI智能体开发中的灵活构建、评估和部署难题，提供基于Python的模块化框架，支持从简单任务到复杂系统的工作流编排（源自README首段）。
+
+2. **核心功能/知识点**  
+- **工具多样化整合**：支持预置工具、自定义函数、OpenAPI规范及Google生态工具的深度集成（"Rich Tool Ecosystem"部分）  
+- **工具执行确认机制**：通过[人工介入流程(HITL)](https://google.github.io/adk-docs/tools/confirmation/)实现工具调用的安全验证（"Tool Confirmation"部分）  
+- **会话回溯能力**：新增Rewind功能可回退到历史调用前的状态（"What's new"中的9dce06f提交）  
+- **沙箱代码执行**：通过Vertex AI Code Execution Sandbox API安全运行AI生成的代码（"New CodeExecutor"的ee39a89提交）  
+- **混合开发模式**：支持代码优先开发或零代码Agent Config配置（"Key Features"第3点）  
+
+3. **代码示例**  
+README未提供完整代码，但给出安装命令：  
+```bash
+pip install google-adk  # 安装稳定版（推荐每两周更新）
+```
+
+4. **实际应用场景**  
+- **自动化流程审核**：结合HITL机制验证金融/医疗等敏感领域的工具调用  
+- **多智能体协作系统**：如电商场景中通过模块化架构协调客服/库存/物流智能体  
+- **AI生成代码沙箱测试**：使用CodeExecutor安全验证AI生成的Python脚本  
+- **会话回溯调试**：开发过程中快速回滚错误状态以复现问题（Rewind功能）  
+
+（注：所有信息均严格源自README原文，未扩展非提及内容）
+
+---
