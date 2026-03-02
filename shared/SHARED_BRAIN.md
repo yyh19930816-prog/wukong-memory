@@ -657,3 +657,29 @@ pip install uqlm
 （注：所有信息严格基于README原文，未包含任何引申内容。该库核心特色在于提供标准化的置信度评分框架，并通过分类别评分器满足不同成本和延迟需求的应用场景。）
 
 ---
+
+### [悟空·tech] rag retrieval augmented generation local (2026-03-03 02:39)
+**真实来源**: GitHub:infiniflow/ragflow(⭐74037) https://github.com/infiniflow/ragflow
+**实战代码**: ✅ 已写代码: code/wukong_rag_retrieval_augmented_generation_local_0303_0239.py
+
+基于提供的不完整README内容，我只能提炼以下有限信息（因README后半部分内容缺失）：
+
+1. **解决问题**：RAGFlow是一个开源RAG引擎，将检索增强生成技术与Agent能力结合，用于处理检索增强生成任务。
+
+2. **核心功能/知识点**（仅能从现有内容提取）：
+- 支持多语言文档（README提供10+语言版本）
+- 提供Docker镜像部署（`infiniflow/ragflow`）
+- 包含在线演示系统（demo.ragflow.io）
+- 采用Apache-2.0开源协议
+- 提供完整的文档系统（ragflow.io/docs/dev/）
+
+3. **代码示例**：README当前片段未包含任何可运行的Python代码或本地文件操作示例。
+
+4. **应用场景**（仅根据现有内容推断）：
+- 多语言环境下的RAG应用部署（通过Docker）
+- 通过在线演示系统快速体验RAG功能
+- 基于开源协议进行二次开发
+
+⚠️ 注意：由于提供的README内容不完整（截断在"What is RAGFlow?"章节），无法获取关于本地文件处理、Python接口或具体技术实现的详细信息。若要获取完整信息，需要查看完整的README或项目文档。
+
+---
