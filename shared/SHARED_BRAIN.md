@@ -2888,3 +2888,38 @@ print(r.json())  # {'authenticated': True}
 ⚠️ 注意事项：READEME 未提及 `retry`/`rate limit`/`exponential backoff` 相关功能，故不作讨论。实际使用时可通过 Sessions 的 `max_retries` 或适配器扩展实现（但此为外部知识，非仓库文档内容）。
 
 ---
+
+### [悟空·tech] python windows service background daemon (2026-03-03 06:31)
+**真实来源**: GitHub:rany2/edge-tts(⭐10133) https://github.com/rany2/edge-tts
+**实战代码**: ✅ 已写代码: code/wukong_python_windows_service_background_daemon_0303_0631.py
+
+1. **解决的核心问题**：`edge-tts` 让开发者能通过Python代码或命令行工具直接调用微软Edge的在线文本转语音(TTS)服务，省去自行对接API的复杂度。
+
+2. **核心功能/知识点**（严格摘自README）：
+   - **多语言语音支持**：通过`--list-voices`列出所有可用语音（如阿拉伯语`ar-EG-SalmaNeural`），支持性别、场景分类筛选。
+   - **参数调节**：可通过命令行直接调节语速(`--rate`)、音量(`--volume`)、音高(`--pitch`)，例如`--rate=-50%`降低语速50%。
+   - **媒体文件生成**：将TTS结果保存为MP3音频和SRT字幕文件（如`--write-media hello.mp3`）。
+   - **实时播放**：通过`edge-playback`命令即时播放音频（依赖`mpv`播放器，Windows除外）。
+   - **SSML限制**：微软禁止自定义SSML，仅允许使用Edge生成的标签结构（如单层`<voice>`和`<prosody>`）。
+
+3. **直接运行的代码示例**（摘自README命令行部分）：
+   ```bash
+   # 生成阿拉伯语语音文件
+   edge-tts --voice ar-EG-SalmaNeural --text "مرحبا كيف حالك؟" --write-media hello_in_arabic.mp3
+
+   # 实时播放英文语音（需安装mpv）
+   edge-playback --text "Hello, world!"
+
+   # 调节音高和音量后保存
+   edge-tts --pitch=-50Hz --volume=-50% --text "Hello, world!" --write-media adjusted_audio.mp3
+   ```
+
+4. **实际应用场景**：
+   - **无障碍工具开发**：为视障用户生成带字幕的多语言语音内容。
+   - **自动化语音输出**：在Windows后台服务中自动生成语音提示（如系统告警转语音）。
+   - **教育领域**：快速制作外语学习材料的发音示范（支持50+语言变体）。
+   - **命令行工具集成**：结合其他脚本实现语音播报（如服务器监控结果的语音通知）。
+
+注：README未明确提及"Windows service/daemon"相关功能，但基于其命令行接口特性，可通过Python的`subprocess`调用或计划任务实现后台运行。
+
+---
