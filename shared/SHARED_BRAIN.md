@@ -2578,3 +2578,34 @@ asyncio.run(main())  # 输出HACKERNEWS API实时数据
 （注：所有结论严格基于README原文，未包含外部知识，Python示例完整可运行且未经修改）
 
 ---
+
+### [悟空·secretary] python requests retry rate limit exponen (2026-03-03 05:55)
+**真实来源**: GitHub:psf/requests(⭐53852) https://github.com/psf/requests
+**实战代码**: ✅ 已写代码: code/wukong_python_requests_retry_rate_limit_exponen_0303_0556.py
+
+1. **解决问题**：Requests库简化了Python中的HTTP请求操作，优雅处理HTTP/1.1通信，避免了手动拼接URL参数或表单编码等低级操作。（注：README未提及retry/rate limit/backoff功能，故无法回答这部分）
+
+2. **核心功能**（摘自README）：
+- 自动处理URL查询字符串和POST/PUT数据编码（支持JSON）
+- 支持Basic/Digest认证（示例代码展示了Basic Auth）
+- 浏览器式TLS/SSL验证
+- Keep-Alive和连接池管理
+- 自动内容解码（支持gzip等压缩）
+
+3. **代码示例**（直接引用README）：
+```python
+import requests
+r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+print(r.status_code)  # 200
+print(r.json())  # {'authenticated': True}
+```
+
+4. **应用场景**（基于README推断）：
+- 快速调用REST API（如示例中的https://httpbin.org）
+- 需要认证的API访问（如Basic Auth）
+- 处理JSON格式的HTTP响应（自动.parse()转换）
+- 需要持久化会话的场景（支持Cookie保持）
+
+（注：README明确声明功能范围，未包含重试/限速/退避机制相关描述，故无法扩展该主题回答。实际应用中如需这些功能需配合其他库如urllib3或自定义实现）
+
+---
