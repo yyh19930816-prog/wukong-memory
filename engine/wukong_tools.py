@@ -301,6 +301,87 @@ def tool_search_web(query: str) -> str:
     return "\n".join(lines)
 
 
+def tool_open_url(url: str) -> str:
+    """
+    打开任意网页链接，读取页面的主要文字内容。
+    支持：普通网页、微博、知乎、公众号、新闻等文字类页面。
+    注意：抖音/微信视频号等视频类平台只能读到文字信息，无法看视频本身。
+    url: 完整的网址，如 https://www.douyin.com/user/xxx
+    """
+    if not url.startswith("http"):
+        url = "https://" + url
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+        "Accept-Encoding": "gzip, deflate",
+        "Connection": "keep-alive",
+    }
+
+    import re
+
+    # 特殊平台提示
+    special_tips = {
+        "douyin.com": "抖音",
+        "tiktok.com": "TikTok",
+        "bilibili.com": "B站",
+        "youtube.com": "YouTube",
+        "weixin.qq.com": "微信公众号",
+    }
+    platform = next((v for k, v in special_tips.items() if k in url), None)
+
+    try:
+        r = requests.get(url, headers=headers, timeout=15, allow_redirects=True)
+        r.encoding = r.apparent_encoding or "utf-8"
+        html = r.text
+
+        # 提取 title
+        title_match = re.search(r"<title[^>]*>(.*?)</title>", html, re.IGNORECASE | re.DOTALL)
+        title = re.sub(r"<[^>]+>", "", title_match.group(1)).strip() if title_match else ""
+
+        # 提取 meta description
+        desc_match = re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=["\'](.*?)["\']', html, re.IGNORECASE)
+        desc = desc_match.group(1).strip() if desc_match else ""
+
+        # 提取 og:description（社交媒体常用）
+        og_desc = re.search(r'<meta[^>]+property=["\']og:description["\'][^>]+content=["\'](.*?)["\']', html, re.IGNORECASE)
+        og_desc = og_desc.group(1).strip() if og_desc else ""
+
+        # 提取正文（去掉脚本/样式，取纯文字）
+        clean_html = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.DOTALL | re.IGNORECASE)
+        clean_html = re.sub(r"<style[^>]*>.*?</style>", "", clean_html, flags=re.DOTALL | re.IGNORECASE)
+        text = re.sub(r"<[^>]+>", " ", clean_html)
+        text = re.sub(r"\s+", " ", text).strip()
+
+        lines = [f"网页内容（{url}）："]
+        if title:
+            lines.append(f"标题：{title}")
+        if desc:
+            lines.append(f"描述：{desc[:200]}")
+        elif og_desc:
+            lines.append(f"描述：{og_desc[:200]}")
+
+        # 取正文前800字
+        if text and len(text) > 50:
+            lines.append(f"正文内容：{text[:800]}")
+
+        if platform in ("抖音", "TikTok", "B站", "YouTube"):
+            lines.append(f"（注意：{platform}是视频平台，这里只能读到文字信息，无法观看视频内容。如需了解视频内容，请告诉我博主名字，我去搜索相关介绍）")
+
+        if len(lines) <= 1:
+            return f"页面内容为空或需要登录才能访问：{url}"
+
+        return "\n".join(lines)
+
+    except requests.exceptions.Timeout:
+        return f"访问超时（15秒）：{url}\n可能需要登录或该页面需要特殊网络"
+    except requests.exceptions.ConnectionError:
+        return f"无法访问该链接：{url}\n可能需要VPN或该网址有误"
+    except Exception as e:
+        return f"打开链接失败：{e}\n链接：{url}"
+
+
 def tool_list_files(directory: str = "workspace") -> str:
     """
     列出目录下的文件
@@ -628,6 +709,23 @@ TOOLS_SCHEMA = [
     {
         "type": "function",
         "function": {
+            "name": "open_url",
+            "description": "打开任意网页链接，读取页面内容。老板发来一个链接想让悟空看看是什么，就用这个工具。支持新闻、微博、知乎、公众号等。抖音/B站只能读文字信息。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "要打开的完整网址，如 https://www.douyin.com/user/xxx"
+                    }
+                },
+                "required": ["url"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "browse_desktop",
             "description": "浏览老板电脑的桌面或桌面下的子目录，列出所有文件和文件夹。想知道桌面有什么文件就用这个。",
             "parameters": {
@@ -698,6 +796,7 @@ TOOL_DISPATCH = {
     "send_feishu":   lambda args: tool_send_feishu(args.get("message", ""), args.get("chat_id", "")),
     "search_web":    lambda args: tool_search_web(args.get("query", "")),
     "list_files":    lambda args: tool_list_files(args.get("directory", "workspace")),
+    "open_url":       lambda args: tool_open_url(args.get("url", "")),
     "browse_desktop": lambda args: tool_browse_desktop(args.get("subpath", "")),
     "read_file":     lambda args: tool_read_file(args.get("path", "")),
     "search_files":  lambda args: tool_search_files(
