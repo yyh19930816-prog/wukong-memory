@@ -718,3 +718,4 @@ pyth |
 
 2. Meituan-tech笔记:
 评分:95分 | 结论:真实 |
+| 2026-03-03 06:19 | 美团审查悟空代码 | 文件:wukong_rag_retrieval_augmented_generation_local_0303_0609.py | 评分:80 | 能否运行:否 | 主要问题:代码不完整(缺少generate_answer实现和主程序),无异常处理,无用import(pickle) | 改进建议:1)补全generate_answ |
