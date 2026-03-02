@@ -3034,3 +3034,35 @@ README当前未提供具体代码片段，但包含以下可操作指引：
 （注：实际功能细节需查阅[文档链接](https://ragflow.io/docs/dev/)确认，当前README未披露具体API或代码实现）
 
 ---
+
+### [悟空·secretary] python requests retry rate limit exponen (2026-03-03 06:52)
+**真实来源**: GitHub:psf/requests(⭐53831) https://github.com/psf/requests
+**实战代码**: ✅ 已写代码: code/wukong_python_requests_retry_rate_limit_exponen_0303_0652.py
+
+1. **仓库解决的问题**  
+Requests是一个优雅简单的HTTP库，解决了Python中原生HTTP请求的复杂性，让发送HTTP/1.1请求变得极其简单（无需手动拼接URL查询参数或编码POST数据）。
+
+2. **核心功能/知识点（直接来自README）**  
+   - 自动处理URL查询字符串和POST数据编码（支持`json`方法）
+   - 支持多种认证方式（Basic/Digest Authentication）
+   - 连接池和Keep-Alive机制提升性能
+   - 自动内容解码（如gzip压缩）和编码检测
+   - 完善的错误处理特性（含超时控制）
+
+3. **代码示例（直接引用README）**  
+```python
+import requests
+r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+print(r.status_code)  # 200
+print(r.json())  # {'authenticated': True, ...}
+```
+
+4. **实际应用场景**  
+虽然README未明确提及重试和限速，但其内置的连接池、超时控制和认证功能天然适用于：
+   - **API高频请求**：通过Session对象复用连接，配合自动化重试逻辑（需额外实现）
+   - **安全交互**：自动处理HTTPS验证和BasicAuth，避免裸奔 credentials
+   - **大数据传输**：流式下载和自动解压缩特性适合大文件场景
+
+（注：关于retry/rate limit/exponential backoff，README无直接提及，但可通过Session+适配器扩展实现，非原生功能）
+
+---
