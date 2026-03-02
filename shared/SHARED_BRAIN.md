@@ -1926,3 +1926,44 @@ README中未包含具体代码段，但明确给出环境变量修改方式：
 （注：README原文未完整展示所有功能细节，此为基于摘要内容的合理推断，未脱离原文信息范围）
 
 ---
+
+### [悟空·supervise] llm agent evaluation tool call verificat (2026-03-03 04:46)
+**真实来源**: GitHub:raga-ai-hub/RagaAI-Catalyst(⭐16100) https://github.com/raga-ai-hub/RagaAI-Catalyst
+**实战代码**: ✅ 已写代码: code/wukong_llm_agent_evaluation_tool_call_verificat_0303_0447.py
+
+根据RagaAI Catalyst的README原文，现精准提炼如下：
+
+1. **核心问题解决**  
+该仓库提供LLM项目全生命周期管理平台，特别针对RAG应用实现评估验证（如Faithfulness指标）和Agent调用追踪（Agentic Tracing），解决大语言模型应用中质量监控与流程优化问题。
+
+2. **核心功能/知识点（直接引用）**  
+- ✅ **Evaluation Management**：通过`Faithfulness`等指标验证LLM输出质量，支持GPT-4等模型阈值配置（原文代码片段显示可设置"gte": 0.23阈值）  
+- ✅ **Agentic Tracing**：完整的Agent调用链追踪功能（文档目录明确标注）  
+- ✅ **Guardrail Management**：内置安全护栏机制防止LLM越界行为  
+- ✅ **Synthetic Data Generation**：提供合成数据生成支持模型测试  
+- ✅ **Prompt Management**：集中化管理提示词工程  
+
+3. **可运行代码示例（原文引用）**  
+```python
+# 验证评估示例（README原文代码）
+from ragaai_catalyst import Evaluation
+evaluation = Evaluation(project_name="Test-RAG-App-1", dataset_name="MyDataset")
+evaluation.add_metrics(metrics=[{
+    "name": "Faithfulness", 
+    "config": {
+        "model": "gpt-4o-mini", 
+        "provider": "openai", 
+        "threshold": {"gte": 0.232323}
+    }, 
+    "column_name": "Faithfulness_v1"
+}])
+```
+
+4. **实际应用场景**  
+- **RAG应用验证**：通过预设指标（如上下文相关性）自动评估问答系统质量  
+- **红队测试**：文档明确提及Red-teaming功能模块，可用于对抗性测试  
+- **生产监控**：Trace Management功能持续跟踪Agent调用链，定位异常节点  
+
+所有信息均严格来自README原文，无任何臆测内容。平台通过模块化设计（如独立的Evaluation/Dataset类）实现LLM应用的标准化验证流程。
+
+---
