@@ -864,29 +864,37 @@ class WukongHUD(ctk.CTk):
     # ── 判断该消息是否必须先调工具才能回答 ──────────────────────────────────
     def _requires_tool(self, msg: str) -> str | None:
         """
-        分析用户消息，判断是否属于"必须调工具"的类型。
+        判断消息是否必须调工具。只拦截明确的信息获取请求，不拦截能力询问/闲聊。
         返回：必须调用的工具名，或 None（表示可以直接回答）
         """
-        m = msg.lower()
-        # 搜索/研究类 → 必须调 search_web 或 deep_research
-        search_kw = ["搜", "查", "找", "研究", "分析", "了解", "看看",
-                     "最新", "现在", "今天", "新闻", "资料", "行情",
-                     "github", "代码", "工具", "开源", "有没有", "能不能"]
-        # 链接类 → 必须调 open_url
-        if any(x in msg for x in ["http://", "https://", "www."]):
+        m = msg.strip()
+
+        # 链接类 → open_url
+        if any(x in m for x in ["http://", "https://", "www."]):
             return "open_url"
-        # 文件类 → 必须调 read_file 或 search_files
-        file_kw = ["文件", "桌面", "文档", "excel", "word", "打开", "读取"]
-        if any(k in m for k in file_kw):
-            return "read_file"
-        # 时间日期 → 必须调 get_datetime
-        time_kw = ["现在几点", "今天几号", "几点了", "日期", "时间"]
+
+        # 时间日期 → get_datetime（必须是明确问时间的句子）
+        time_kw = ["现在几点", "今天几号", "几点了", "现在时间", "当前时间"]
         if any(k in m for k in time_kw):
             return "get_datetime"
-        # 搜索类
-        if any(k in m for k in search_kw):
+
+        # 文件操作 → read_file（明确要求打开/读取某个文件）
+        file_kw = ["帮我打开", "读取文件", "打开文件", "读一下", "看一下文件"]
+        if any(k in m for k in file_kw):
+            return "read_file"
+
+        # 搜索类 → search_web（必须包含明确的搜索动词+信息对象）
+        # 只拦截"帮我搜"、"去搜一下"、"查一下最新"这类，不拦截"你会吗"、"能不能"这类
+        search_triggers = [
+            "帮我搜", "帮我查", "帮我找", "搜一下", "查一下",
+            "找一下", "搜索一下", "查询一下", "去搜", "上网查",
+            "最新新闻", "最新消息", "最新动态", "最新趋势", "查行情",
+            "搜资料", "查资料", "找资料",
+        ]
+        if any(k in m for k in search_triggers):
             return "search_web"
-        return None  # 不需要工具（闲聊、创作类可直接回答）
+
+        return None  # 闲聊、能力询问、创作类 → 直接回答
 
     # ── 智能识别对话方向 ──────────────────────────────────────────────────────
     def _detect_direction(self, msg, reply):

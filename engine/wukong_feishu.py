@@ -185,14 +185,19 @@ def call_ai(user_msg):
 
                 # 强制拦截：涉及查询/搜索类但没调工具
                 m = user_msg.lower()
-                search_kw = ["搜","查","找","研究","分析","最新","github","工具","有没有","http"]
-                time_kw = ["几点","日期","时间"]
                 needs_tool = None
-                if any(x in user_msg for x in ["http://","https://"]):
+                if any(x in user_msg for x in ["http://", "https://"]):
                     needs_tool = "open_url"
-                elif any(k in m for k in time_kw):
+                elif any(k in reply_text for k in ["现在几点", "今天几号", "几点了", "现在时间", "当前时间"]):
                     needs_tool = "get_datetime"
-                elif any(k in m for k in search_kw):
+                elif any(k in reply_text for k in ["帮我打开", "读取文件", "打开文件"]):
+                    needs_tool = "read_file"
+                elif any(k in reply_text for k in [
+                    "帮我搜", "帮我查", "帮我找", "搜一下", "查一下",
+                    "找一下", "搜索一下", "去搜", "上网查",
+                    "最新新闻", "最新消息", "最新动态", "最新趋势",
+                    "搜资料", "查资料", "找资料",
+                ]):
                     needs_tool = "search_web"
 
                 if needs_tool and not tool_results_log and TOOLS_ENABLED and round_n == 0:
