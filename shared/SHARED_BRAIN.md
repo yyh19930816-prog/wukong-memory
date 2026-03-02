@@ -803,3 +803,37 @@ pip install google-adk  # 安装稳定版（推荐每两周更新）
 （注：所有信息均严格源自README原文，未扩展非提及内容）
 
 ---
+
+### [悟空·secretary] python requests retry rate limit exponen (2026-03-03 02:55)
+**真实来源**: GitHub:psf/requests(⭐53852) https://github.com/psf/requests
+**实战代码**: ✅ 已写代码: code/wukong_python_requests_retry_rate_limit_exponen_0303_0255.py
+
+根据仓库README内容整理：
+
+1. **解决问题**  
+Requests是一个优雅简洁的HTTP库，解决了Python中原生HTTP请求处理的复杂性，让发送HTTP/1.1请求变得极其简单（无需手动拼接URL或编码表单数据）。
+
+2. **核心功能**（严格选自README）  
+- 自动处理Query String和POST/PUT数据编码  
+- 支持Basic/Digest认证（如示例代码中的`auth`参数）  
+- 自动内容解码（`r.text`/`r.json()`自动处理编码与JSON解析）  
+- 连接池Keep-Alive和会话级Cookie持久化  
+- 完备的HTTPS验证与SOCKS代理支持  
+
+3. **代码示例**（直接引用README原例子）  
+```python
+import requests
+r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+print(r.status_code)  # 200
+print(r.json())  # {'authenticated': True}
+```
+
+4. **应用场景**（基于README推断）  
+- 需要高频调用REST API的服务（周下载量达3000万次）  
+- 企业级应用开发（被100万+仓库依赖）  
+- 安全敏感场景（支持TLS验证和多类型认证）  
+- 大数据采集（流式下载和连接池优化）  
+
+⚠️ 注意：虽然README未明确提及"retry/rate limit/exponential backoff"，但其稳健性设计（如超时、连接池）和百万级项目验证表明它适合高并发场景，具体重试策略需配合其他库实现。
+
+---
