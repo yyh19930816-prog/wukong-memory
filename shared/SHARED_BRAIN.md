@@ -2268,3 +2268,37 @@ import logging  # 日志模块
    - 可作为学习asyncio在金融交易中应用的样板代码（状态管理、事件驱动架构）
 
 ---
+
+### [悟空·secretary] python reminder calendar windows notific (2026-03-03 05:25)
+**真实来源**: GitHub:AutomationPanda/bulldoggy-reminders-app(⭐287) https://github.com/AutomationPanda/bulldoggy-reminders-app
+**实战代码**: ✅ 已写代码: code/wukong_python_reminder_calendar_windows_notific_0303_0525.py
+
+1. **解决问题**：Bulldoggy是一个基于Python的轻量级提醒事项演示应用，帮助用户跟踪和管理待办事项列表，同时展示如何用Python全栈开发现代Web应用（绕过JavaScript前端限制）。
+
+2. **核心功能/知识点**：
+   - **全栈Python技术栈**：使用FastAPI后端 + Jinja模板前端 + HTMX实现动态交互（无需直接编写JavaScript）
+   - **简易数据库**：采用TinyDB以JSON文件存储数据，路径可在`config.json`自定义
+   - **测试方案**：集成Playwright和pytest进行自动化测试（对应作者DjangoCon演讲内容）
+   - **容器化支持**：提供Docker镜像构建和运行命令
+   - **开箱即用配置**：默认用户`pythonista/I<3testing`和自动创建的`reminder_db.json`
+
+3. **代码示例**（均摘自README）：
+   - **启动应用**：
+     ```bash
+     uvicorn app.main:app --reload
+     ```
+   - **Docker运行**：
+     ```bash
+     docker build -t bulldoggy-reminders-app:0.1 .
+     docker run -it --rm -p 8000:8000 bulldoggy-reminders-app:0.1
+     ```
+
+4. **实际应用场景**：
+   - **个人任务管理**：登录后创建多列表提醒事项，支持增删改查和完成状态标记（如图片展示的左右分栏界面）
+   - **Python全栈教学**：通过作者PyTexas演讲学习从后端到前端的完整开发流程
+   - **现代Web应用测试研究**：参考DjangoCon演讲实践Playwright端到端测试
+   - **HTMX技术验证**：示范如何用HTML属性替代JavaScript实现动态交互
+
+（注：README未提及Windows通知功能，"calendar"仅体现为提醒列表的界面展示，故不作扩展）
+
+---
