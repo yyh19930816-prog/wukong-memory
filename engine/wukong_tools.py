@@ -25,6 +25,10 @@ SERPER_API_KEY    = ""   # 填入后自动启用Google搜索
 # Brave Search：注册免费拿2000次/月 → https://api.search.brave.com/app/keys
 BRAVE_API_KEY     = ""   # 备选搜索引擎
 
+# ── GitHub API Token（可选，填入后每小时5000次，不填也有60次）──────────────
+# 在 https://github.com/settings/tokens 生成 Personal Access Token（不需要任何权限）
+GITHUB_TOKEN      = ""   # 可选，不填也能用，只是限速更低
+
 # 允许悟空访问的目录白名单（防止误操作系统文件）
 ALLOWED_ROOTS = [
     DESKTOP,
@@ -461,67 +465,116 @@ def tool_search_web(query: str) -> str:
     return _format_results(query, results)
 
 
-def tool_deep_research(topic: str, questions: str = "") -> str:
+def tool_deep_research(topic: str, questions: str = "", include_github: str = "auto") -> str:
     """
-    深度研究一个话题：自动拆解多个角度，多次搜索，整合成研究报告。
-    比 search_web 更强：会搜索3-5个不同角度，综合给出有来源的分析。
-    topic: 研究主题，如"抖音博主张三的内容风格和粉丝画像"
+    深度研究一个话题：自动联合 Google + GitHub，多角度搜索，整合成有来源的研究报告。
+    topic: 研究主题，如"抖音博主张三的内容风格"或"飞书机器人开发"
     questions: 可选，指定要回答的具体问题，用逗号分隔
+    include_github: 'auto'=自动判断(技术类话题加入GitHub) / 'yes'=强制搜GitHub / 'no'=不搜GitHub
     """
     import re
 
-    # 拆解研究角度
+    # 判断是否为技术类话题（自动决定是否搜GitHub）
+    tech_keywords = ["代码", "开发", "api", "sdk", "爬虫", "机器人", "bot", "python",
+                     "编程", "工具", "框架", "库", "插件", "脚本", "接口", "集成",
+                     "github", "开源", "部署", "服务器", "自动化", "程序", "软件",
+                     "系统", "飞书", "微信", "抖音", "数据"]
+    topic_lower = topic.lower()
+    is_tech = include_github == "yes" or (
+        include_github == "auto" and
+        any(kw in topic_lower for kw in tech_keywords)
+    )
+
+    # 拆解搜索角度
     if questions:
         search_queries = [q.strip() for q in questions.split(",") if q.strip()]
     else:
-        # 自动生成3个搜索角度
         search_queries = [
             topic,
-            topic + " 最新动态 2026",
-            topic + " 分析 数据",
+            topic + " 最新 2026",
+            topic + " 方法 技巧",
         ]
 
+    junk_titles = {"大家还在搜", "实时智能回复", ""}
     all_results = []
     searched = []
-    junk_titles = {"大家还在搜", "实时智能回复", ""}
+    sections = []
 
-    for q in search_queries[:4]:
+    # ── 第一部分：网络搜索（Google/搜狗/360）──────────────────────────────
+    web_results = []
+    for q in search_queries[:3]:
         res = (_search_serper(q, 5) or _search_brave(q, 5)
                or _search_baidu_mip(q, 5) or _search_sogou(q, 5) or _search_360(q, 5))
         if res:
-            # 过滤垃圾结果
             res = [r for r in res
                    if r.get("title", "") not in junk_titles
                    and len(r.get("title", "")) > 5]
         if res:
             searched.append(q)
-            for r in res[:4]:
+            for r in res[:3]:
                 snippet = r.get("snippet", "")
                 url = r.get("url", "")
-                entry = f"[{q}] {r['title']}"
+                entry = f"• {r['title']}"
                 if snippet:
-                    entry += f"\n  摘要：{snippet[:200]}"
+                    entry += f"\n  {snippet[:180]}"
                 if url:
-                    entry += f"\n  来源：{url[:80]}"
-                all_results.append(entry)
+                    entry += f"\n  来源: {url[:80]}"
+                web_results.append(entry)
 
-    if not all_results:
+    if web_results:
+        sections.append("【网络资讯】\n" + "\n\n".join(web_results))
+
+    # ── 第二部分：GitHub搜索（技术类话题）─────────────────────────────────
+    github_results = []
+    if is_tech:
+        github_query = topic
+        headers = {"User-Agent": "WukongBot/1.0", "Accept": "application/vnd.github+json"}
+        if GITHUB_TOKEN:
+            headers["Authorization"] = f"token {GITHUB_TOKEN}"
+        try:
+            r = requests.get(
+                "https://api.github.com/search/repositories",
+                params={"q": github_query, "sort": "stars", "order": "desc", "per_page": 6},
+                headers=headers, timeout=15
+            )
+            if r.status_code == 200:
+                items = r.json().get("items", [])
+                total = r.json().get("total_count", 0)
+                for item in items[:5]:
+                    desc = item.get("description", "") or "无描述"
+                    entry = (f"• {item['full_name']}  ★{item['stargazers_count']}"
+                             f"  [{item.get('language','?')}]\n"
+                             f"  {desc[:100]}\n"
+                             f"  {item['html_url']}")
+                    github_results.append(entry)
+                if github_results:
+                    sections.append(
+                        f"【GitHub开源方案】（共{total}个相关仓库）\n" +
+                        "\n\n".join(github_results)
+                    )
+        except:
+            pass
+
+    # ── 汇总 ─────────────────────────────────────────────────────────────
+    if not sections:
         if not SERPER_API_KEY and not BRAVE_API_KEY:
             return (
-                f"深度研究「{topic}」失败：未配置搜索API Key，被搜索引擎拦截。\n\n"
-                f"一次性解决方法：\n"
-                f"1. 访问 https://serper.dev 免费注册\n"
-                f"2. 拿到API Key\n"
-                f"3. 填入 wukong_tools.py 的 SERPER_API_KEY 变量\n"
-                f"4. 重启悟空，之后就能真实搜索Google了"
+                f"深度研究「{topic}」：网络搜索被拦截（未配置API Key）\n\n"
+                f"GitHub部分可用（无需Key），但「{topic}」不是技术话题，无法用GitHub。\n\n"
+                f"激活完整搜索能力：\n"
+                f"1. 访问 https://serper.dev 免费注册（2500次Google搜索）\n"
+                f"2. 把API Key填入 wukong_tools.py 的 SERPER_API_KEY\n"
+                f"3. 重启悟空"
             )
-        return f"深度研究失败：搜索「{topic}」无结果，网络不可用。"
+        return f"深度研究失败：「{topic}」在所有渠道均无结果"
 
-    report = f"深度研究：{topic}\n"
-    report += f"搜索角度（{len(searched)}个）：{' | '.join(searched)}\n"
-    report += f"收集到 {len(all_results)} 条真实来源\n"
-    report += "=" * 40 + "\n"
-    report += "\n\n".join(all_results)
+    report = f"深度研究报告：{topic}\n"
+    if searched:
+        report += f"搜索角度：{' | '.join(searched)}\n"
+    if is_tech and github_results:
+        report += f"GitHub找到 {len(github_results)} 个开源方案\n"
+    report += "=" * 50 + "\n\n"
+    report += "\n\n".join(sections)
     return report
 
 
@@ -604,6 +657,135 @@ def tool_open_url(url: str) -> str:
         return f"无法访问该链接：{url}\n可能需要VPN或该网址有误"
     except Exception as e:
         return f"打开链接失败：{e}\n链接：{url}"
+
+
+def tool_search_github(query: str, search_type: str = "repo") -> str:
+    """
+    搜索GitHub获取代码库、技术方案、工具
+    query: 搜索关键词，如 'feishu bot python' 或 '抖音爬虫'
+    search_type: 'repo'=搜仓库(默认) / 'topic'=搜话题标签
+    """
+    import base64
+    headers = {
+        "User-Agent": "WukongBot/1.0",
+        "Accept": "application/vnd.github+json",
+    }
+    if GITHUB_TOKEN:
+        headers["Authorization"] = f"token {GITHUB_TOKEN}"
+
+    try:
+        if search_type == "topic":
+            r = requests.get(
+                "https://api.github.com/search/topics",
+                params={"q": query, "per_page": 5},
+                headers={**headers, "Accept": "application/vnd.github.mercy-preview+json"},
+                timeout=15
+            )
+        else:
+            r = requests.get(
+                "https://api.github.com/search/repositories",
+                params={"q": query, "sort": "stars", "order": "desc", "per_page": 8},
+                headers=headers,
+                timeout=15
+            )
+
+        if r.status_code == 200:
+            data = r.json()
+            items = data.get("items", [])
+            total = data.get("total_count", 0)
+
+            if not items:
+                return f"GitHub搜索「{query}」：没有找到相关仓库"
+
+            lines = [f"GitHub搜索「{query}」— 共{total}个结果，显示前{len(items)}个\n"]
+            for i, item in enumerate(items, 1):
+                name = item.get("full_name", "")
+                desc = item.get("description", "") or "无描述"
+                stars = item.get("stargazers_count", 0)
+                url = item.get("html_url", "")
+                lang = item.get("language", "") or "未知"
+                updated = item.get("updated_at", "")[:10]
+                lines.append(f"{i}. {name}  ★{stars}  [{lang}]  更新:{updated}")
+                lines.append(f"   {desc[:100]}")
+                lines.append(f"   {url}")
+                lines.append("")
+            return "\n".join(lines)
+
+        elif r.status_code == 403:
+            rate = r.headers.get("X-RateLimit-Remaining", "?")
+            reset = r.headers.get("X-RateLimit-Reset", "")
+            return f"GitHub API限速（剩余次数:{rate}），请稍后再试或填入GITHUB_TOKEN提升限额"
+        else:
+            return f"GitHub搜索失败 HTTP {r.status_code}"
+
+    except Exception as e:
+        return f"GitHub搜索异常：{e}"
+
+
+def tool_read_github_repo(repo: str, filepath: str = "README.md") -> str:
+    """
+    读取GitHub仓库里的文件内容（默认读README）
+    repo: 仓库路径，如 'larksuite/oapi-sdk-python'
+    filepath: 文件路径，如 'README.md' 或 'examples/send_message.py'
+    """
+    import base64
+    headers = {
+        "User-Agent": "WukongBot/1.0",
+        "Accept": "application/vnd.github+json",
+    }
+    if GITHUB_TOKEN:
+        headers["Authorization"] = f"token {GITHUB_TOKEN}"
+
+    try:
+        # 先获取文件内容
+        url = f"https://api.github.com/repos/{repo}/contents/{filepath}"
+        r = requests.get(url, headers=headers, timeout=15)
+
+        if r.status_code == 200:
+            data = r.json()
+            if isinstance(data, list):
+                # 是目录，列出文件
+                lines = [f"仓库 {repo}/{filepath} 是个目录，包含：\n"]
+                for f_item in data[:20]:
+                    ftype = "📁" if f_item["type"] == "dir" else "📄"
+                    lines.append(f"  {ftype} {f_item['name']}")
+                return "\n".join(lines)
+
+            # 是文件，解码内容
+            encoding = data.get("encoding", "")
+            content_raw = data.get("content", "")
+            if encoding == "base64":
+                content = base64.b64decode(content_raw).decode("utf-8", errors="replace")
+            else:
+                content = content_raw
+
+            # 限制长度，太长的文件截取前3000字
+            size = data.get("size", 0)
+            if len(content) > 3000:
+                content = content[:3000] + f"\n\n[文件共{size}字节，已截取前3000字符]"
+
+            return f"文件：{repo}/{filepath}\n大小：{size}字节\n\n{content}"
+
+        elif r.status_code == 404:
+            # 尝试自动找README
+            if filepath == "README.md":
+                for alt in ["readme.md", "README.rst", "README", "docs/README.md"]:
+                    r2 = requests.get(
+                        f"https://api.github.com/repos/{repo}/contents/{alt}",
+                        headers=headers, timeout=10
+                    )
+                    if r2.status_code == 200:
+                        d2 = r2.json()
+                        raw = base64.b64decode(d2.get("content", "")).decode("utf-8", errors="replace")
+                        return f"文件：{repo}/{alt}\n\n{raw[:3000]}"
+            return f"文件不存在：{repo}/{filepath}\n请检查路径是否正确"
+        elif r.status_code == 403:
+            return "GitHub API限速，请稍后再试"
+        else:
+            return f"读取失败 HTTP {r.status_code}"
+
+    except Exception as e:
+        return f"读取GitHub文件异常：{e}"
 
 
 def tool_list_files(directory: str = "workspace") -> str:
@@ -1011,20 +1193,68 @@ TOOLS_SCHEMA = [
         "type": "function",
         "function": {
             "name": "deep_research",
-            "description": "深度研究一个话题：自动拆解多个角度，多次搜索网络，整合成有来源的研究报告。当老板让你'帮我研究/分析/查找资料关于某件事'时使用，比单次search_web更全面。",
+            "description": "深度研究一个话题：自动联合Google+GitHub，多角度搜索，整合成有来源的研究报告。老板说'帮我研究/分析/查资料'时用这个，比search_web全面10倍。技术类话题会自动搜GitHub开源方案。",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "topic": {
                         "type": "string",
-                        "description": "研究主题，如'抖音博主张三的内容风格'或'2026年新能源行业趋势'"
+                        "description": "研究主题，如'抖音博主涨粉策略'、'飞书机器人开发'、'2026年短视频行业趋势'"
                     },
                     "questions": {
                         "type": "string",
                         "description": "可选：指定要回答的具体问题，用逗号分隔，如'他发什么内容,粉丝多少,涨粉速度'"
+                    },
+                    "include_github": {
+                        "type": "string",
+                        "enum": ["auto", "yes", "no"],
+                        "description": "是否搜GitHub：auto=自动判断(技术话题自动搜)，yes=强制搜，no=不搜"
                     }
                 },
                 "required": ["topic"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_github",
+            "description": "在GitHub上搜索开源代码库和技术方案。老板问'有没有现成的XXX工具/代码/框架'，或者遇到技术问题想找解决方案时用这个。GitHub上有全世界最好的开源代码。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "搜索关键词，如'feishu bot python'、'抖音爬虫'、'wechat auto reply'"
+                    },
+                    "search_type": {
+                        "type": "string",
+                        "enum": ["repo", "topic"],
+                        "description": "repo=搜仓库(默认)，topic=搜话题标签"
+                    }
+                },
+                "required": ["query"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "read_github_repo",
+            "description": "读取GitHub仓库里的文件内容，默认读README。用于了解某个开源项目怎么用、有哪些功能。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "repo": {
+                        "type": "string",
+                        "description": "仓库路径，如'larksuite/oapi-sdk-python'或'microsoft/autogen'"
+                    },
+                    "filepath": {
+                        "type": "string",
+                        "description": "文件路径，默认'README.md'，也可以是'docs/quickstart.md'或具体代码文件"
+                    }
+                },
+                "required": ["repo"]
             }
         }
     }
@@ -1040,7 +1270,19 @@ TOOL_DISPATCH = {
     "query_evomap":   lambda args: tool_query_evomap(args.get("action", "heartbeat")),
     "send_feishu":    lambda args: tool_send_feishu(args.get("message", ""), args.get("chat_id", "")),
     "search_web":     lambda args: tool_search_web(args.get("query", "")),
-    "deep_research":  lambda args: tool_deep_research(args.get("topic", ""), args.get("questions", "")),
+    "deep_research":  lambda args: tool_deep_research(
+                         args.get("topic", ""),
+                         args.get("questions", ""),
+                         args.get("include_github", "auto")
+                      ),
+    "search_github":  lambda args: tool_search_github(
+                         args.get("query", ""),
+                         args.get("search_type", "repo")
+                      ),
+    "read_github_repo": lambda args: tool_read_github_repo(
+                         args.get("repo", ""),
+                         args.get("filepath", "README.md")
+                      ),
     "list_files":     lambda args: tool_list_files(args.get("directory", "workspace")),
     "open_url":       lambda args: tool_open_url(args.get("url", "")),
     "browse_desktop": lambda args: tool_browse_desktop(args.get("subpath", "")),
