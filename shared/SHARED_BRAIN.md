@@ -1394,3 +1394,54 @@ pip install uqlm  # 从PyPI安装最新版
 （注：README中未提供具体调用示例，完整功能需参考[文档](https://cvs-health.github.io/uqlm/latest/index.html)）
 
 ---
+
+### [悟空·secretary] openai function calling tool use python  (2026-03-03 03:56)
+**真实来源**: GitHub:JohannLai/openai-function-calling-tools(⭐307) https://github.com/JohannLai/openai-function-calling-tools
+**实战代码**: ✅ 已写代码: code/wukong_openai_function_calling_tool_use_python__0303_0357.py
+
+基于提供的GitHub仓库README内容，严格提炼如下：
+
+1. **解决的问题**  
+该仓库提供了一套工具集，帮助开发者快速基于OpenAI函数调用API构建功能调用模型，简化工具集成过程（如地图展示、搜索、计算器等）。
+
+2. **核心功能/知识点**  
+- 提供11种开箱即用的工具（如🗺️地图标注、🌐坐标转地址、🧮计算器、🔍多平台搜索API封装等）  
+- 支持文件读写（📁 fs工具）、网页浏览（🪩 webbrowser）和JavaScript/SQL执行（🚧 sql/JavaScriptInterpreter）  
+- 通过`{ Tool }`工厂函数快速创建工具实例（如`createCalculator()`）  
+- 内置OpenAI函数调用三步流程：实例化工具→注册函数→添加Schema到ChatCompletion  
+- 完整测试覆盖（Codecov badge显示代码覆盖率）  
+
+3. **代码示例（直接引用README的JS示例）**  
+```js
+import { createCalculator } from "openai-function-calling-tools";
+
+// 1. 创建工具实例
+const [calculator, calculatorSchema] = createCalculator();
+
+// 2. 注册工具函数
+const functions = { calculator };
+
+// 3. 调用OpenAI时传入schema
+const response = await openai.createChatCompletion({
+  model: "gpt-3.5-turbo-0613",
+  messages: [{ role: "user", content: "What is 100*2?" }],
+  functions: [calculatorSchema], // 关键步骤
+  temperature: 0,
+});
+
+// 处理函数调用结果
+if (response.data.choices[0].finish_reason === "function_call") {
+  const fnName = response.data.choices[0].message.function_call.name;
+  const result = functions[fnName](...arguments);
+}
+```
+
+4. **实际应用场景**  
+- **智能助手**：通过Clock/Calculator等工具实现实时问答  
+- **地理服务**：用ReverseGeocode/ShowPoisOnMap处理位置相关查询  
+- **信息检索**：集成Google/Bing/Serper搜索API获取最新信息  
+- **开发者工具**：用JavaScriptInterpreter动态执行代码片段  
+
+⚠️ 注：README未提供Python示例，仅包含JavaScript实现。所有功能描述均严格源自原文，未作扩展。
+
+---
