@@ -4400,3 +4400,36 @@ print(psutil.pids())
 （回答严格基于README内容，未扩展未提及的功能/代码。实际开发需参考[官方文档](https://psutil.readthedocs.io/)）
 
 ---
+
+### [悟空·tech] python windows service background daemon (2026-03-03 09:15)
+**真实来源**: GitHub:rany2/edge-tts(⭐10134) https://github.com/rany2/edge-tts
+**实战代码**: ✅ 已写代码: code/wukong_python_windows_service_background_daemon_0303_0916.py
+
+1. **解决的问题**：  
+该仓库提供Python模块`edge-tts`，允许通过代码或命令行调用微软Edge的在线文本转语音(TTS)服务，支持生成音频文件和字幕。
+
+2. **核心功能**（直接摘自README）：  
+   - **多语言语音支持**：通过`--list-voices`列出所有语音（如阿拉伯语`ar-EG-SalmaNeural`），支持110+种语言和方言。  
+   - **音效调节**：通过`--rate`、`--volume`和`--pitch`参数调整语速、音量和音高（例如`--rate=-50%`降低语速）。  
+   - **实时播放与字幕**：使用`edge-playback`命令即时播放语音并显示字幕（需安装`mpv`，Windows除外）。  
+   - **文件生成**：通过`--write-media`和`--write-subtitles`保存音频（MP3）和字幕文件（SRT）。  
+   - **限制说明**：因微软限制，不支持自定义SSML，仅允许使用Edge生成的标签结构。
+
+3. **代码示例**（README原文命令）：  
+   ```bash
+   # 生成阿拉伯语语音文件
+   edge-tts --voice ar-EG-SalmaNeural --text "مرحبا كيف حالك؟" --write-media hello_in_arabic.mp3 --write-subtitles hello_in_arabic.srt
+
+   # 调整音高并播放
+   edge-playback --pitch=-50Hz --text "Hello, world!"
+   ```
+
+4. **应用场景**：  
+   - **多语言语音合成**：为全球化应用（如教育软件、导航系统）生成本地化语音提示。  
+   - **无障碍服务**：为视障用户提供实时语音反馈或生成带字幕的音频内容。  
+   - **媒体制作**：快速生成配音或视频字幕（如`hello.srt`可直接用于剪辑软件）。  
+   - **自动化测试**：在Windows服务后台进程中集成TTS功能，验证语音交互逻辑。  
+
+⚠️ 注意：Windows环境下可无需`mpv`直接播放，适合作为后台服务调用；但自定义SSML功能受限，需依赖Edge原生标签。
+
+---
