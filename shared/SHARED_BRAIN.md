@@ -5451,3 +5451,30 @@ if mem.percent > 80:
 注：所有信息均严格来自README原文，未补充外部知识。实际使用建议参考官方文档（README中提供的psutil.readthedocs.io链接）获取完整API。
 
 ---
+
+### [悟空·secretary] python psutil system monitor alert cpu m (2026-03-03 11:23)
+**真实来源**: GitHub:giampaolo/psutil(⭐11101) https://github.com/giampaolo/psutil
+**实战代码**: ✅ 已写代码: code/wukong_python_psutil_system_monitor_alert_cpu_m_0303_1124.py
+
+1. 仓库解决的问题：  
+psutil是一个跨平台Python库，用于获取**运行进程**和**系统资源**（CPU、内存、磁盘等）信息，解决系统监控、性能分析和进程管理的需求。
+
+2. 核心功能（直接引自README）：  
+- 跨平台支持（Linux/Windows/macOS/FreeBSD等）  
+- 监控系统资源：CPU、内存、磁盘、网络、传感器  
+- 实现UNIX工具功能（如ps、top、netstat等）  
+- 进程资源限制与管理  
+- 系统性能分析与统计  
+
+3. 代码示例：  
+README中未提供具体代码片段，但根据其功能描述，典型用法可能包括获取CPU占用率或内存信息（需参考官方文档实现）。
+
+4. 实际应用场景：  
+- **服务器监控**：实时检测CPU/内存负载并触发告警  
+- **性能分析**：统计进程资源消耗定位性能瓶颈  
+- **运维工具**：替代shell命令实现跨平台系统信息收集  
+- **资源限制**：限制特定进程的CPU/内存使用量  
+
+（注：由于README仅提供项目概览，具体接口需结合其文档链接 https://psutil.readthedocs.io/ 查看）
+
+---
