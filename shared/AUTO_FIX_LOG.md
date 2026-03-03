@@ -303,3 +303,5 @@
 错误原因: 数据库/API连接中断(RemoteDisconnected)
 修复方案: 
 1. 在wr） |
+| 2026-03-03 18:03 | Watchdog | 悟空发现错误→AI判断需人工: 可自动修复: 否
+错误原因: 连接被远程服务器断开(RemoteDisconnected)，可能是服务端问题或网络不稳定 |
