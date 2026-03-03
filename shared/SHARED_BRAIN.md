@@ -4516,3 +4516,34 @@ if (response.data.choices[0].finish_reason === "function_call") {
 > 注：README未提供Python示例，但设计模式通用，可参考其工具调用逻辑实现Python版。
 
 ---
+
+### [悟空·tech] python subprocess safe execution shell c (2026-03-03 09:28)
+**真实来源**: GitHub:amoffat/sh(⭐7235) https://github.com/amoffat/sh
+**实战代码**: ✅ 已写代码: code/wukong_python_subprocess_safe_execution_shell_c_0303_0929.py
+
+基于 `amoffat/sh` 仓库的README内容，严格提炼如下：
+
+### 1. 解决的问题
+该库是Python 3.8-3.12及PyPy的**子进程替代方案**，允许像调用函数一样执行任意系统命令，同时明确声明**不是Python实现的系统命令集合**，而是通过Unix系统调用来实现。
+
+### 2. 核心功能/知识点（直接源自README）
+1. **直接映射系统命令为函数**：如`ifconfig("eth0")`即可执行shell命令  
+2. **跨版本支持**：兼容Python 3.8-3.12和PyPy  
+3. **严格的平台限制**：仅支持Unix-like系统（Linux/macOS/BSD），**不支持Windows**  
+4. **轻量安装**：通过`pip install sh`即可安装  
+5. **专业文档支持**：提供常规文档和**LLM辅助编程专用单页全文档**
+
+### 3. 代码示例（README原文）
+```python
+from sh import ifconfig  # 直接导入系统命令
+print(ifconfig("eth0"))  # 像函数一样调用
+```
+
+### 4. 实际应用场景
+- **系统管理工具开发**：直接调用`ifconfig`、`ls`等命令处理网络/文件信息  
+- **自动化脚本**：避免手动拼接子进程命令字符串，降低代码复杂度  
+- **跨版本兼容工具**：在PyPy和Python 3.8+环境中保持一致的命令调用方式  
+
+（注：所有信息均严格限定在README范围内，未做任何扩展推测）
+
+---
