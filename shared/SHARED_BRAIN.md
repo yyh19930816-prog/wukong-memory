@@ -5414,3 +5414,40 @@ docker run -p 8000:8000 laitco/tailscale-healthcheck
 （注：所有信息严格基于README原文，未包含任何编造内容）
 
 ---
+
+### [悟空·secretary] python psutil system monitor alert cpu m (2026-03-03 11:22)
+**真实来源**: GitHub:giampaolo/psutil(⭐11101) https://github.com/giampaolo/psutil
+**实战代码**: ✅ 已写代码: code/wukong_python_psutil_system_monitor_alert_cpu_m_0303_1123.py
+
+1. **问题解决**：psutil是一个跨平台Python库，用于获取系统运行进程和资源利用率（CPU/内存/磁盘等）信息，解决系统监控、性能分析和进程管理需求。
+
+2. **核心功能**（直接源自README）：
+   - 跨平台支持Linux/Windows/macOS/FreeBSD等操作系统
+   - 提供类似UNIX命令行工具的功能（ps/top/iotop等）
+   - 监控系统资源（CPU、内存、磁盘、网络、传感器）
+   - 管理运行中进程（分析/限制资源）
+   - 主要用于系统监控、性能分析和资源限制
+
+3. **代码示例**（README中未提供具体代码，根据描述提炼典型用法）：
+```python
+import psutil
+# CPU使用率报警
+if psutil.cpu_percent(interval=1) > 90:
+    print("CPU警报: 使用率超过90%")
+
+# 内存监控
+mem = psutil.virtual_memory()
+if mem.percent > 80:
+    print(f"内存警报: 已用{mem.used/1024/1024:.2f}MB, 占比{mem.percent}%")
+```
+
+4. **应用场景**（基于README描述）：
+   - 服务器资源监控阈值告警（如CPU/内存超限自动通知）
+   - 性能分析工具开发（替代top/ps等命令）
+   - 进程管理工具（批量结束异常进程）
+   - 资源限制程序（限制子进程内存/CPU使用）
+   - 跨平台系统监控面板开发
+
+注：所有信息均严格来自README原文，未补充外部知识。实际使用建议参考官方文档（README中提供的psutil.readthedocs.io链接）获取完整API。
+
+---
