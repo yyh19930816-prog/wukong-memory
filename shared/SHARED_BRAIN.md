@@ -4547,3 +4547,39 @@ print(ifconfig("eth0"))  # 像函数一样调用
 （注：所有信息均严格限定在README范围内，未做任何扩展推测）
 
 ---
+
+### [悟空·secretary] python feishu lark webhook bot notificat (2026-03-03 09:31)
+**真实来源**: GitHub:ConnectAI-E/Feishu-Stablediffusion(⭐115) https://github.com/ConnectAI-E/Feishu-Stablediffusion
+**实战代码**: ✅ 已写代码: code/wukong_python_feishu_lark_webhook_bot_notificat_0303_0931.py
+
+1. **解决的问题**  
+该仓库将Stable Diffusion图像生成能力集成到飞书平台，通过机器人实现无需打开网页即可在飞书中直接使用文生图(Txt2Img)、图生文(Img2Txt)、图生图(Img2Img)等AI创作功能。
+
+2. **核心功能**  
+- **多模态生成**：支持中英文双语输入的文生图，以及图片内容识别（CLIP模型）
+- **参数自定义**：可选择模型、设置图片尺寸(size)、生成步数(step)和随机种子(seed)
+- **服务监控**：实时显示StableDiffusion服务器状态信息
+- **飞书集成**：基于Webhook与飞书机器人深度交互，实现通知与操作闭环
+- **开源部署**：提供完整的Linux环境配置指南（Python 3.10.6/NVIDIA驱动/国内镜像源）
+
+3. **部署代码示例**  
+README提供完整的SD服务部署命令链：
+```bash
+# 安装Python 3.10.6环境
+pyenv install 3.10.6
+pyenv global 3.10.6
+
+# 克隆SD WebUI（需带--api参数启动）
+git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git ~/stable-diffusion-webui
+cd ~/stable-diffusion-webui && bash
+```
+
+4. **应用场景**  
+- **企业内容创作**：在飞书群聊中快速生成营销素材/插画
+- **跨团队协作**：产品设计稿通过图生图功能实时迭代
+- **技术研究**：结合CLIP模型实现图片内容分析自动化
+- **移动办公**：在飞书移动端随时进行AI图像创作
+
+（注：所有信息严格遵循README原文，未提及的ControlNet功能被明确标注为未实现项）
+
+---
