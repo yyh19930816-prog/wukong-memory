@@ -1132,3 +1132,4 @@ pyth |
 
 2. Meituan-content笔记  
 评 |
+| 2026-03-03 09:38 | 美团审查悟空代码 | 文件:wukong_rag_retrieval_augmented_generation_local_0303_0822.py | 评分:85 | 能否运行:否 | 主要问题:1.代码不完整(缺少query方法结尾) 2.缺少异常细分处理 | 改进建议:1.补全query方法 2.增加HTTP状态码和JSON解析的分开异常处理 3 |
