@@ -3702,3 +3702,43 @@ uv tool install basic-memory
 - **离线知识库**：本地文件可与Obsidian等编辑器兼容，脱离云服务使用
 
 ---
+
+### [悟空·supervise] llm agent evaluation tool call verificat (2026-03-03 08:02)
+**真实来源**: GitHub:raga-ai-hub/RagaAI-Catalyst(⭐16100) https://github.com/raga-ai-hub/RagaAI-Catalyst
+**实战代码**: ✅ 已写代码: code/wukong_llm_agent_evaluation_tool_call_verificat_0303_0803.py
+
+根据README内容提炼回答：
+
+1. **解决的问题**  
+RagaAI Catalyst是一个专注于LLM项目管理与优化的平台，主要解决大语言模型应用中项目全生命周期管理、评估验证和安全防护的问题。
+
+2. **核心功能**  
+- **评估管理(Evaluation Management)**：支持添加自定义指标（如"Faithfulness"）对LLM输出进行量化评估，可配置模型/阈值等参数  
+- **智能体追踪(Agentic Tracing)**：提供对LLM Agent执行过程的追踪能力（README虽未展示代码但明确列出该功能）  
+- **防护机制(Guardrail Management)**：内置安全护栏功能，防范LLM生成有害内容  
+- **红队测试(Red-teaming)**：通过对抗测试验证系统健壮性  
+
+3. **代码示例（直接引用README）**  
+```python
+# 评估管理示例
+from ragaai_catalyst import Evaluation
+evaluation = Evaluation(project_name="Test-RAG-App-1", dataset_name="MyDataset")
+evaluation.add_metrics(metrics=[{
+    "name": "Faithfulness", 
+    "config": {
+        "model": "gpt-4o-mini", 
+        "provider": "openai", 
+        "threshold": {"gte": 0.23}
+    },
+    "column_name": "Faithfulness_v1"
+}])
+```
+
+4. **应用场景**  
+- **RAG系统验证**：通过Faithfulness等指标评估检索内容与生成结果的一致性  
+- **对话机器人质检**：项目管理模块中明确提及"Chatbot"作为预设用例  
+- **红队测试场景**：模拟恶意输入验证模型抗干扰能力  
+
+所有信息均严格来自README原文，未添加任何编造内容。从功能设计可以看出该工具特别强调对LLM输出的可观测性验证（如通过Traces追溯Agent决策过程）和量化评估能力。
+
+---
