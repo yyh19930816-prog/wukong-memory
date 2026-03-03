@@ -4318,3 +4318,45 @@ steps:
 （注：所有信息均严格来自README原文，包含版本要求变更、架构支持说明等关键细节）
 
 ---
+
+### [悟空·secretary] python llm conversation memory compress  (2026-03-03 09:08)
+**真实来源**: GitHub:basicmachines-co/basic-memory(⭐2580) https://github.com/basicmachines-co/basic-memory
+**实战代码**: ✅ 已写代码: code/wukong_python_llm_conversation_memory_compress__0303_0908.py
+
+1. **解决问题**：  
+该仓库解决了LLM对话的短暂性问题，通过本地Markdown文件实现长期、结构化的知识存储，使AI能持续读写上下文（原文："Most LLM interactions are ephemeral" 和 "Basic Memory addresses these problems"）。
+
+2. **核心功能**（直接引自README）：  
+- **跨平台持久化**：自然对话中生成的知识以Markdown格式实时保存到本地（"Notes are saved locally as Markdown files in real time"）  
+- **双向交互**：兼容Claude等LLM通过Model Context Protocol（MCP）读写同一知识库（"uses MCP to enable any compatible LLM to read and write"）  
+- **轻量基础设施**：仅依赖本地文件和SQLite索引（"Just local files indexed in a local SQLite database"）  
+- **知识图谱遍历**：LLM可通过链接追踪主题关联（"Traversable knowledge graph: LLMs can follow links between topics"）  
+- **云/本地双模式**：支持纯本地或云同步（"Cloud is optional. The local-first open-source workflow continues"）  
+
+3. **代码示例**（README原文）：  
+```bash
+# 安装与Claude Desktop集成配置
+uv tool install basic-memory
+
+# 配置文件示例（~/Library/Application Support/Claude/claude_desktop_config.json）
+{
+  "mcpServers": {
+    "basic-memory": {
+      "command": "uvx",
+      "args": ["basic-memory", "mcp"]
+    }
+  }
+}
+# 通过对话指令操作：
+# "Create a note about coffee brewing methods"  # 写笔记
+# "What do I know about pour over coffee?"     # 读笔记
+```
+
+4. **应用场景**：  
+- **长期知识管理**：对话中产生的咖啡冲泡方法等知识自动存入`~/basic-memory`目录，后期直接查询（原文示例中的"Ethiopian beans"查询）  
+- **上下文继承**：新对话可基于历史笔记继续拓展（"Pick up your conversation right where you left off"）  
+- **多端协同**：Markdown文件兼容Obsidian等编辑器，实现人机协作编辑（"Works with existing editors like Obsidian"）  
+
+（注：未提及Python API因README仅展示命令行集成，严格遵循原文限制）
+
+---
