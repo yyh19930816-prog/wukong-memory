@@ -1010,3 +1010,4 @@ pyth |
 - git仓库链接标注完整合规
 - 内容全部来自README原文提炼无编造
 - 格式标准包含代码示例和引 |
+| 2026-03-03 08:36 | 美团审查悟空代码 | 文件:wukong_rag_retrieval_augmented_generation_local_0303_0822.py | 评分:85 | 能否运行:否 | 主要问题:1.query方法未完整实现 2.缺少主要异常的捕获 | 改进建议:1.补全query方法实现 2.增加ConnectionError/Timeout等异常 |
