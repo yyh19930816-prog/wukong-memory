@@ -3742,3 +3742,33 @@ evaluation.add_metrics(metrics=[{
 所有信息均严格来自README原文，未添加任何编造内容。从功能设计可以看出该工具特别强调对LLM输出的可观测性验证（如通过Traces追溯Agent决策过程）和量化评估能力。
 
 ---
+
+### [悟空·supervise] llm hallucination detection evaluation b (2026-03-03 08:09)
+**真实来源**: GitHub:cvs-health/uqlm(⭐1116) https://github.com/cvs-health/uqlm
+**实战代码**: ✅ 已写代码: code/wukong_llm_hallucination_detection_evaluation_b_0303_0809.py
+
+1. **解决的问题**  
+uqlm是一个专注于大语言模型(LLM)幻觉检测的Python库，通过先进的**不确定性量化技术**评估模型输出可靠性，帮助识别可能存在的错误或虚构内容（根据README首段及Hallucination Detection章节）。
+
+2. **核心功能/知识点**  
+- **多类型评分器**：提供黑盒/白盒/LLM裁判/集成四类置信度评分器（0-1分），高分表示低幻觉风险（表格分类部分）  
+- **零成本白盒检测**：利用LLM返回的token概率直接评估，无需额外API调用（White-Box Scorers说明）  
+- **跨模型兼容**：黑盒方案适配任何LLM，无模型访问限制（Black-Box Scorers的🌍标注）  
+- **已发表方法论**：技术经JMLR/TMLR学术期刊认证（徽章部分）  
+- **生产就绪**：提供PyPI安装、CI测试和完整文档（顶部徽章及Installation章节）  
+
+3. **代码示例**  
+README未提供具体调用代码，但给出标准安装命令：  
+```bash
+pip install uqlm  # 通过PyPI安装最新版
+```
+
+4. **应用场景**  
+- **关键领域QA系统**：医疗/金融等高风险场景下过滤LLM错误信息  
+- **模型调优验证**：量化不同提示工程方案的可靠性差异  
+- **多模型对比**：通过统一标准评估不同LLM的幻觉率  
+- **内容审核**：辅助识别生成文本中的事实性错误  
+
+（注：所有信息均严格来自README原文，未包含任何额外推测）
+
+---
