@@ -4986,3 +4986,33 @@ sudo reboot
 该项目的创新点在于将专业的AI绘图功能无缝合入了日常办公IM工具中，大幅降低了使用门槛并提升了工作流效率。
 
 ---
+
+### [悟空·supervise] python distributed task queue celery red (2026-03-03 10:29)
+**真实来源**: GitHub:celery/celery(⭐28152) https://github.com/celery/celery
+**实战代码**: ✅ 已写代码: code/wukong_python_distributed_task_queue_celery_red_0303_1029.py
+
+根据提供的README内容，提炼要点如下：
+
+1. **解决的问题**  
+Celery是一个Python分布式任务队列系统，用于跨线程或机器分发工作单元（任务）。它通过消息中间件（如RabbitMQ/Redis）协调客户端和工作者进程，实现异步任务处理。
+
+2. **核心功能/知识点**  
+- **任务队列机制**：工作者进程持续监控队列，执行客户端通过消息投递的任务（原文："worker processes monitor the queue for new work"）  
+- **多后端支持**：兼容RabbitMQ/AMQP、Redis等消息代理（Keywords中明确列出）  
+- **分布式架构**：支持多工作节点并行处理（原文："system can consist of multiple workers"）  
+- **企业级支持**：通过Tidelift提供商业支持（Enterprise部分说明）  
+- **云服务集成**：推荐使用CloudAMQP、Upstash等托管服务（Sponsors部分）
+
+3. **代码示例**  
+README中未提供具体代码片段，但明确指出：  
+- 官方文档链接：https://docs.celeryq.dev  
+- PyPI安装命令：`pip install celery`（通过Download链接推断）
+
+4. **实际应用场景**  
+- **高可用消息队列**：结合CloudAMQP托管RabbitMQ服务（Sponsors部分描述）  
+- **无服务器架构**：使用Upstash的Serverless Redis实现弹性扩展  
+- **现代云应用**：DragonflyDB替代Redis以优化云硬件资源利用率  
+
+注：所有信息严格基于README原文，未添加任何编造内容。具体使用需参考官方文档给出的完整示例。
+
+---
