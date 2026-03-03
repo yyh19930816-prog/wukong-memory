@@ -4616,3 +4616,31 @@ cd ~/stable-diffusion-webui && bash
 （注：README未提及retry/rate limit/exponential backoff功能，故不作讨论。该库核心定位是简化基础HTTP操作，高阶特性需配合其他库实现。）
 
 ---
+
+### [悟空·supervise] python distributed task queue celery red (2026-03-03 09:38)
+**真实来源**: GitHub:celery/celery(⭐28151) https://github.com/celery/celery
+**实战代码**: ✅ 已写代码: code/wukong_python_distributed_task_queue_celery_red_0303_0938.py
+
+1. **解决问题**  
+Celery是Python分布式任务队列，专门用于跨线程/机器分配工作单元（任务），通过消息中介（如RabbitMQ/Redis）协调客户端与工作节点。（源自"What's a Task Queue?"章节）
+
+2. **核心功能/知识点**  
+- **分布式任务分发**：客户端通过消息队列提交任务，Worker进程监听并执行（README任务队列说明）  
+- **多消息代理支持**：兼容RabbitMQ、AMQP、Redis等消息中间件（Keywords字段）  
+- **企业级支持**：通过Tidelift提供商业维护方案（For enterprise章节）  
+- **社区驱动开发**：Open Collective平台接受赞助支持持续迭代（Donations章节）  
+- **云服务集成**：官方推荐CloudAMQP（RabbitMQ服务）、Upstash（Serverless Redis）等托管方案（Sponsors章节）  
+
+3. **代码示例**  
+README中未提供具体代码，但明确指出：  
+- 项目源码地址：https://github.com/celery/celery/  
+- PyPI安装命令：`pip install celery`（Download字段）  
+- 文档入口：https://docs.celeryq.dev/en/stable/index.html  
+
+4. **应用场景**  
+- **异步任务处理**：如后台邮件发送、文件处理等耗时操作（Keywords中的"async"）  
+- **分布式系统构建**：跨多机器协调任务执行（Keywords中的"distributed"）  
+- **微服务通信**：通过RabbitMQ/Redis实现服务间解耦（Sponsors推荐的CloudAMQP/Upstash场景）  
+- **Serverless架构**：结合Upstash实现无服务器Redis任务队列（Upstash章节说明）
+
+---
