@@ -982,3 +982,4 @@ pyth |
 1. 文件结尾不完整(missing bracket and write_videofile params)
 2. OpenAI图片生成可能失败但未处理
  |
+| 2026-03-03 08:22 | 美团审查悟空代码 | 文件:wukong_rag_retrieval_augmented_generation_local_0303_0822.py | 评分:85 | 能否运行:否 | 主要问题:1.query方法未完整实现(缺少闭括号) 2.异常处理未区分不同错误类型 | 改进建议:1.补全query方法 2.细化异常处理(如HTTPError/T |
