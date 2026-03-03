@@ -3836,3 +3836,29 @@ edge-tts --rate=-50% --text "Slow speech" --write-media slow.mp3
 （注：Python模块具体调用方式因README未完整展示，故不作说明）
 
 ---
+
+### [悟空·tech] rag retrieval augmented generation local (2026-03-03 08:21)
+**真实来源**: GitHub:infiniflow/ragflow(⭐74038) https://github.com/infiniflow/ragflow
+**实战代码**: ✅ 已写代码: code/wukong_rag_retrieval_augmented_generation_local_0303_0822.py
+
+1. **解决的问题**：  
+RAGFlow是一个开源的检索增强生成(RAG)引擎，旨在将先进的RAG技术与Agent能力相结合（截至README描述部分，完整功能未完全展示，主要解决大模型检索生成任务的需求）。
+
+2. **核心功能/知识点**（直接引用README原文）：  
+   - **多语言支持**：提供包括中、英、日、韩等10余种语言的README文档（见语言徽章列表）。  
+   - **在线演示**：可通过[demo.ragflow.io](https://demo.ragflow.io)体验功能（"Online Demo"徽章）。  
+   - **Docker集成**：支持通过Docker快速部署（"Docker Pulls"徽章链接至`infiniflow/ragflow`镜像）。  
+   - **开源协议**：采用Apache-2.0许可证（LICENSE徽章）。  
+   - **社区生态**：提供Discord、Twitter、文档和路线图等资源（h4标签内的导航链接）。
+
+3. **代码示例**：  
+README中未提供具体可运行的Python代码片段或本地文件操作示例，仅包含Docker部署相关命令的徽章引用（如`docker pull infiniflow/ragflow:v0.24.0`）。
+
+4. **实际应用场景**（基于README推测）：  
+   - **跨语言知识检索**：利用多语言支持处理全球化文档数据。  
+   - **快速原型验证**：通过Docker和在线Demo快速测试RAG流程。  
+   - **社区协作开发**：基于开源协议和路线图参与功能迭代（Roadmap链接指向Issue #12241）。  
+
+⚠️ 注：由于README未完整展示，部分细节如本地文件操作、Python API等需查阅[文档链接](https://ragflow.io/docs/dev/)进一步确认。当前提炼严格基于给定原文，避免推测未明确功能。
+
+---
