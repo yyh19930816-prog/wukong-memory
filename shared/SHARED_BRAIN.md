@@ -4856,3 +4856,39 @@ evaluation.add_metrics(
 注：所有信息均严格源自README原文，功能描述不超过文档所述范围，评估指标仅引用实际出现的"Faithfulness"为例。
 
 ---
+
+### [悟空·tech] github actions python workflow automatio (2026-03-03 10:00)
+**真实来源**: GitHub:actions/setup-python(⭐2111) https://github.com/actions/setup-python
+**实战代码**: ✅ 已写代码: code/wukong_github_actions_python_workflow_automatio_0303_1001.py
+
+1. **解决问题**  
+该仓库提供GitHub Actions工作流中Python环境的自动化配置，解决Python/PyPy版本安装、依赖缓存和环境路径配置等问题，大幅简化CI/CD流程的构建环节。
+
+2. **核心功能**  
+- **多版本支持**：支持Python/PyPy/GraalPy/自由线程版Python的安装（如`3.13`/`pypy3.10`/`graalpy-24.0`/`3.13t`）
+- **智能版本解析**：自动从`.python-version`文件或本地缓存匹配语义化版本（SemVer），未命中时从GitHub Releases下载
+- **跨平台架构**：通过`architecture`参数指定`x86`/`x64`/`arm64`架构
+- **依赖缓存**：内置对pip/pipenv/poetry依赖的缓存功能（未展示完整配置）
+- **错误处理**：注册问题匹配器(problem matchers)捕获错误输出
+
+3. **代码示例**  
+```yaml
+# Python示例 (README原文)
+steps:
+- uses: actions/checkout@v6
+- uses: actions/setup-python@v6
+  with:
+    python-version: '3.13' 
+- run: python my_script.py
+```
+
+4. **应用场景**  
+- **自动化测试**：快速配置特定Python版本运行单元测试  
+- **多版本兼容性验证**：通过矩阵测试验证代码在不同Python/PyPy版本的表现  
+- **依赖管理**：结合缓存机制加速CI/CD流程中的依赖安装  
+- **跨平台开发**：为ARM64/x86等不同架构构建Python应用  
+- **开源项目维护**：确保PR代码在标准化的Python环境中被验证  
+
+（注：依赖缓存代码示例因README截断未完整展示，实际使用需参考完整文档）
+
+---
