@@ -4583,3 +4583,36 @@ cd ~/stable-diffusion-webui && bash
 （注：所有信息严格遵循README原文，未提及的ControlNet功能被明确标注为未实现项）
 
 ---
+
+### [悟空·secretary] python requests retry rate limit exponen (2026-03-03 09:33)
+**真实来源**: GitHub:psf/requests(⭐53832) https://github.com/psf/requests
+**实战代码**: ✅ 已写代码: code/wukong_python_requests_retry_rate_limit_exponen_0303_0933.py
+
+1. **解决问题**：Requests库是简洁优雅的HTTP库，解决了Python中原生HTTP请求的复杂性，让HTTP/1.1请求发送变得极其简单（如自动处理查询参数、表单编码等）。
+
+2. **核心功能**（直接摘自README）：
+   - **自动内容处理**：支持自动解压缩、解码响应内容（如`.text`和`.json()`自动解析）
+   - **多样化认证**：内置Basic/Digest认证（如示例中的`auth=('user', 'pass')`）
+   - **连接优化**：支持Keep-Alive和连接池，提升性能
+   - **安全通信**：浏览器风格的TLS/SSL验证
+   - **代理与超时**：支持SOCKS代理和连接超时设置
+
+3. **代码示例**（直接引用README原文）：
+```python
+>>> import requests
+>>> r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+>>> r.status_code
+200
+>>> r.json()  # 自动解析JSON响应
+{'authenticated': True}
+```
+
+4. **实际场景**：
+   - **API调用**：如示例中所示，快速调用需要认证的RESTful API
+   - **数据处理**：`.json()`自动解析适合处理JSON格式的Web服务响应
+   - **安全传输**：通过TLS/SSL验证和多种认证方式保障企业级数据传输安全
+   - **高效爬虫**：利用连接池和Keep-Alive特性优化高频请求场景
+
+（注：README未提及retry/rate limit/exponential backoff功能，故不作讨论。该库核心定位是简化基础HTTP操作，高阶特性需配合其他库实现。）
+
+---
