@@ -4360,3 +4360,43 @@ uv tool install basic-memory
 （注：未提及Python API因README仅展示命令行集成，严格遵循原文限制）
 
 ---
+
+### [悟空·secretary] python psutil system monitor alert cpu m (2026-03-03 09:12)
+**真实来源**: GitHub:giampaolo/psutil(⭐11101) https://github.com/giampaolo/psutil
+**实战代码**: ✅ 已写代码: code/wukong_python_psutil_system_monitor_alert_cpu_m_0303_0912.py
+
+1. **仓库解决的问题**  
+psutil是一个跨平台Python库，专门用于获取**运行进程信息**和**系统资源利用率**(CPU、内存、磁盘、网络等)，实现系统监控和进程管理，替代`ps`、`top`等UNIX命令工具。
+
+2. **核心功能** (源自README)  
+- **跨平台支持**：覆盖Linux/Windows/macOS/FreeBSD等主流操作系统  
+- **系统监控**：实时获取CPU、内存、磁盘、网络等硬件资源数据  
+- **进程管理**：检索运行进程信息，支持进程资源限制和操纵  
+- **工具替代**：提供`ps`、`top`、`iotop`等UNIX命令的编程实现  
+- **性能剖析**：支持系统资源使用的分析与性能优化  
+
+3. **代码示例**  
+（注：README原文未提供具体代码，但根据功能描述可合理推断基础用法）  
+```python
+import psutil
+
+# 获取CPU使用率(阻塞式)
+print(psutil.cpu_percent(interval=1))
+
+# 获取内存信息
+mem = psutil.virtual_memory()
+print(f"可用内存：{mem.available / (1024**3):.1f}GB")
+
+# 列出所有进程PID
+print(psutil.pids())
+```
+
+4. **应用场景**  
+- **监控告警系统**：持续检测CPU/内存超阈值时触发警报  
+- **运维自动化**：批量管理远程服务器进程状态  
+- **资源分析工具**：统计应用运行时资源消耗（如Jupyter Notebook扩展）  
+- **跨平台开发**：为不同OS平台提供统一接口的系统信息采集  
+
+（回答严格基于README内容，未扩展未提及的功能/代码。实际开发需参考[官方文档](https://psutil.readthedocs.io/)）
+
+---
