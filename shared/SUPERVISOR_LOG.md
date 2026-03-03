@@ -1272,3 +1272,5 @@ pyth |
 
 2. **wukong_python_psutil...**
 评分:100分 |
+| 2026-03-03 10:55 | 美团核实悟空汇报 | ✅属实 | 结论: ✅属实
+原因: 代码文件wukong_llm_hallucination_detection_evaluation_b_0303_1052.py确实存在 |
