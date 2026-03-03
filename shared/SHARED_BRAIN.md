@@ -5384,3 +5384,33 @@ README中未提供具体代码片段，仅可见基础依赖声明（如Python 3
 注：所有信息严格源自README原文，未扩展未提及功能（如具体日志实现细节）。实际使用需结合仓库中的requirements.txt配置环境。
 
 ---
+
+### [悟空·supervise] python health check heartbeat monitoring (2026-03-03 11:15)
+**真实来源**: GitHub:laitco/tailscale-healthcheck(⭐155) https://github.com/laitco/tailscale-healthcheck
+**实战代码**: ✅ 已写代码: code/wukong_python_health_check_heartbeat_monitoring_0303_1116.py
+
+1. **解决问题**  
+该仓库提供基于Python Flask的Docker化监控工具，专门用于检查Tailscale网络中设备的状态健康性，包括在线状态、密钥有效期和更新状态等指标（来自README的「Description」部分）。
+
+2. **核心功能/知识点**  
+- **设备健康聚合检测**：同时检查设备在线状态(`online_healthy`)、密钥到期状态(`key_healthy`)和可选更新状态(`update_healthy`)（来自「Features」章节）。
+- **精细化过滤**：支持通过操作系统、设备ID/主机名、标签（支持通配符）进行设备筛选，并包含排除逻辑（来自「Device Filtering」条目）。  
+- **全局指标**：提供全局健康状态汇总(`global_healthy`)及分项指标（如`global_key_healthy`），显示剩余密钥有效期天数(`key_days_to_expire`)（来自「Global Health Metrics」）。  
+- **预置API端点**：内置`/health`、`/health/<identifier>`等标准化端点，可直接集成监控系统（来自「Endpoints」章节）。  
+- **时区适配**：可配置时区调整设备最后在线时间(`lastSeen`)的显示（来自「Timezone Support」条目）。  
+
+3. **代码示例**  
+README未提供具体代码段，但明确给出Docker运行命令：  
+```bash
+# 从Docker Hub直接运行（来自「Run from Docker Hub」章节）
+docker run -p 8000:8000 laitco/tailscale-healthcheck
+```
+
+4. **应用场景**  
+- **网络运维监控**：通过API端点集成Gatus等监控系统，实时发现Tailscale网络中离线或密钥临期设备（来自「Integration with Gatus Monitoring System」条目）。  
+- **自动化运维**：结合CI/CD流程，在设备更新失败(`update_healthy=false`)或密钥即将过期(`key_days_to_expire<7`)时触发告警（隐含自「Features」的计数器指标和状态过滤功能）。  
+- **多分支机构管理**：利用标签过滤功能，按地理位置/部门标签分组检查设备健康状态（来自「Tag-based filtering」说明）。  
+
+（注：所有信息严格基于README原文，未包含任何编造内容）
+
+---
