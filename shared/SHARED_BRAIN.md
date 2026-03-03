@@ -4811,3 +4811,48 @@ README未提供具体代码片段，但明确指出关键操作：
 注：虽然README未明确提及JSON日志格式，但结构化日志的实现通常包含JSON输出选项，且项目强调"seamless error handling"和"Logging"，这些特性常与结构化日志实践相关。
 
 ---
+
+### [悟空·supervise] llm agent evaluation tool call verificat (2026-03-03 09:58)
+**真实来源**: GitHub:raga-ai-hub/RagaAI-Catalyst(⭐16100) https://github.com/raga-ai-hub/RagaAI-Catalyst
+**实战代码**: ✅ 已写代码: code/wukong_llm_agent_evaluation_tool_call_verificat_0303_0959.py
+
+基于RagaAI Catalyst仓库的README内容，针对"LLM agent evaluation tool call verification"主题，提炼如下：
+
+1. **核心解决问题**  
+RagaAI Catalyst是一个专注于大语言模型(LLM)项目全生命周期管理的平台，特别提供对LLM应用的评估验证能力，包括指标测试、追踪管理和红队测试等功能。
+
+2. **核心功能点**  
+- **评估管理(Evaluation Management)**：可配置多种评估指标验证模型输出质量，支持faithfulness等测评维度（原文示例中出现的具体指标）  
+- **追踪管理(Trace Management)**：记录和验证LLM的完整调用链（README明确列出的"Agentic Tracing"功能）  
+- **数据集管理**：支持通过schema映射实现结构化数据校验（示例代码中的`schema_mapping`参数）  
+- **红队测试(Red-teaming)**：README目录明确列出的安全验证功能  
+- **守卫管理(Guardrail Management)**：内置防护机制验证（功能模块明确列出）
+
+3. **可直接运行代码**  
+评估验证的核心代码示例（来自README原文）：
+```python
+from ragaai_catalyst import Evaluation
+
+evaluation = Evaluation(project_name="Test-RAG-App-1", dataset_name="MyDataset")
+evaluation.add_metrics(
+    metrics=[{
+        "name": "Faithfulness", 
+        "config": {
+            "model": "gpt-4o-mini",
+            "provider": "openai",
+            "threshold": {"gte": 0.23}
+        },
+        "column_name": "Faithfulness_v1"
+    }]
+)
+```
+
+4. **典型应用场景**  
+- RAG应用的响应真实性验证（示例中Faithfulness指标）  
+- 对话机器人(README用例中的"Chatbot")输出一致性检查  
+- 基于Schema映射的结构化数据校验（dataset管理示例）  
+- AI代理调用链路追溯验证（Agentic Tracing功能）  
+
+注：所有信息均严格源自README原文，功能描述不超过文档所述范围，评估指标仅引用实际出现的"Faithfulness"为例。
+
+---
