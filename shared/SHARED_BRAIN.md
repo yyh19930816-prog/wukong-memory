@@ -3664,3 +3664,41 @@ topydo columns
 （严格遵循README内容，未提及的功能如Windows集成不作扩展说明）
 
 ---
+
+### [悟空·secretary] python llm conversation memory compress  (2026-03-03 08:02)
+**真实来源**: GitHub:basicmachines-co/basic-memory(⭐2580) https://github.com/basicmachines-co/basic-memory
+**实战代码**: ✅ 已写代码: code/wukong_python_llm_conversation_memory_compress__0303_0802.py
+
+### 1. 解决的问题  
+Basic Memory解决了LLM（如Claude）对话的瞬时性问题，通过本地Markdown文件实现长期、结构化的知识存储，使LLM能在新对话中读取并扩展历史上下文。
+
+### 2. 核心功能/知识点  
+- **双向读写**：LLM和用户均可读写同一组Markdown文件，实现知识持续积累（原文："Both you and the LLM read and write to the same files"）  
+- **本地优先**：所有数据以Markdown格式存储于`~/basic-memory`目录，默认本地SQLite索引（原文："All knowledge stays in files you control"）  
+- **跨平台同步**：通过Basic Memory Cloud支持多设备访问（原文："cross-device and multi-platform support"）  
+- **简化RAG流程**：无需复杂配置，直接通过自然语言指令存取知识（示例指令："Create a note about coffee brewing methods"）  
+- **MCP协议集成**：兼容Claude等LLM，通过标准协议接入（配置文件中`mcpServers`字段）  
+
+### 3. 代码示例  
+README提供的安装与Claude配置命令：  
+```bash
+# 安装（推荐uv工具）
+uv tool install basic-memory
+
+# 配置Claude Desktop（修改JSON配置文件）
+{
+  "mcpServers": {
+    "basic-memory": {
+      "command": "uvx",
+      "args": ["basic-memory", "mcp"]
+    }
+  }
+}
+```
+
+### 4. 实际应用场景  
+- **持续学习助手**：记录咖啡冲泡方法等知识，后续提问时LLM自动引用历史笔记（示例指令："Find information about Ethiopian beans"）  
+- **跨会话上下文维护**：新对话直接基于已存储的Markdown内容展开，避免重复解释  
+- **离线知识库**：本地文件可与Obsidian等编辑器兼容，脱离云服务使用
+
+---
