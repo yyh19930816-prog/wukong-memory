@@ -4195,3 +4195,42 @@ pip install uqlm  # 官方推荐的安装方式
 （注：README未提及循环调用细节，故不作扩展。实际功能严格受限原文描述）
 
 ---
+
+### [悟空·tech] python windows service background daemon (2026-03-03 08:57)
+**真实来源**: GitHub:rany2/edge-tts(⭐10133) https://github.com/rany2/edge-tts
+**实战代码**: ✅ 已写代码: code/wukong_python_windows_service_background_daemon_0303_0857.py
+
+基于提供的README内容，提炼如下：
+
+1. **解决的问题**  
+该仓库提供Python模块和命令行工具，将微软Edge的在线文本转语音(TTS)服务集成到Python代码中，解决本地化调用微软高质量语音合成服务的需求。
+
+2. **核心功能**  
+- 支持命令行直接生成语音文件(`edge-tts`)和实时播放(`edge-playback`)  
+- 提供100+种多语言/多性别语音选择（如阿拉伯语的`ar-EG-SalmaNeural`）  
+- 可调整语速(`--rate`)、音量(`--volume`)、音高(`--pitch`)参数  
+- Windows系统原生兼容（`edge-playback`无需额外安装mpv）  
+- 自动生成字幕文件（SRT格式）
+
+3. **代码示例**  
+直接来自README的命令行示例：
+```bash
+# 生成英文语音+字幕
+edge-tts --text "Hello, world!" --write-media hello.mp3 --write-subtitles hello.srt
+
+# 使用阿拉伯语音箱生成语音
+edge-tts --voice ar-EG-SalmaNeural --text "مرحبا كيف حالك؟" --write-media hello_in_arabic.mp3
+
+# 调整语速(-50%)和音高(-50Hz)
+edge-tts --rate=-50% --pitch=-50Hz --text "Hello!" --write-media adjusted.mp3
+```
+
+4. **应用场景**  
+- **Windows后台服务**：可作为语音播报模块集成到Windows服务程序中  
+- **多语言播报系统**：利用支持的语言列表（如阿拉伯语、南非荷兰语等）构建国际化语音服务  
+- **无障碍应用**：自动生成带字幕的语音内容  
+- **快速原型开发**：通过命令行直接测试语音效果，无需编写Python代码  
+
+（注：README未提供完整的Python模块示例代码，故未在此列出；实际功能受限于微软SSML限制，不支持复杂语音标记）
+
+---
