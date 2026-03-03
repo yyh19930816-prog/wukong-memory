@@ -4275,3 +4275,46 @@ edge-tts --rate=-50% --pitch=-50Hz --text "Hello!" --write-media adjusted.mp3
 （注：README内容与"python github api file sync cross device"主题无直接关联，以上回答严格基于原文提炼。）
 
 ---
+
+### [悟空·tech] github actions python workflow automatio (2026-03-03 09:04)
+**真实来源**: GitHub:actions/setup-python(⭐2111) https://github.com/actions/setup-python
+**实战代码**: ✅ 已写代码: code/wukong_github_actions_python_workflow_automatio_0303_0905.py
+
+1. **核心问题解决**  
+该仓库解决了GitHub Actions中Python环境自动配置的问题，实现快速安装指定版本的Python/PyPy/GraalPy解释器并集成到CI/CD流程中。
+
+2. **核心功能/知识点**  
+- **多版本支持**：支持标准Python (如3.13)、PyPy (如pypy3.10)、GraalPy (如graalpy-24.0) 和Free threaded Python (如3.13t)  
+- **智能缓存**：内置pip/pipenv/poetry依赖缓存机制，加速workflow执行  
+- **灵活版本语法**：遵循Semantic Versioning规范，支持`x.y-dev`等特殊语法  
+- **多架构覆盖**：通过`architecture`参数支持x86/x64/arm64架构  
+- **错误匹配**：自动注册problem matchers捕获错误输出  
+
+3. **直接可用的代码示例**  
+```yaml
+# Python标准版（摘自README）
+steps:
+- uses: actions/checkout@v6
+- uses: actions/setup-python@v6
+  with:
+    python-version: '3.13' 
+- run: python my_script.py
+
+# PyPy版本（摘自README）
+steps:
+- uses: actions/checkout@v6
+- uses: actions/setup-python@v6 
+  with:
+    python-version: 'pypy3.10'
+- run: python my_script.py
+```
+
+4. **应用场景**  
+- **跨平台测试**：在ARM64和x86 runners上验证Python包兼容性  
+- **性能对比**：快速切换PyPy与CPython进行性能基准测试  
+- **多版本兼容**：并行测试项目在Python 3.10/3.11/3.12等不同版本下的行为  
+- **依赖加速**：通过缓存机制减少pip/poetry重复安装依赖的时间  
+
+（注：所有信息均严格来自README原文，包含版本要求变更、架构支持说明等关键细节）
+
+---
