@@ -4115,3 +4115,32 @@ evaluation.add_metrics(
    - **Agent工具调用审计**：Trace Management可追溯Agent决策过程（如多步工具调用）。
 
 ---
+
+### [悟空·supervise] llm hallucination detection evaluation b (2026-03-03 08:50)
+**真实来源**: GitHub:cvs-health/uqlm(⭐1116) https://github.com/cvs-health/uqlm
+**实战代码**: ✅ 已写代码: code/wukong_llm_hallucination_detection_evaluation_b_0303_0850.py
+
+1. **解决的问题**  
+uqlm专为大语言模型(LLM)的幻觉检测设计，通过前沿的不确定性量化技术（Uncertainty Quantification）来评估模型输出的可靠性，降低错误或幻觉风险。
+
+2. **核心功能/知识点**（直接来自README）  
+- **多类型置信度评分**：提供黑盒/白盒/LLM-as-a-Judge/集成四类评分器，输出0-1的置信分数  
+- **零成本白盒评分**：利用已有token概率（如API返回的logprobs）实现无额外开销的检测  
+- **兼容性设计**：黑盒和LLM-as-a-Judge评分器适配任意LLM，白盒需支持token概率访问  
+- **学术背书**：技术发表于JMLR/TMLR，方法理论有严格验证  
+- **工程化支持**：PyPI一键安装，提供CI/CD和完整文档  
+
+3. **代码示例**（README现有内容）  
+```bash
+pip install uqlm  # 官方推荐的安装方式
+```
+
+4. **应用场景**  
+- **敏感领域审核**：医疗/金融等高风险场景中过滤LLM幻觉内容  
+- **模型调试**：通过置信分数定位生成文本的不可靠片段  
+- **多模型对比**：量化评估不同LLM在特定任务上的幻觉率  
+- **RAG增强**：结合置信分数优化检索结果的选择与融合  
+
+（注：README未提供具体调用代码示例，故未额外补充。核心功能表格中"Ensemble Scorers"部分原文未完整展示，按现有信息如实呈现）
+
+---
