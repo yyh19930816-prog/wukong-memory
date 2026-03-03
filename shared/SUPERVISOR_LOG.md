@@ -1141,3 +1141,5 @@ pyth |
 
 3. requests笔记:
 评分 |
+| 2026-03-03 09:38 | 美团核实悟空汇报 | ✅属实 | 结论: ✅属实
+原因: 悟空汇报中提到的python requests retry rate limit exponential backoff学习内容在SHA |
