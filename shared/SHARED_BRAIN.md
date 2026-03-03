@@ -5156,3 +5156,39 @@ pip install uqlm
 注：所有分析严格基于README原文，未引入任何外部假设。
 
 ---
+
+### [悟空·secretary] python psutil system monitor alert cpu m (2026-03-03 10:49)
+**真实来源**: GitHub:giampaolo/psutil(⭐11101) https://github.com/giampaolo/psutil
+**实战代码**: ✅ 已写代码: code/wukong_python_psutil_system_monitor_alert_cpu_m_0303_1050.py
+
+1. **解决问题**  
+psutil 是一个跨平台Python库，主要用于获取**运行中进程信息**和**系统资源利用率**（CPU、内存、磁盘、网络等），实现系统监控、性能分析和进程管理。
+
+2. **核心功能/知识点**（直接引用README）  
+- 跨平台支持Linux/Windows/macOS/FreeBSD等  
+- 提供类似`ps`、`top`、`netstat`等UNIX工具的Python接口  
+- 监控CPU、内存、磁盘、网络及传感器数据  
+- 分析进程资源使用情况并限制资源  
+- 替代命令行工具实现更灵活的监控方案  
+
+3. **代码示例**  
+⚠️注：README未提供具体代码，以下为功能对应逻辑（非仓库原文）：  
+```python
+import psutil
+# 监控CPU使用率
+print(psutil.cpu_percent(interval=1))
+# 获取内存信息
+print(psutil.virtual_memory())
+# 列出所有进程PID
+print(psutil.pids())
+```
+
+4. **实际应用场景**  
+- **异常进程检测**：通过实时CPU/内存占用发现异常进程  
+- **资源瓶颈分析**：监控服务器资源使用率（如内存泄漏）  
+- **自动化运维**：替代shell命令实现跨平台监控脚本  
+- **安全审计**：类似`lsof`检测可疑网络连接或文件操作  
+
+（依据README内容，该库通过Python API统一了多平台系统监控方式，适用于需精细化资源管理的场景）
+
+---
