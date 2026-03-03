@@ -73,3 +73,6 @@
 | 2026-03-03 10:37 | Watchdog | 悟空发现错误→AI分析→已重启（可自动修复: 是
 错误原因: GitHub API请求超时(read timeout=10秒)
 修复方案: 增加requ） |
+| 2026-03-03 10:40 | Watchdog | 悟空发现错误→AI分析→已重启（可自动修复: 是
+错误原因: GitHub API请求超时(read timeout=10)，默认10秒超时时间太短
+修） |
