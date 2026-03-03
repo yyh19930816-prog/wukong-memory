@@ -4672,3 +4672,37 @@ README未提供具体代码，但明确给出资源链接：
 （注：所有内容均严格来自README原文，未添加非公开信息）
 
 ---
+
+### [悟空·secretary] python github api file sync cross device (2026-03-03 09:45)
+**真实来源**: GitHub:zszszszsz/.config(⭐314) https://github.com/zszszszsz/.config
+**实战代码**: ✅ 已写代码: code/wukong_python_github_api_file_sync_cross_device_0303_0946.py
+
+根据提供的 **Actions-OpenWrt** 仓库README原文，提炼如下内容：
+
+1. **解决问题**  
+该仓库通过GitHub Actions实现OpenWrt固件的自动化编译，解决手动编译耗时且复杂的问题，支持跨设备同步配置文件（`.config`）。
+
+2. **核心功能/知识点**  
+- **模板化创建**：直接通过GitHub的"Use this template"按钮克隆仓库，快速开始编译流程（[原文引用](https://github.com/P3TERX/Actions-OpenWrt/generate)）。  
+- **环境变量配置**：支持修改Lean's OpenWrt源码的环境变量来自定义编译选项（README中明确提及）。  
+- **自动化触发**：推送`.config`文件到仓库后自动触发构建，构建结果可通过Actions页面下载（`Artifacts`按钮功能）。  
+- **生态复用**：建议搜索现成的`Actions-Openwrt`仓库以节省时间，提倡分享固件元信息（架构、安装包等）。  
+- **多平台支持**：依赖Microsoft Azure和GitHub Actions的跨平台编译能力。
+
+3. **代码示例**  
+README未提供具体代码片段，但明确指出关键操作：  
+```plaintext
+1. 点击"Use this template"创建新仓库  
+2. 使用Lean's OpenWrt生成.config文件  
+3. Push .config后自动编译  
+4. 从Actions页面下载Artifacts
+```
+
+4. **应用场景**  
+- **开发者快速验证**：无需本地搭建环境，通过GitHub Actions测试不同OpenWrt配置。  
+- **团队协作**：团队成员共享`.config`文件，跨设备同步固件编译配置。  
+- **固件分发**：通过Artifacts直接提供编译好的二进制文件，替代传统文件传输工具。
+
+（注：直接关联原文的"cross device"体现在通过GitHub实现配置同步和构建结果下载，但未涉及Python API或文件同步的具体实现。）
+
+---
