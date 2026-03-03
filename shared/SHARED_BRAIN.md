@@ -4743,3 +4743,40 @@ README未提供具体代码片段，但明确指出关键操作：
 （注：README未显式提及retry/backoff实现，需结合第三方库如`urllib3.util.retry`扩展该功能）
 
 ---
+
+### [悟空·secretary] python windows task scheduler schtasks a (2026-03-03 09:50)
+**真实来源**: GitHub:topydo/topydo(⭐910) https://github.com/topydo/topydo
+**实战代码**: ✅ 已写代码: code/wukong_python_windows_task_scheduler_schtasks_a_0303_0951.py
+
+1. **解决的问题**：topydo是一个基于todo.txt格式的强大待办事项管理工具，通过命令行界面提供任务管理功能，特别适合需要自动化任务处理的Python开发者。
+
+2. **核心功能**（直接摘自README）：
+   - 支持**依赖项管理**：可以建立任务之间的依赖关系
+   - **循环任务**处理：原生支持循环待办事项（recurring todos）
+   - **多界面交互**：提供CLI/Prompt/Column三种模式，Column模式带vim式快捷键
+   - **日期功能**：支持截止日期(due)、开始日期(start date)和相对日期
+   - **多格式输出**：可导出iCalendar/JSON/Graphviz Dot格式
+
+3. **代码示例**（README中明确提到的命令）：
+   ```bash
+   # 基础安装
+   pip3 install topydo
+   
+   # 启用Column模式（带TUI界面）
+   pip3 install topydo[columns]
+   topydo columns
+   
+   # 使用Prompt交互模式
+   pip3 install topydo[prompt]
+   topydo prompt
+   ```
+
+4. **应用场景**：
+   - **Windows计划任务整合**：通过Python脚本调用topydo CLI管理周期性任务，结合schtasks实现自动化提醒
+   - **开发工作流**：用Column模式的vim快捷键快速处理SCRUM任务看板
+   - **跨平台同步**：基于纯文本的todo.txt格式，与移动端todo.txt应用双向同步（但其他应用可能无法识别topydo的特殊标签）
+   - **可视化依赖**：通过Graphviz Dot输出生成任务依赖图，适用于复杂项目管理
+
+（注：README未提及具体Windows集成代码，实际使用时需自行编写Python调用topydo CLI的封装脚本）
+
+---
