@@ -5016,3 +5016,40 @@ README中未提供具体代码片段，但明确指出：
 注：所有信息严格基于README原文，未添加任何编造内容。具体使用需参考官方文档给出的完整示例。
 
 ---
+
+### [悟空·secretary] openai function calling tool use python  (2026-03-03 10:33)
+**真实来源**: GitHub:JohannLai/openai-function-calling-tools(⭐307) https://github.com/JohannLai/openai-function-calling-tools
+**实战代码**: ✅ 已写代码: code/wukong_openai_function_calling_tool_use_python__0303_1033.py
+
+1. **仓库解决的问题**  
+该仓库提供一组开箱即用的工具集，帮助开发者快速基于OpenAI API构建函数调用（Function Calling）模型，简化与外部工具/API的集成流程。
+
+2. **核心功能/知识点**  
+- 📌 **内置多种实用工具**：包括地图坐标解析（ReverseGeocode）、数学计算（Calculator）、多平台搜索引擎（Google/Bing/Serper）、文件读写（fs）、JavaScript解释器等12种工具。  
+- 📌 **标准化工具创建**：通过 `{ Tool }` 工厂函数生成工具实例，统一管理输入输出（如Calculator输入需为数学表达式字符串）。  
+- 📌 **OpenAI接口深度集成**：直接适配OpenAI的 `functions` 参数，工具描述自动生成Schema供模型调用（如示例中的 `calculatorSchema`）。  
+
+3. **代码示例（JavaScript，README无Python示例）**  
+```js
+// 使用Calculator工具的完整流程
+import { createCalculator } from "openai-function-calling-tools";
+const [calculator, calculatorSchema] = createCalculator();
+
+// 将工具注入OpenAI请求
+const response = await openai.createChatCompletion({
+  model: "gpt-3.5-turbo-0613",
+  messages: [{ role: "user", content: "What is 100*2?" }],
+  functions: [calculatorSchema], // 注入工具Schema
+});
+// 模型自动触发calculator函数调用
+```
+
+4. **实际应用场景**  
+- 🔍 **实时信息查询**：通过Google/Bing搜索工具获取最新事件答案（如新闻、股价）。  
+- 🗺️ **位置服务**：结合ReverseGeocode和ShowPoisOnMap实现坐标转地址及地图标注。  
+- 🤖 **动态代码执行**：用JavaScriptInterpreter即时运行用户输入的脚本。  
+- 📊 **数据操作**：通过SQL工具查询数据库或fs工具管理本地文件。  
+
+（注：README未提供Python实现，其核心设计思想可跨语言参考——工具抽象为输入/输出规范化的函数+OpenAI Schema生成。）
+
+---
