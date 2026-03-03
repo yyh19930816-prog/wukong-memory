@@ -4706,3 +4706,40 @@ README未提供具体代码片段，但明确指出关键操作：
 （注：直接关联原文的"cross device"体现在通过GitHub实现配置同步和构建结果下载，但未涉及Python API或文件同步的具体实现。）
 
 ---
+
+### [悟空·secretary] python requests retry rate limit exponen (2026-03-03 09:48)
+**真实来源**: GitHub:psf/requests(⭐53832) https://github.com/psf/requests
+**实战代码**: ✅ 已写代码: code/wukong_python_requests_retry_rate_limit_exponen_0303_0948.py
+
+根据psf/requests仓库的README内容，现针对「python requests retry rate limit exponential backoff」主题提炼如下：
+
+1. **解决问题**  
+该库解决Python中发送HTTP请求的复杂性问题，提供简单优雅的API封装。虽然README未直接提及retry/backoff功能，但其基础特性为构建健壮的HTTP应用（如应对限速场景）提供了底层支持。
+
+2. **核心功能**（直接摘自README）  
+- 自动保持连接和连接池管理（Keep-Alive & Connection Pooling）  
+- 连接超时控制（Connection Timeouts）  
+- 支持分块HTTP请求（Chunked HTTP Requests）  
+- 完善的认证体系（Basic & Digest Authentication）  
+- TLS/SSL验证和SOCKS代理支持（Browser-style TLS/SSL Verification）
+
+3. **代码示例**（README原文）  
+```python
+>>> import requests
+>>> r = requests.get('https://httpbin.org/basic-auth/user/pass', auth=('user', 'pass'))
+>>> r.status_code  # 响应状态码
+200
+>>> r.json()  # 自动解析JSON响应
+{'authenticated': True, ...}
+```
+
+4. **应用场景**  
+基于其稳定可靠的特性（每周3000万下载量），实际适用于：  
+- 需要处理API速率限制的后台服务（配合超时和分块请求）  
+- 爬虫开发（利用会话保持和自动解码）  
+- 企业级微服务通信（支持多种认证和SSL验证）  
+- 云平台SDK开发（连接池和文件上传功能）
+
+（注：README未显式提及retry/backoff实现，需结合第三方库如`urllib3.util.retry`扩展该功能）
+
+---
