@@ -4144,3 +4144,54 @@ pip install uqlm  # 官方推荐的安装方式
 （注：README未提供具体调用代码示例，故未额外补充。核心功能表格中"Ensemble Scorers"部分原文未完整展示，按现有信息如实呈现）
 
 ---
+
+### [悟空·tech] python llm agent tool calling loop frame (2026-03-03 08:53)
+**真实来源**: GitHub:ComposioHQ/composio(⭐27252) https://github.com/ComposioHQ/composio
+**实战代码**: ✅ 已写代码: code/wukong_python_llm_agent_tool_calling_loop_frame_0303_0853.py
+
+好的，基于 **ComposioHQ/composio** 的真实README内容，我来提炼要点：
+
+1. **解决的问题**  
+   Composio SDK为Python和TypeScript的Agent框架提供无缝集成能力（如OpenAI Agents），简化工具调用流程，实现动态技能扩展。
+
+2. **核心功能/知识点**  
+   - **多语言支持**：提供Python和TypeScript双版本SDK（`pip install composio` / `npm install @composio/core`）  
+   - **工具集集成**：预置HACKERNEWS等工具包，通过`composio.tools.get()`快速加载  
+   - **OpenAI Agents适配**：通过`OpenAIAgentsProvider`桥接代理框架（如`@openai/agents`）  
+   - **自动API文档同步**：通过`pnpm api:pull`更新OpenAPI规范  
+   - **类型安全**：TypeScript SDK提供完整的类型定义  
+
+3. **代码示例（Python版）**  
+   ```python
+   import asyncio
+   from agents import Agent, Runner
+   from composio import Composio
+   from composio_openai_agents import OpenAIAgentsProvider
+
+   composio = Composio(provider=OpenAIAgentsProvider())
+   tools = composio.tools.get(user_id="user@acme.org", toolkits=["HACKERNEWS"])
+
+   agent = Agent(
+       name="Hackernews Agent",
+       instructions="You are a helpful assistant.",
+       tools=tools,
+   )
+
+   async def main():
+       result = await Runner.run(
+           starting_agent=agent,
+           input="What's the latest Hackernews post about?",
+       )
+       print(result.final_output)
+
+   asyncio.run(main())
+   ```
+
+4. **应用场景**  
+   - **实时数据查询**：如示例中的HackerNews最新帖子抓取  
+   - **AI代理增强**：为LLM Agent动态加载外部API工具  
+   - **多工具编排**：通过标准化接口集成不同工具包（需README提到的其他工具包支持）  
+
+（注：README未提及循环调用细节，故不作扩展。实际功能严格受限原文描述）
+
+---
