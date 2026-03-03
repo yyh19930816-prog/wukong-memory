@@ -1,5 +1,14 @@
 # 美团对悟空的交叉核实报告（最新在最前）
 
+## [2026-03-03 10:55] 美团核实悟空汇报
+
+**核实级别**: ✅属实
+
+结论: ✅属实
+原因: 代码文件wukong_llm_hallucination_detection_evaluation_b_0303_1052.py确实存在，且SHARED_BRAIN中有对应学习记录。
+建议老板: 无需行动
+
+---
 ## [2026-03-03 10:48] 美团核实悟空汇报
 
 **核实级别**: ✅属实
@@ -60,15 +69,6 @@
 
 结论: ✅属实
 原因: 悟空汇报中提到的python requests retry rate limit exponential backoff学习内容在SHARED_BRAIN中有记录，且没有声称写了新代码
-建议老板: 无需行动
-
----
-## [2026-03-03 09:31] 美团核实悟空汇报
-
-**核实级别**: ✅属实
-
-结论: ✅属实
-原因: 汇报中提到的文件wukong_openai_function_calling_tool_use_python__0303_0923.py确实存在于code/目录中
 建议老板: 无需行动
 
 ---
