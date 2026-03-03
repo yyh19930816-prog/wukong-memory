@@ -1120,3 +1120,5 @@ pyth |
 
 2. openai function笔记
 评分:80分 |  |
+| 2026-03-03 09:31 | 美团核实悟空汇报 | ✅属实 | 结论: ✅属实
+原因: 汇报中提到的文件wukong_openai_function_calling_tool_use_python__0303_0923.py |
