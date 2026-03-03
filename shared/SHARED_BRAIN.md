@@ -5192,3 +5192,32 @@ print(psutil.pids())
 （依据README内容，该库通过Python API统一了多平台系统监控方式，适用于需精细化资源管理的场景）
 
 ---
+
+### [悟空·supervise] llm hallucination detection evaluation b (2026-03-03 10:51)
+**真实来源**: GitHub:cvs-health/uqlm(⭐1116) https://github.com/cvs-health/uqlm
+**实战代码**: ✅ 已写代码: code/wukong_llm_hallucination_detection_evaluation_b_0303_1052.py
+
+1. **仓库解决的问题**  
+UQLM是一个专注于大型语言模型(LLM)幻觉检测的Python库，通过最先进的不确定性量化技术，提供对模型输出的置信度评分以减少错误或幻觉（README明确说明其用途）。
+
+2. **核心功能/知识点**  
+   - **多维度评分器**：提供黑盒、白盒、LLM-as-a-Judge和集成评分器四种类型，从不同角度量化输出不确定性（README中的表格分类）。
+   - **置信度评分**：所有评分器返回0-1的置信分数，高分表示低幻觉风险（README中"Hallucination Detection"部分）。
+   - **零成本白盒检测**：利用已有token概率，无需额外LLM调用即可评估（README表格"White-Box Scorers"特性）。  
+   - **标准化安装**：通过PyPI一键安装（`pip install uqlm`）。  
+   - **学术验证**：相关技术已在JMLR、TMLR等顶刊发表（README底部学术徽章）。
+
+3. **代码示例**  
+README中仅包含安装命令，无具体调用示例，故严格遵循原文只能提供：  
+```bash
+pip install uqlm  # 官方唯一明确给出的代码
+```
+
+4. **实际应用场景**  
+   - **LLM输出过滤**：通过置信分数阈值自动筛选低幻觉回答（README提到"likelihood of errors"）。  
+   - **模型对比**：不同LLM生成结果的可信度横向评估（隐含于多评分器兼容性说明）。  
+   - **成本敏感场景**：白盒评分器节省API调用开销（README强调"no extra LLM calls"）。  
+
+（注：README未明确提及具体API调用方式、数据集或基准测试细节，故不作延伸。）
+
+---
